@@ -1,0 +1,119 @@
+{
+  "summary": {
+    "passed": 0,
+    "failed": 0,
+    "errors": 13
+  },
+  "results": [
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:29"
+      },
+      "file_path": "[EXCELLENT] EXC_001"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:31"
+      },
+      "file_path": "[EXCELLENT] EXC_002"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:33"
+      },
+      "file_path": "[EXCELLENT] EXC_003"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:35"
+      },
+      "file_path": "[EXCELLENT] EXC_004"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:37"
+      },
+      "file_path": "[GOOD] GOOD_001"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:39"
+      },
+      "file_path": "[GOOD] GOOD_002"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:40"
+      },
+      "file_path": "[GOOD] GOOD_003"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:42"
+      },
+      "file_path": "[MEDIUM] MED_001"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:44"
+      },
+      "file_path": "[MEDIUM] MED_002"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:46"
+      },
+      "file_path": "[MEDIUM] MED_003"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:48"
+      },
+      "file_path": "[POOR] POOR_001"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:49"
+      },
+      "file_path": "[POOR] POOR_002"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração da OpenAI: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:42:51"
+      },
+      "file_path": "[POOR] POOR_003"
+    }
+  ],
+  "timestamp": "2026-01-15 00:42:51",
+  "benchmark_metadata": {
+    "llm_name": "GPT-4o",
+    "total_time": 23.99,
+    "dataset_version": "1.0"
+  }
+}

@@ -1,0 +1,66 @@
+{
+    "validation_profile": "standard",
+    "rules": {
+        "endpoint_structure": {
+            "enabled": true,
+            "severity": "error",
+            "description": "Valida estrutura básica do endpoint",
+            "checks": [
+                "Possui docstring explicativa",
+                "Define response_model",
+                "Especifica status_code explicitamente",
+                "Declara tags para organização",
+                "Usa APIRouter ao invés de FastAPI app"
+            ]
+        },
+        "naming_conventions": {
+            "enabled": true,
+            "severity": "warning",
+            "description": "Valida convenções de nomenclatura",
+            "checks": [
+                "Nome da função em snake_case com verbo de ação (ex: get_users)",
+                "Variáveis em snake_case",
+                "Classes em PascalCase",
+                "Parâmetros seguem convenção Python"
+            ]
+        },
+        "type_hints": {
+            "enabled": true,
+            "severity": "error",
+            "description": "Valida uso de type hints",
+            "checks": [
+                "Todos parâmetros possuem type hints",
+                "Função possui return type annotation",
+                "Usa tipos adequados (List, Dict, Optional, etc)"
+            ]
+        },
+        "error_handling": {
+            "enabled": true,
+            "severity": "error",
+            "description": "Valida tratamento de erros",
+            "checks": [
+                "Possui try-except para operações críticas",
+                "Usa HTTPException apropriadamente",
+                "Define status codes corretos para erros"
+            ]
+        },
+        "input_validation": {
+            "enabled": true,
+            "severity": "warning",
+            "description": "Valida entrada de dados",
+            "checks": [
+                "Usa Pydantic models para body requests",
+                "Usa Query(), Path(), Body() para documentação",
+                "Define validações quando necessário"
+            ]
+        },
+        "async_usage": {
+            "enabled": true,
+            "severity": "info",
+            "description": "Valida uso de async",
+            "checks": [
+                "Preferência por funções async quando possível"
+            ]
+        }
+    }
+}

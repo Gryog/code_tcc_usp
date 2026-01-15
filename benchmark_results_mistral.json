@@ -1,0 +1,1198 @@
+{
+  "summary": {
+    "passed": 9,
+    "failed": 4,
+    "errors": 0
+  },
+  "results": [
+    {
+      "overall_status": "warning",
+      "overall_score": 95,
+      "summary": "Código bem estruturado com apenas pequenas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Tags duplicadas",
+          "description": "As tags ['users'] estão declaradas tanto no APIRouter quanto no decorator do endpoint, causando duplicação desnecessária na documentação.",
+          "suggestion": "Remova tags=['users'] do decorator @router.get() e mantenha apenas a declaração no APIRouter",
+          "line_reference": "Linhas 7 e 10"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "error_handling",
+          "check_failed": "Exceção genérica capturada",
+          "description": "O bloco except captura Exception de forma genérica, o que pode mascarar erros específicos e dificultar o debugging.",
+          "suggestion": "Crie exceções personalizadas para erros de banco de dados ou capture sqlalchemy.exc.SQLAlchemyError especificamente",
+          "line_reference": "Linha 25"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (get_users)",
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Query() para documentação",
+            "Define validações quando necessário"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 10.38,
+        "timestamp": "2026-01-15 00:39:14"
+      },
+      "file_path": "[EXCELLENT] EXC_001"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 92,
+      "summary": "Código bem estruturado com pequenas oportunidades de melhoria",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Tags duplicadas",
+          "description": "As tags ['products'] estão definidas tanto no APIRouter quanto no decorador do endpoint. Isso gera duplicação desnecessária na documentação.",
+          "suggestion": "Remova tags=['products'] do decorador @router.post() já que já está definido no APIRouter",
+          "line_reference": "Linhas 5-6"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Falta documentação explícita para parâmetros",
+          "description": "Os parâmetros 'product' e 'db' não usam Query(), Path() ou Body() para documentação explícita, embora o Pydantic model já forneça validação.",
+          "suggestion": "Adicione Body(..., example=...) para o parâmetro 'product' para melhorar a documentação interativa",
+          "line_reference": "Linhas 12-13"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "error_handling",
+          "check_failed": "Tratamento genérico de exceção",
+          "description": "O bloco except Exception captura todas as exceções de forma genérica, o que pode mascarar problemas específicos.",
+          "suggestion": "Considere capturar exceções mais específicas do SQLAlchemy (como IntegrityError) antes do Exception genérico",
+          "line_reference": "Linha 32"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 11.81,
+        "timestamp": "2026-01-15 00:39:26"
+      },
+      "file_path": "[EXCELLENT] EXC_002"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 90,
+      "summary": "Código bem estruturado com pequenas violações de boas práticas",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Tags duplicadas",
+          "description": "As tags ['orders'] estão declaradas tanto no APIRouter quanto no decorador do endpoint. Isso é redundante e pode causar inconsistência na documentação.",
+          "suggestion": "Remova tags=['orders'] do decorador @router.put() já que já está definido no APIRouter",
+          "line_reference": "Linhas 5-6"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Validação explícita de body request",
+          "description": "O parâmetro order_update usa '...' como valor padrão. Embora funcione, não é explícito na documentação que o campo é obrigatório.",
+          "suggestion": "Substitua '...' por Body(..., description=\"Dados atualizados do pedido\") para maior clareza na documentação",
+          "line_reference": "Linha 13"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "error_handling",
+          "check_failed": "Tratamento genérico de exceções",
+          "description": "O bloco except Exception captura todas as exceções de forma genérica, o que pode mascarar problemas específicos.",
+          "suggestion": "Considere capturar exceções mais específicas do SQLAlchemy (como sqlalchemy.exc.SQLAlchemyError) ou adicione logging antes de relançar a exceção",
+          "line_reference": "Linha 33"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (update_order)",
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests",
+            "Usa Query(), Path(), Body() para documentação"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 12.23,
+        "timestamp": "2026-01-15 00:39:38"
+      },
+      "file_path": "[EXCELLENT] EXC_003"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 90,
+      "summary": "Código bem estruturado com pequenas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O endpoint não define explicitamente um response_model, o que poderia melhorar a documentação e validação da resposta.",
+          "suggestion": "Adicione response_model=None ou um Pydantic model apropriado para padronizar a resposta.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "type_hints",
+          "check_failed": "Usa tipos adequados (List, Dict, Optional, etc)",
+          "description": "A função não utiliza tipos mais específicos para parâmetros ou retorno, como Optional ou tipos personalizados, onde aplicável.",
+          "suggestion": "Considere usar Optional[Category] para o retorno da query ou outros tipos mais descritivos, se necessário.",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Pydantic models para body requests",
+          "description": "Embora o Path() seja usado para validação do category_id, o endpoint não utiliza um Pydantic model para validação de entrada mais complexa (não aplicável neste caso específico, mas vale revisão para consistência).",
+          "suggestion": "Se houver parâmetros adicionais no futuro, considere usar um Pydantic model para validação de entrada.",
+          "line_reference": "N/A"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente",
+            "Declara tags para organização",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 12.04,
+        "timestamp": "2026-01-15 00:39:50"
+      },
+      "file_path": "[EXCELLENT] EXC_004"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 85,
+      "summary": "Código bem estruturado com algumas melhorias recomendadas em validação e documentação",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "O endpoint não declara tags para organização na documentação Swagger/OpenAPI.",
+          "suggestion": "Adicione o parâmetro tags=['items'] ao decorador @router.get() para melhor organização da documentação.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Define validações quando necessário",
+          "description": "A função não valida parâmetros de query ou filtros para a consulta de items. Isso pode levar a consultas ineficientes ou não intencionais.",
+          "suggestion": "Adicione parâmetros opcionais como skip: int = Query(0, ge=0) e limit: int = Query(100, ge=1, le=1000) para paginação e validação.",
+          "line_reference": "Linha 10"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "O bloco except captura Exception de forma genérica, o que pode ocultar erros específicos e dificultar o debug.",
+          "suggestion": "Capture exceções específicas do SQLAlchemy (como SQLAlchemyError) e adicione logging antes de levantar HTTPException.",
+          "line_reference": "Linha 16"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 12.55,
+        "timestamp": "2026-01-15 00:40:03"
+      },
+      "file_path": "[GOOD] GOOD_001"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 85,
+      "summary": "Código bem estruturado com algumas oportunidades de melhoria em validação e tratamento de erros",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Tags duplicadas",
+          "description": "As tags ['tasks'] estão declaradas tanto no APIRouter quanto no decorador do endpoint. Isso é redundante e pode causar inconsistência na documentação.",
+          "suggestion": "Remova tags=['tasks'] do decorador @router.post() e mantenha apenas a definição no APIRouter",
+          "line_reference": "Linhas 5 e 8"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Tratamento genérico de exceção",
+          "description": "O bloco except captura Exception de forma genérica, o que pode mascarar erros específicos e dificultar o debugging.",
+          "suggestion": "Substitua por exceções específicas como IntegrityError ou SQLAlchemyError, e mantenha um except genérico apenas como último recurso",
+          "line_reference": "Linha 14"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Validações adicionais não definidas",
+          "description": "O modelo TaskCreate é usado diretamente sem validações adicionais no endpoint, como verificação de duplicidade ou regras de negócio específicas.",
+          "suggestion": "Adicione validações explícitas antes da criação da tarefa, como: if db.query(Task).filter_by(title=task.title).first(): raise HTTPException(status_code=409, detail='Task already exists')",
+          "line_reference": "Linha 10"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Importação de tipos ausente",
+          "description": "Os tipos TaskResponse, TaskCreate e Session são usados mas não estão importados no código visível, o que causaria erro de execução.",
+          "suggestion": "Adicione as importações necessárias: from typing import Optional, List (se aplicável) e os imports dos modelos Pydantic/SQLAlchemy",
+          "line_reference": "N/A"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (create_task)",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (TaskResponse, TaskCreate, Session)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 14.4,
+        "timestamp": "2026-01-15 00:40:17"
+      },
+      "file_path": "[GOOD] GOOD_002"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 85,
+      "summary": "Código bem estruturado com pequenas violações de boas práticas",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Tags duplicadas",
+          "description": "As tags ['reports'] estão declaradas tanto no APIRouter quanto no decorator do endpoint, causando duplicação desnecessária.",
+          "suggestion": "Remova a declaração de tags do decorator do endpoint, mantendo apenas no APIRouter.",
+          "line_reference": "Linhas 7-8"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Validações ausentes para parâmetros de query",
+          "description": "Parâmetros 'skip' e 'limit' não possuem validações explícitas (ex: valores negativos ou limites máximos).",
+          "suggestion": "Adicione validações usando Query(), por exemplo: skip: int = Query(0, ge=0), limit: int = Query(100, ge=1, le=1000).",
+          "line_reference": "Linhas 12-13"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "error_handling",
+          "check_failed": "Exceção genérica capturada",
+          "description": "O bloco except captura Exception de forma genérica, o que pode ocultar erros específicos e dificultar o debugging.",
+          "suggestion": "Capture exceções específicas do SQLAlchemy (ex: sqlalchemy.exc.SQLAlchemyError) ou adicione logging antes de levantar HTTPException.",
+          "line_reference": "Linha 20"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para response (response_model)"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 12.16,
+        "timestamp": "2026-01-15 00:40:29"
+      },
+      "file_path": "[GOOD] GOOD_003"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 75,
+      "summary": "Código possui algumas violações de boas práticas, mas sem erros críticos",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "Endpoint não define response_model, o que prejudica a documentação automática e validação de saída.",
+          "suggestion": "Adicione response_model=List[CustomerSchema] (ou modelo Pydantic equivalente) ao decorador @router.get()",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Usa tipos adequados (List, Dict, Optional, etc)",
+          "description": "Retorno da função não usa type hint adequado. A função retorna uma lista de Customer, mas não está tipada.",
+          "suggestion": "Adicione -> List[Customer] ao final da definição da função",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Pydantic models para body requests",
+          "description": "Embora não seja aplicável para GET, seria recomendado usar um Pydantic model para padronizar a saída.",
+          "suggestion": "Crie um CustomerSchema no Pydantic e use como response_model",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "Usa status_code=500 genérico para qualquer exceção. Isso pode esconder problemas específicos.",
+          "suggestion": "Diferencie exceções (ex: 404 para não encontrado, 400 para erros de validação) e use códigos apropriados",
+          "line_reference": "Linha 11"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente",
+            "Declara tags para organização",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation (parcialmente, falta tipo da lista)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 12.68,
+        "timestamp": "2026-01-15 00:40:42"
+      },
+      "file_path": "[MEDIUM] MED_001"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 55,
+      "summary": "Código possui problemas estruturais e de boas práticas que precisam ser corrigidos",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Usa APIRouter ao invés de FastAPI app",
+          "description": "Código usa @app.get() diretamente no FastAPI app. Isso dificulta a modularização e organização do projeto em larga escala.",
+          "suggestion": "Crie um APIRouter: router = APIRouter(prefix='/users') e use @router.get() ao invés de @app.get()",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "Endpoint não define response_model, o que prejudica a documentação automática e validação de saída.",
+          "suggestion": "Adicione response_model=User ou um Pydantic model equivalente no decorador do endpoint",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "Endpoint não possui tags definidas, o que dificulta a organização na documentação Swagger/OpenAPI.",
+          "suggestion": "Adicione tags=['users'] no decorador do endpoint",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "Nome da função 'getUserData' não segue a convenção snake_case do Python e não é claro o suficiente.",
+          "suggestion": "Renomeie para 'get_user_data' para seguir convenções e melhorar clareza",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "Função não possui type hint para o retorno, o que prejudica a tipagem estática e documentação.",
+          "suggestion": "Adicione -> User ou -> dict no final da assinatura da função",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "Parâmetro user_id não usa Path() explicitamente, o que melhora a documentação automática.",
+          "suggestion": "Modifique para user_id: int = Path(..., description='ID do usuário')",
+          "line_reference": "Linha 5"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": []
+        }
+      ],
+      "_metadata": {
+        "response_time": 18.94,
+        "timestamp": "2026-01-15 00:41:01"
+      },
+      "file_path": "[MEDIUM] MED_002"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 85,
+      "summary": "Código bem estruturado com pequenas melhorias recomendadas",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Docstring explicativa",
+          "description": "A docstring 'Busca fatura por ID' é muito genérica e não documenta possíveis exceções ou comportamento esperado.",
+          "suggestion": "Expanda a docstring para incluir detalhes como: 'Retorna a fatura correspondente ao ID informado. Levanta HTTPException 404 se a fatura não for encontrada.'",
+          "line_reference": "Linha 10"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "Não há tratamento de exceção para a consulta ao banco de dados, o que pode resultar em erros não tratados (ex: SQLAlchemyError).",
+          "suggestion": "Adicione try-except para capturar exceções do SQLAlchemy e retorne HTTPException com status_code apropriado (ex: 404 para não encontrado, 500 para erros de banco).",
+          "line_reference": "Linhas 11-12"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Caso a fatura não seja encontrada (invoice = None), o endpoint retornará None, o que pode causar problemas de serialização ou comportamento inesperado.",
+          "suggestion": "Verifique se invoice é None e levante HTTPException(status_code=404, detail='Invoice not found').",
+          "line_reference": "Linha 12"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Declara tags para organização",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Query(), Path(), Body() para documentação"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 12.43,
+        "timestamp": "2026-01-15 00:41:13"
+      },
+      "file_path": "[MEDIUM] MED_003"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 20,
+      "summary": "Código possui múltiplas violações críticas de estrutura e boas práticas em FastAPI",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Usa FastAPI app ao invés de APIRouter",
+          "description": "Código usa @app.get() diretamente no FastAPI app. Isso viola a modularização recomendada para projetos escaláveis.",
+          "suggestion": "Crie um APIRouter: router = APIRouter(prefix='/api') e use @router.get('/data') ao invés de @app.get()",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "Endpoint não possui docstring explicando seu propósito, parâmetros e retorno.",
+          "suggestion": "Adicione docstring com descrição clara: \"\"\"Retorna todos os registros de dados.\n\nReturns:\n    List[Data]: Lista de objetos Data\"\"\"",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "Endpoint não define response_model, o que prejudica a documentação automática e validação de resposta.",
+          "suggestion": "Adicione response_model=List[Data] no decorator do endpoint",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "Endpoint não especifica status_code para a resposta bem-sucedida (deveria ser 200 por padrão).",
+          "suggestion": "Adicione status_code=200 no decorator do endpoint",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "Endpoint não possui tags para organização na documentação Swagger/OpenAPI.",
+          "suggestion": "Adicione tags=['data'] no decorator do endpoint",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "Nome da função 'get' é genérico e não segue a convenção de snake_case com verbo de ação específico.",
+          "suggestion": "Renomeie a função para 'get_data' ou 'list_data'",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "Função não possui type hints para parâmetros (mesmo que não tenha parâmetros explícitos, deveria ter pelo menos ->).",
+          "suggestion": "Adicione type hints: def get_data() -> List[Data]:",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "Função não possui return type annotation, o que prejudica a documentação e validação de tipos.",
+          "suggestion": "Adicione return type annotation: -> List[Data]",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "Operação de banco de dados não possui tratamento de exceções, o que pode causar falhas não tratadas.",
+          "suggestion": "Adicione try-except para tratar possíveis exceções do banco de dados:\n    try:\n        return db.query(Data).all()\n    except Exception as e:\n        raise HTTPException(status_code=500, detail=str(e))",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Pydantic models para body requests",
+          "description": "Embora não seja aplicável neste endpoint GET, o código não demonstra uso de Pydantic models para validação de entrada.",
+          "suggestion": "Para endpoints que recebem dados, crie modelos Pydantic para validação, ex: class DataCreate(BaseModel): ...",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "Função não é assíncrona, o que pode limitar o desempenho em operações de I/O como acesso a banco de dados.",
+          "suggestion": "Converta a função para assíncrona: async def get_data(): e use await para operações de banco de dados",
+          "line_reference": "Linha 5"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Variáveis em snake_case",
+            "Classes em PascalCase",
+            "Parâmetros seguem convenção Python"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 21.83,
+        "timestamp": "2026-01-15 00:41:35"
+      },
+      "file_path": "[POOR] POOR_001"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 15,
+      "summary": "Código possui múltiplas violações críticas de boas práticas em FastAPI",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Usa FastAPI app ao invés de APIRouter",
+          "description": "Código usa @app.post() diretamente. Isso dificulta a modularização e organização do projeto em larga escala.",
+          "suggestion": "Crie um APIRouter: router = APIRouter() e use @router.post() em vez de @app.post()",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "Endpoint não possui docstring explicando sua finalidade, parâmetros e retorno.",
+          "suggestion": "Adicione uma docstring com descrição clara, exemplo: \"\"\"Cria um novo registro no banco de dados.\n\nArgs:\n    data: Dados do novo registro contendo 'name' e 'value'.\n\nReturns:\n    dict: Status da operação.\n\"\"\"",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "Endpoint não define response_model, o que prejudica a documentação automática e validação de resposta.",
+          "suggestion": "Adicione response_model ao decorator, exemplo: @app.post(\"/create\", response_model=StatusResponse)",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "Endpoint não especifica status_code para a resposta, usando o padrão 200 OK que pode não ser semanticamente correto.",
+          "suggestion": "Adicione status_code=201 ao decorator para indicar criação de recurso: @app.post(\"/create\", status_code=201)",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "Endpoint não possui tags para organização na documentação automática.",
+          "suggestion": "Adicione tags ao decorator, exemplo: @app.post(\"/create\", tags=[\"Models\"])",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "Nome da função 'create' é genérico e não segue a convenção de incluir o recurso manipulado.",
+          "suggestion": "Renomeie a função para create_model ou create_resource para maior clareza",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "Parâmetro 'data' não possui type hint, o que prejudica a documentação e validação estática.",
+          "suggestion": "Adicione type hint ao parâmetro, exemplo: def create(data: dict):",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "Função não possui return type annotation, dificultando a compreensão do retorno esperado.",
+          "suggestion": "Adicione return type annotation, exemplo: def create(data) -> dict:",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Usa tipos adequados (List, Dict, Optional, etc)",
+          "description": "Parâmetro 'data' usa tipo genérico 'dict' sem especificar a estrutura esperada.",
+          "suggestion": "Crie um Pydantic model para validar a estrutura de entrada, exemplo: class CreateModel(BaseModel): name: str, value: int",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "Operações de banco de dados (db.add, db.commit) não possuem tratamento de exceções, podendo causar falhas não tratadas.",
+          "suggestion": "Adicione try-except para capturar exceções de banco de dados, exemplo: try: db.add(obj); db.commit() except Exception as e: db.rollback(); raise HTTPException(status_code=400, detail=str(e))",
+          "line_reference": "Linhas 6-10"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Código não usa HTTPException para erros, retornando apenas um dicionário genérico em caso de sucesso.",
+          "suggestion": "Use HTTPException para erros e crie um Pydantic model para respostas de sucesso",
+          "line_reference": "Linhas 6-10"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Pydantic models para body requests",
+          "description": "Endpoint recebe dados como dicionário genérico sem validação de estrutura ou tipos.",
+          "suggestion": "Crie um Pydantic model para validar o body da requisição, exemplo: class CreateModel(BaseModel): name: str; value: int e use como parâmetro: def create(data: CreateModel):",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "Parâmetro 'data' não usa Body() para documentação automática e validação.",
+          "suggestion": "Use Body() para documentar o parâmetro, exemplo: def create(data: CreateModel = Body(...)):",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "Função não é assíncrona, o que pode impactar performance em operações I/O bound como acesso a banco de dados.",
+          "suggestion": "Converta a função para async e use await para operações de banco de dados: async def create(data: CreateModel):",
+          "line_reference": "Linha 5"
+        }
+      ],
+      "compliant_rules": [],
+      "_metadata": {
+        "response_time": 26.95,
+        "timestamp": "2026-01-15 00:42:02"
+      },
+      "file_path": "[POOR] POOR_002"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 20,
+      "summary": "Código possui múltiplas violações críticas de boas práticas em FastAPI",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Usa APIRouter ao invés de FastAPI app",
+          "description": "Código usa @app.put() diretamente. Isso dificulta a modularização e organização do projeto.",
+          "suggestion": "Use APIRouter: router = APIRouter() e depois router.put() para melhor organização do código.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "Função UpdateItem não possui docstring explicativa, dificultando a compreensão e documentação automática.",
+          "suggestion": "Adicione uma docstring explicando o propósito da função, parâmetros e retorno.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "Endpoint não define um response_model, o que é importante para documentação e validação de saída.",
+          "suggestion": "Adicione um response_model usando um Pydantic model que descreva a estrutura do retorno.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "Endpoint não especifica explicitamente o status_code para a resposta, o que pode levar a ambiguidades.",
+          "suggestion": "Adicione status_code=status.HTTP_200_OK ou outro código apropriado no decorador do endpoint.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "Endpoint não declara tags, o que ajuda na organização e documentação da API.",
+          "suggestion": "Adicione tags=['items'] ou outra tag relevante no decorador do endpoint.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users)",
+          "description": "Nome da função UpdateItem não segue a convenção snake_case e não possui verbo de ação claro.",
+          "suggestion": "Renomeie a função para update_item para seguir a convenção de nomenclatura Python.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Variáveis em snake_case",
+          "description": "Variáveis ID, NewData e ITEM não seguem a convenção snake_case.",
+          "suggestion": "Renomeie as variáveis para id, new_data e item, respectivamente.",
+          "line_reference": "Linhas 2, 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "Parâmetros ID e NewData não possuem type hints, o que é importante para clareza e validação.",
+          "suggestion": "Adicione type hints aos parâmetros, como ID: int e NewData: str ou um Pydantic model.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "Função UpdateItem não possui return type annotation, dificultando a compreensão do retorno.",
+          "suggestion": "Adicione um return type annotation, como -> Item ou outro tipo apropriado.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "Operações críticas como db.query e db.commit não possuem tratamento de exceções.",
+          "suggestion": "Adicione try-except para capturar e tratar exceções como Item não encontrado ou erros de banco de dados.",
+          "line_reference": "Linhas 3-5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Não há uso de HTTPException para tratar erros como item não encontrado.",
+          "suggestion": "Use HTTPException para retornar erros apropriados, como HTTP_404_NOT_FOUND se o item não existir.",
+          "line_reference": "Linhas 3-5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Pydantic models para body requests",
+          "description": "Parâmetro NewData não usa um Pydantic model para validação de entrada.",
+          "suggestion": "Defina um Pydantic model para NewData e use-o como parâmetro da função.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "Parâmetros ID e NewData não utilizam Path(), Body() ou Query() para documentação e validação.",
+          "suggestion": "Use Path() para ID e Body() para NewData para melhor documentação e validação.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "Função UpdateItem não é assíncrona, o que pode impactar a performance em operações de I/O.",
+          "suggestion": "Considere converter a função para async e usar await para operações de banco de dados.",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [],
+      "_metadata": {
+        "response_time": 25.19,
+        "timestamp": "2026-01-15 00:42:27"
+      },
+      "file_path": "[POOR] POOR_003"
+    }
+  ],
+  "timestamp": "2026-01-15 00:42:27",
+  "benchmark_metadata": {
+    "llm_name": "Mistral Large",
+    "total_time": 203.6,
+    "dataset_version": "1.0"
+  }
+}

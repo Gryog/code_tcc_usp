@@ -1,0 +1,119 @@
+{
+  "summary": {
+    "passed": 0,
+    "failed": 0,
+    "errors": 13
+  },
+  "results": [
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:38:58"
+      },
+      "file_path": "[EXCELLENT] EXC_001"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:38:59"
+      },
+      "file_path": "[EXCELLENT] EXC_002"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:38:59"
+      },
+      "file_path": "[EXCELLENT] EXC_003"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:00"
+      },
+      "file_path": "[EXCELLENT] EXC_004"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:00"
+      },
+      "file_path": "[GOOD] GOOD_001"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:01"
+      },
+      "file_path": "[GOOD] GOOD_002"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:01"
+      },
+      "file_path": "[GOOD] GOOD_003"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:02"
+      },
+      "file_path": "[MEDIUM] MED_001"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:02"
+      },
+      "file_path": "[MEDIUM] MED_002"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:02"
+      },
+      "file_path": "[MEDIUM] MED_003"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:03"
+      },
+      "file_path": "[POOR] POOR_001"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:03"
+      },
+      "file_path": "[POOR] POOR_002"
+    },
+    {
+      "error": "Erro sistêmico na validação",
+      "details": "Falha na geração do Gemini: 404 NOT_FOUND. {'error': {'code': 404, 'message': 'models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.', 'status': 'NOT_FOUND'}}",
+      "_metadata": {
+        "timestamp": "2026-01-15 00:39:04"
+      },
+      "file_path": "[POOR] POOR_003"
+    }
+  ],
+  "timestamp": "2026-01-15 00:39:04",
+  "benchmark_metadata": {
+    "llm_name": "Gemini 1.5 Flash",
+    "total_time": 5.38,
+    "dataset_version": "1.0"
+  }
+}

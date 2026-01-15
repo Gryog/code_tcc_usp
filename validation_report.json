@@ -1,0 +1,837 @@
+{
+  "summary": {
+    "passed": 2,
+    "failed": 6,
+    "errors": 0
+  },
+  "results": [
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação especificadas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Declara tags para organização",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Classes em PascalCase",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests",
+            "Usa Query(), Path(), Body() para documentação",
+            "Define validações quando necessário"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 11.58,
+        "timestamp": "2026-01-15 00:13:51"
+      },
+      "file_path": "Exemplo 1 (Ideal)"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 40,
+      "summary": "Código apresenta problemas significativos na estrutura do endpoint e tipagem de retorno, impactando a documentação e manutenibilidade da API.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O endpoint POST /users não define um `response_model`. Isso impede a geração de documentação Swagger/OpenAPI precisa sobre o formato da resposta esperada.",
+          "suggestion": "Defina um Pydantic model para a resposta e adicione `response_model=UserResponse` ao decorador `@router.post`.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "O endpoint POST /users não possui tags declaradas. Tags são essenciais para organizar a documentação da API em grupos lógicos.",
+          "suggestion": "Adicione `tags=['users']` ao decorador `@router.post` para agrupar endpoints relacionados a usuários.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `create_user` não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que a função retorna e prejudica a análise estática do código.",
+          "suggestion": "Adicione `-> UserResponse` (ou o tipo Pydantic model que representa a resposta do usuário) à assinatura da função: `async def create_user(...) -> UserResponse:`.",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Classes em PascalCase",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests",
+            "Usa Query(), Path(), Body() para documentação",
+            "Define validações quando necessário"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 13.83,
+        "timestamp": "2026-01-15 00:14:05"
+      },
+      "file_path": "Exemplo 2 (Bom)"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 38,
+      "summary": "O código apresenta múltiplas violações de boas práticas de FastAPI e convenções de código.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Usa APIRouter ao invés de FastAPI app",
+          "description": "O código inicializa diretamente `FastAPI()` e usa `@app.get()`. Isso dificulta a modularização e escalabilidade do projeto. APIRouter é a abordagem recomendada para organizar endpoints.",
+          "suggestion": "Declare um `APIRouter` (ex: `router = APIRouter(prefix='/users', tags=['Users'])`) e adicione seus endpoints a ele. O `APIRouter` pode ser incluído no `FastAPI` principal posteriormente.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função `getUserById` não possui uma docstring que explique sua finalidade, parâmetros e o que ela retorna. Isso prejudica a legibilidade e manutenção do código.",
+          "suggestion": "Adicione uma docstring concisa e informativa à função `get_user_by_id`.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O endpoint GET não especifica um `response_model`. Isso impede que o FastAPI gere a documentação adequada para a estrutura da resposta e não garante que o tipo de retorno seja validado.",
+          "suggestion": "Defina um Pydantic `response_model` para o tipo de retorno esperado, por exemplo, `response_model=schemas.User` (assumindo que 'User' tem um esquema Pydantic associado).",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O status_code de sucesso (200 OK) não é explicitamente definido no decorador do endpoint. Definir o status_code explicitamente melhora a clareza e a documentação da API.",
+          "suggestion": "Adicione `status_code=200` ao decorador `@app.get()`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "O endpoint não possui tags declaradas. Tags são cruciais para organizar a documentação Swagger UI e agrupar endpoints relacionados.",
+          "suggestion": "Adicione `tags=['users']` (ou tags relevantes) ao decorador `@app.get()`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users)",
+          "description": "A função `getUserById` usa camelCase, o que viola a convenção Python de snake_case para nomes de funções. Isso afeta a consistência e legibilidade do código.",
+          "suggestion": "Renomeie a função para `get_user_by_id` para seguir a convenção snake_case.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "O parâmetro `db` não possui uma anotação de tipo. Anotações de tipo são importantes para clareza, validação e para o FastAPI gerar a documentação.",
+          "suggestion": "Adicione uma anotação de tipo para o parâmetro `db`, por exemplo, `db: Session = Depends(get_db)` (assumindo SQLAlchemy Session ou tipo de banco de dados similar).",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `getUserById` não possui uma anotação de tipo para seu valor de retorno. Isso dificulta a compreensão do que a função promete retornar e a validação do tipo pelo FastAPI.",
+          "suggestion": "Adicione uma anotação de tipo de retorno, por exemplo, `-> schemas.User` ou `-> Optional[schemas.User]` se puder retornar None.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "O parâmetro `user_id` é um Path Parameter. Embora o FastAPI o infira, usar `Path()` explicitamente melhora a documentação Swagger UI e permite adicionar validações/metadados (ex: `Path(..., gt=0)`).",
+          "suggestion": "Use `user_id: int = Path(...)` para adicionar metadados e documentação explícita ao parâmetro de rota.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "A função `getUserById` é síncrona (`def`) mas realiza uma operação de I/O (consulta ao banco de dados). Em FastAPI, é preferível usar funções assíncronas (`async def`) para operações I/O-bound para não bloquear o loop de eventos.",
+          "suggestion": "Converta a função para `async def get_user_by_id(...)` e certifique-se de que a operação de banco de dados (`db.query(...)`) seja compatível com `await` ou que seja executada em um `run_in_threadpool`.",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Variáveis em snake_case",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 29.74,
+        "timestamp": "2026-01-15 00:14:35"
+      },
+      "file_path": "Exemplo 3 (Médio)"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 11,
+      "summary": "O código possui diversas violações de boas práticas e problemas estruturais, principalmente na definição do endpoint, tratamento de erros e validação de entrada.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Usa APIRouter ao invés de FastAPI app",
+          "description": "O endpoint é definido diretamente no objeto 'app' do FastAPI. Isso dificulta a modularização e a organização da API em projetos maiores.",
+          "suggestion": "Prefira usar APIRouter para agrupar endpoints relacionados e melhorar a estrutura do projeto. Ex: `router = APIRouter(prefix='/users', tags=['Users'])` e `@router.post('/')`.",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint não possui uma docstring que explique sua finalidade, parâmetros e o que retorna.",
+          "suggestion": "Adicione uma docstring clara e concisa para documentar o endpoint, ajudando na compreensão e manutenção.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O endpoint não especifica um 'response_model', o que impede o FastAPI de gerar documentação de resposta detalhada e realizar validação de saída.",
+          "suggestion": "Defina um Pydantic model para tipar a resposta do endpoint. Ex: `response_model=UserResponse`.",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O status code de sucesso (200 OK por padrão) para esta operação POST não é explicitamente definido. Para criação, 201 Created é mais apropriado.",
+          "suggestion": "Especifique o status code apropriado para o endpoint. Para POST, geralmente é `status_code=201`.",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "O endpoint não possui tags para organização, o que dificulta a categorização e visualização na documentação Swagger UI.",
+          "suggestion": "Adicione tags relevantes ao decorator do endpoint ou ao APIRouter para organizar a documentação da API. Ex: `tags=['Users']`.",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users)",
+          "description": "O nome da função 'create' é um verbo de ação, mas poderia ser mais específico ao recurso que está sendo criado, como 'create_user'.",
+          "suggestion": "Renomeie a função para 'create_user' para maior clareza e alinhamento com a convenção de nomear endpoints específicos para recursos.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Variáveis em snake_case",
+          "description": "A variável 'u' é muito curta e não é descritiva. Dificulta a legibilidade do código.",
+          "suggestion": "Use nomes de variáveis descritivos, como 'user' ou 'new_user'.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "O parâmetro 'data' da função 'create' não possui um type hint. Isso impede a validação automática de tipos pelo FastAPI e a clareza do código.",
+          "suggestion": "Adicione type hints a todos os parâmetros da função, preferencialmente usando um Pydantic model para o corpo da requisição.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'create' não possui uma annotation de tipo de retorno. Isso dificulta a análise estática e a compreensão do tipo de dado que a função retorna.",
+          "suggestion": "Adicione uma annotation de tipo de retorno à função, indicando o tipo de dado esperado. Ex: `-> dict` ou `-> UserResponse`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "As operações de banco de dados (db.add, db.commit) são críticas e podem falhar, mas não estão envoltas em um bloco try-except. Falhas podem levar a erros 500 não tratados.",
+          "suggestion": "Implemente blocos try-except para operações críticas de banco de dados para capturar e tratar exceções, retornando respostas de erro adequadas.",
+          "line_reference": "Linhas 9-10"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Não há uso de HTTPException para retornar erros HTTP padronizados em caso de falhas de validação, conflitos (ex: email duplicado) ou outros problemas.",
+          "suggestion": "Utilize `raise HTTPException(status_code=..., detail=...)` para sinalizar erros específicos da API com códigos HTTP apropriados, como 400 Bad Request ou 409 Conflict.",
+          "line_reference": "Linha 5 (contextual)"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "A ausência de tratamento de erros impede a definição de status codes HTTP corretos para diferentes cenários de falha. Isso leva a respostas genéricas (500 Internal Server Error) em caso de problemas.",
+          "suggestion": "Ao tratar erros, assegure-se de que cada tipo de erro retorne o status code HTTP mais apropriado (ex: 400 para dados inválidos, 404 para recurso não encontrado, 409 para conflito).",
+          "line_reference": "Linha 5 (contextual)"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Pydantic models para body requests",
+          "description": "O corpo da requisição é acessado diretamente como um dicionário (`data['name']`) sem o uso de um modelo Pydantic. Isso não fornece validação automática, serialização/desserialização e documentação clara da estrutura esperada.",
+          "suggestion": "Crie um modelo Pydantic (`class UserCreate(BaseModel): ...`) para definir a estrutura e os tipos dos dados esperados no corpo da requisição. Use-o como tipo para o parâmetro `data`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "O parâmetro 'data' não utiliza as funções Query(), Path() ou Body() para documentação explícita. Isso torna a documentação Swagger/OpenAPI menos detalhada sobre a origem e o propósito do parâmetro.",
+          "suggestion": "Use `data: UserCreate = Body(...)` para indicar claramente que 'data' é o corpo da requisição e para adicionar metadados à documentação.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Define validações quando necessário",
+          "description": "Não há validações explícitas para os campos 'name' e 'email' (ex: formato de email, comprimento mínimo/máximo). A validação é feita de forma 'manual' ou ausente, o que pode levar a dados inconsistentes no banco de dados.",
+          "suggestion": "Ao usar Pydantic models, adicione validações nos campos (ex: `EmailStr` para email, `min_length`, `max_length`) para garantir a integridade dos dados na entrada.",
+          "line_reference": "Linhas 7-8"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "A função do endpoint 'create' é síncrona (`def`) e realiza operações de I/O (acesso ao banco de dados). Em FastAPI, é preferível que funções de endpoint que realizam I/O sejam assíncronas (`async def`) para evitar bloquear o event loop.",
+          "suggestion": "Se o driver do banco de dados for assíncrono, mude a função para `async def`. Se for síncrono, use `run_in_threadpool` do `starlette.concurrency` ou configure um executor para offload para um thread pool.",
+          "line_reference": "Linha 5"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Classes em PascalCase",
+            "Parâmetros seguem convenção Python"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 32.98,
+        "timestamp": "2026-01-15 00:15:08"
+      },
+      "file_path": "Exemplo 4 (Ruim)"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 42,
+      "summary": "Código possui múltiplos problemas estruturais e de boas práticas no endpoint.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Usa APIRouter ao invés de FastAPI app",
+          "description": "O endpoint está sendo definido diretamente com `@app.get()`. Isso impede a modularização e dificulta a organização do código em projetos maiores.",
+          "suggestion": "Utilize `APIRouter` para agrupar endpoints relacionados. Ex: `router = APIRouter(prefix='/users', tags=['users'])` e `@router.get('/')`.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint não possui uma docstring. Docstrings são essenciais para explicar a funcionalidade do endpoint, seus parâmetros e o que ele retorna.",
+          "suggestion": "Adicione uma docstring clara e concisa para descrever o propósito do endpoint.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O `response_model` não foi especificado. Sem ele, a documentação OpenAPI não pode inferir o esquema da resposta corretamente e o FastAPI não valida os dados de saída.",
+          "suggestion": "Defina um Pydantic `response_model` para o retorno do endpoint, por exemplo, `response_model=List[UserSchema]` (assumindo `UserSchema` é um modelo Pydantic para usuários).",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O `status_code` de sucesso para a operação não foi especificado explicitamente. Embora o padrão seja 200, defini-lo ajuda na clareza e documentação.",
+          "suggestion": "Adicione `status_code=status.HTTP_200_OK` ao decorador do endpoint para explicitar o código de sucesso.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "O endpoint não possui tags. Tags são cruciais para organizar a documentação OpenAPI e agrupar endpoints relacionados.",
+          "suggestion": "Adicione `tags=['users']` ao decorador do endpoint para categorizá-lo na documentação.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users)",
+          "description": "O nome da função `get` é muito genérico e não indica claramente o recurso que está sendo recuperado. Isso dificulta a leitura e manutenção do código.",
+          "suggestion": "Renomeie a função para algo mais descritivo, como `get_users` ou `list_users`.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função não possui uma anotação de tipo de retorno. Isso dificulta a inferência de tipo para ferramentas de análise estática e a leitura do código.",
+          "suggestion": "Adicione uma anotação de tipo para o valor de retorno da função, por exemplo, `-> List[UserSchema]`.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "A operação de banco de dados `db.query(User).all()` é crítica e não está envolvida em um bloco `try-except`. Falhas de banco de dados podem causar erros 500 não tratados.",
+          "suggestion": "Adicione um bloco `try-except` para capturar exceções de banco de dados e retornar uma resposta de erro apropriada usando `HTTPException`.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Não há tratamento de erros explícito usando `HTTPException`. Qualquer falha na operação de banco de dados resultará em um erro 500 genérico.",
+          "suggestion": "Em caso de falha na consulta ao banco de dados, utilize `raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Erro ao buscar usuários')`.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "Não há definição de status codes para cenários de erro. Em um ambiente de produção, é crucial fornecer status codes específicos para diferentes tipos de falhas.",
+          "suggestion": "Implemente `HTTPException` com os status codes corretos, como `status.HTTP_500_INTERNAL_SERVER_ERROR` para erros de servidor ou `status.HTTP_404_NOT_FOUND` se a consulta pudesse retornar vazio de forma não esperada.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "A função é síncrona (`def`) e realiza uma operação de I/O bloqueante (consulta ao banco de dados `db.query`). Isso bloqueia o loop de eventos do FastAPI, impactando a performance sob alta carga.",
+          "suggestion": "Se o driver do banco de dados for assíncrono, utilize `async def` e `await` a chamada ao DB. Caso contrário, envolva a operação bloqueante em `run_in_threadpool` do `fastapi.concurrency` para não bloquear o loop de eventos.",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Variáveis em snake_case",
+            "Classes em PascalCase",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests",
+            "Usa Query(), Path(), Body() para documentação",
+            "Define validações quando necessário"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 17.1,
+        "timestamp": "2026-01-15 00:15:25"
+      },
+      "file_path": "Exemplo 5 (Muito Ruim)"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 29,
+      "summary": "O código possui múltiplos problemas estruturais e de boas práticas, especialmente em tratamento de erros, tipagem e convenções de nomenclatura.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O endpoint não define um 'response_model' explícito. Embora retorne None (204 No Content), a especificação do response_model=None melhora a documentação OpenAPI e clareza da API.",
+          "suggestion": "Adicione `response_model=None` ao decorador `@router.delete` para indicar explicitamente que nenhuma resposta será retornada.",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "O endpoint não declara tags para categorização. Tags são essenciais para organizar a documentação OpenAPI e agrupar endpoints relacionados.",
+          "suggestion": "Adicione `tags=['users']` (ou uma tag apropriada) ao decorador `@router.delete`.",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users)",
+          "description": "O nome da função 'DeleteUserFunction' usa PascalCase e é excessivamente verboso. Nomes de função em Python devem ser em snake_case (PEP8).",
+          "suggestion": "Renomeie a função para `delete_user`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Variáveis em snake_case",
+          "description": "O parâmetro 'UserId' usa PascalCase. Parâmetros em Python devem ser em snake_case (PEP8).",
+          "suggestion": "Renomeie o parâmetro para `user_id`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Variáveis em snake_case",
+          "description": "O parâmetro 'DataBase' usa PascalCase. Parâmetros em Python devem ser em snake_case (PEP8).",
+          "suggestion": "Renomeie o parâmetro para `db` ou `database`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Variáveis em snake_case",
+          "description": "A variável 'USER' usa UPPER_CASE. Variáveis locais em Python devem ser em snake_case (PEP8).",
+          "suggestion": "Renomeie a variável para `user`.",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "O parâmetro 'DataBase' não possui um type hint explícito. Isso diminui a legibilidade e a capacidade de análise estática do código.",
+          "suggestion": "Adicione um type hint para 'DataBase', como `db: Session = Depends(get_db)` (assumindo `Session` do SQLAlchemy ou tipo similar).",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'DeleteUserFunction' não possui uma anotação de tipo de retorno, o que dificulta a compreensão do que a função retorna.",
+          "suggestion": "Adicione `-> None` à assinatura da função, pois ela retorna `None`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "As operações de banco de dados (query, delete, commit) são críticas e podem lançar exceções. A ausência de um bloco try-except pode levar a falhas inesperadas na API e não garantir que o `DataBase.rollback()` seja chamado em caso de falha.",
+          "suggestion": "Encapsule as operações de banco de dados em um bloco try-except para tratar possíveis erros de forma graciosa e garantir `db.rollback()` e `db.close()`.",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Quando o usuário não é encontrado (`if USER:` é falso), a função retorna `None`, resultando em um status 204. Para um recurso não encontrado em uma operação DELETE, a resposta correta é geralmente um 404 Not Found com `HTTPException`.",
+          "suggestion": "Se `USER` não for encontrado, levante uma `HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')`.",
+          "line_reference": "Linha 8"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "Retornar um status 204 (No Content) quando um usuário não é encontrado após uma tentativa de exclusão é enganoso. O código 404 Not Found seria mais apropriado para indicar que o recurso não existe.",
+          "suggestion": "Utilize `status.HTTP_404_NOT_FOUND` para casos onde o usuário a ser deletado não existe, via `HTTPException`.",
+          "line_reference": "Linha 8"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "O parâmetro 'UserId' é um parâmetro de caminho e poderia se beneficiar da documentação explícita com `Path()`, o que permite adicionar metadados como descrição e validações adicionais (ex: `gt=0`).",
+          "suggestion": "Use `user_id: int = Path(..., description='ID do usuário a ser deletado', gt=0)` para melhor documentação e validação.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "A função é `async def`, mas as operações de banco de dados (`DataBase.query`, `DataBase.delete`, `DataBase.commit`) são síncronas e bloqueiam o event loop. Isso anula os benefícios de performance de funções assíncronas.",
+          "suggestion": "Para operações de I/O bloqueantes em uma função `async def`, considere: 1) Usar um driver de banco de dados e ORM assíncrono (ex: SQLAlchemy 2.0+ com driver asyncpg, SQLModel); ou 2) Executar a operação em um thread pool usando `run_in_threadpool` do `starlette.concurrency`.",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [],
+      "_metadata": {
+        "response_time": 29.33,
+        "timestamp": "2026-01-15 00:15:54"
+      },
+      "file_path": "Exemplo 6 (Nomenclatura)"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 63,
+      "summary": "O código possui problemas significativos de tratamento de erros, tipagem e uso de async.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "O tipo 'Session' para o parâmetro 'db' não foi importado. Isso causará um NameError em tempo de execução ou uma tipagem incorreta se 'Session' for um tipo genérico ou de outra biblioteca não importada.",
+          "suggestion": "Importe 'Session' da sua biblioteca ORM (ex: 'from sqlalchemy.orm import Session') ou use um alias se o nome for diferente.",
+          "line_reference": "Linha 14"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "Operações de banco de dados são críticas e podem falhar. Não há tratamento de exceções explícito para as chamadas a 'db.query' ou para o caso de 'user' ser None, o que resultará em um erro 500 se o usuário não for encontrado.",
+          "suggestion": "Adicione um bloco 'try-except' para lidar com exceções de banco de dados e verifique se o 'user' foi encontrado antes de tentar acessar seus atributos.",
+          "line_reference": "Linha 17"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Se o usuário não for encontrado ('user' é None), o código tentará acessar 'user.id', resultando em um AttributeError. A API deveria retornar um HTTPException com status 404 (Not Found).",
+          "suggestion": "Após buscar o usuário, adicione uma verificação como 'if not user:' e 'raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=\"User not found\")'.",
+          "line_reference": "Linha 17"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "Não há definição de status codes para cenários de erro (ex: 404 para usuário não encontrado, 500 para erro interno do servidor). Isso resulta em respostas inconsistentes ou erros não tratados.",
+          "suggestion": "Utilize HTTPException com os status codes apropriados para diferentes cenários de erro (e.g., 'status.HTTP_404_NOT_FOUND', 'status.HTTP_500_INTERNAL_SERVER_ERROR').",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "O parâmetro 'user_id' é um Path parameter, mas não é explicitamente declarado com 'Path()'. Embora FastAPI infira o tipo, a declaração explícita melhora a documentação no Swagger UI e permite adicionar metadados.",
+          "suggestion": "Declare 'user_id' como 'user_id: int = Path(..., description=\"ID do usuário\")' para maior clareza e documentação.",
+          "line_reference": "Linha 13"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Define validações quando necessário",
+          "description": "O parâmetro 'user_id' é um ID e geralmente deve ser um número positivo. Nenhuma validação explícita (e.g., 'gt=0') foi definida para garantir que o ID seja válido.",
+          "suggestion": "Adicione validação ao 'user_id' usando 'Path()' ou 'Query()' com argumentos como 'gt=0' (maior que zero), por exemplo: 'user_id: int = Path(..., gt=0)'.",
+          "line_reference": "Linha 13"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "A função é declarada como 'async def', mas contém operações de banco de dados síncronas ('db.query(...).first()', 'db.query(...).all()') que bloquearão o loop de eventos. Isso anula os benefícios de performance do 'asyncio'.",
+          "suggestion": "Para operações de DB, use um driver de banco de dados assíncrono (ex: SQLAlchemy com asyncpg e AsyncSession, ou uma biblioteca como 'databases') e 'await' as chamadas. Alternativamente, execute as operações de DB em um 'ThreadPoolExecutor' usando 'run_in_threadpool' do 'starlette.concurrency' se a migração para drivers assíncronos não for viável.",
+          "line_reference": "Linha 12"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Declara tags para organização",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Classes em PascalCase",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 25.14,
+        "timestamp": "2026-01-15 00:16:19"
+      },
+      "file_path": "Exemplo 7 (Sem Tratamento Erro)"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 84,
+      "summary": "O código apresenta boas práticas na estrutura do endpoint, tipagem e tratamento de erros, mas necessita de melhorias na validação de entrada de dados e no uso correto de funções assíncronas.",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "O parâmetro de caminho 'user_id' é inferido como Path, mas não usa 'Path()' explicitamente. Embora funcional, o uso explícito de 'Path()' permite adicionar metadados detalhados para a documentação OpenAPI e validações mais ricas.",
+          "suggestion": "Altere `user_id: int` para `user_id: int = Path(..., title='ID do usuário a ser atualizado')` para melhorar a documentação e permitir validações futuras.",
+          "line_reference": "Linha 14"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Define validações quando necessário",
+          "description": "Não há validações explícitas definidas para o parâmetro 'user_id'. Por exemplo, o ID pode ser negativo ou zero, o que pode causar erros em operações de banco de dados.",
+          "suggestion": "Use `user_id: int = Path(..., gt=0)` para garantir que o ID do usuário seja um número inteiro positivo, melhorando a robustez da entrada de dados.",
+          "line_reference": "Linha 14"
+        },
+        {
+          "severity": "info",
+          "rule_category": "async_usage",
+          "check_failed": "Preferência por funções async quando possível",
+          "description": "A função 'update_user' é declarada como assíncrona (`async def`), mas contém chamadas síncronas de banco de dados (`db.query`, `db.commit`, `db.refresh`). Isso bloqueia o loop de eventos, negando os benefícios de desempenho da assincronicidade do FastAPI.",
+          "suggestion": "Para operações de banco de dados síncronas em funções assíncronas, utilize `starlette.concurrency.run_in_threadpool` para executá-las em um thread separado. Alternativamente, considere usar uma biblioteca ORM assíncrona como `SQLAlchemy` com `asyncpg` e `SQLAlchemy.ext.asyncio`. Exemplo para síncrono: `await run_in_threadpool(lambda: db.query(User).filter(User.id == user_id).first())`.",
+          "line_reference": "Linha 30"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Define response_model",
+            "Especifica status_code explicitamente",
+            "Declara tags para organização",
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users)",
+            "Variáveis em snake_case",
+            "Classes em PascalCase",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Possui try-except para operações críticas",
+            "Usa HTTPException apropriadamente",
+            "Define status codes corretos para erros"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 24.65,
+        "timestamp": "2026-01-15 00:16:44"
+      },
+      "file_path": "Exemplo 8 (Alternativo Válido)"
+    }
+  ],
+  "timestamp": "2026-01-15 00:16:44"
+}
