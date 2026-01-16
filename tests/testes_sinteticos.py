@@ -264,8 +264,235 @@ async def delete_category(
             detail=f"Erro ao deletar categoria: {str(e)}"
         )
 """
+        },{
+            "id": "EXC_005",
+            "description": "Endpoint com Background Tasks e status 202",
+            "expected_score_min": 95,
+            "expected_score_max": 100,
+            "code": """
+from fastapi import APIRouter, BackgroundTasks, status
+from pydantic import BaseModel, EmailStr
+
+router = APIRouter(prefix="/api/v1", tags=["notifications"])
+
+class EmailSchema(BaseModel):
+    email: EmailStr
+    subject: str
+    content: str
+
+def send_email_background(email: str, content: str):
+    # Simula envio de email
+    pass
+
+@router.post(
+    "/send-email",
+    status_code=status.HTTP_202_ACCEPTED,
+    tags=["notifications"]
+)
+async def send_notification(
+    email_data: EmailSchema,
+    background_tasks: BackgroundTasks
+) -> dict:
+    '''
+    Envia notificação por email em background.
+    
+    Args:
+        email_data: Dados do email
+        background_tasks: Gerenciador de tarefas em background
+        
+    Returns:
+        Mensagem de confirmação
+    '''
+    background_tasks.add_task(send_email_background, email_data.email, email_data.content)
+    return {"message": "Email queued for sending"}
+"""
+        },
+        {
+            "id": "EXC_006",
+            "description": "Endpoint de Upload de Arquivo com Validação",
+            "expected_score_min": 95,
+            "expected_score_max": 100,
+            "code": """
+from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from typing import Dict
+
+router = APIRouter(prefix="/api/v1", tags=["files"])
+
+@router.post(
+    "/upload",
+    response_model=Dict[str, str],
+    status_code=status.HTTP_201_CREATED,
+    tags=["files"]
+)
+async def upload_file(
+    file: UploadFile = File(..., description="Arquivo de imagem (max 5MB)")
+) -> Dict[str, str]:
+    '''
+    Faz upload de um arquivo de imagem.
+    
+    Args:
+        file: Arquivo enviado pelo cliente
+        
+    Returns:
+        Metadados do arquivo salvo
+        
+    Raises:
+        HTTPException: Se arquivo não for imagem ou muito grande
+    '''
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Apenas imagens são permitidas"
+        )
+    
+    contents = await file.read()
+    if len(contents) > 5 * 1024 * 1024:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="Arquivo muito grande (max 5MB)"
+        )
+        
+    return {"filename": file.filename, "content_type": file.content_type}
+"""
+        },
+        {
+            "id": "EXC_007",
+            "description": "Endpoint de Busca Complexa com Dependência de Filtro",
+            "expected_score_min": 95,
+            "expected_score_max": 100,
+            "code": """
+from fastapi import APIRouter, Depends, Query
+from typing import Optional, List
+from pydantic import BaseModel
+
+router = APIRouter(prefix="/api/v1", tags=["items"])
+
+class ItemFilter(BaseModel):
+    q: Optional[str] = None
+    min_price: Optional[float] = None
+    max_price: Optional[float] = None
+
+async def parse_filter(
+    q: Optional[str] = Query(None, description="Termo de busca"),
+    min_price: Optional[float] = Query(None, ge=0, description="Preço mínimo"),
+    max_price: Optional[float] = Query(None, ge=0, description="Preço máximo")
+) -> ItemFilter:
+    return ItemFilter(q=q, min_price=min_price, max_price=max_price)
+
+@router.get(
+    "/search",
+    response_model=List[ItemResponse],
+    tags=["items"]
+)
+async def search_items(
+    filters: ItemFilter = Depends(parse_filter),
+    db: Session = Depends(get_db)
+) -> List[ItemResponse]:
+    '''
+    Busca itens com filtros complexos.
+    '''
+    query = db.query(Item)
+    if filters.q:
+        query = query.filter(Item.name.contains(filters.q))
+    if filters.min_price:
+        query = query.filter(Item.price >= filters.min_price)
+    return query.all()
+"""
+        },
+        {
+            "id": "EXC_008",
+            "description": "Endpoint com autenticação OAuth2 e Scopes",
+            "expected_score_min": 95,
+            "expected_score_max": 100,
+            "code": """
+from fastapi import APIRouter, Depends, Security, status
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+
+router = APIRouter(prefix="/api/v1", tags=["admin"])
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", scopes={"admin": "Acesso administrativo"})
+
+async def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)):
+    # Lógica de validação de token e escopo
+    pass
+
+@router.delete(
+    "/users/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    tags=["admin"]
+)
+async def delete_user_admin(
+    user_id: int,
+    current_user: User = Security(get_current_user, scopes=["admin"]),
+    db: Session = Depends(get_db)
+) -> None:
+    '''Endpoint administrativo seguro para remoção de usuários.'''
+    # Lógica de deleção
+    pass
+"""
+        },
+        {
+            "id": "EXC_009",
+            "description": "Health Check Endpoint Robusto",
+            "expected_score_min": 95,
+            "expected_score_max": 100,
+            "code": """
+from fastapi import APIRouter, status, Depends
+from sqlalchemy.sql import text
+
+router = APIRouter(tags=["health"])
+
+@router.get(
+    "/health",
+    status_code=status.HTTP_200_OK,
+    tags=["health"],
+    response_model=dict
+)
+async def health_check(db: Session = Depends(get_db)) -> dict:
+    '''
+    Verifica a saúde da aplicação e conexão com banco.
+    '''
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "healthy", "database": "connected"}
+    except Exception:
+        return {"status": "unhealthy", "database": "disconnected"}
+"""
+        },
+        {
+            "id": "EXC_010",
+            "description": "Endpoint com StreamingResponse",
+            "expected_score_min": 95,
+            "expected_score_max": 100,
+            "code": """
+from fastapi import APIRouter, status
+from fastapi.responses import StreamingResponse
+import io
+
+router = APIRouter(prefix="/api/v1", tags=["export"])
+
+@router.get(
+    "/export/csv",
+    status_code=status.HTTP_200_OK,
+    tags=["export"]
+)
+async def export_data_csv() -> StreamingResponse:
+    '''
+    Exporta dados em formato CSV via stream.
+    '''
+    stream = io.StringIO()
+    stream.write("id,name,value\\n")
+    stream.write("1,Test,100\\n")
+    stream.seek(0)
+    
+    return StreamingResponse(
+        iter([stream.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=data.csv"}
+    )
+"""
         }
     ]
+    
     
     # ========================================================================
     # CATEGORIA: BOM (15 exemplos) - Score esperado: 80-94
@@ -368,6 +595,212 @@ async def get_reports(
             detail=f"Erro: {str(e)}"
         )
 """
+        },{
+            "id": "GOOD_004",
+            "description": "Faltam tags e description no Query",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter, Query
+
+router = APIRouter()
+
+@router.get("/search")
+async def search(q: str = Query(None)):
+    '''Busca simples'''
+    return {"query": q}
+"""
+        },
+        {
+            "id": "GOOD_005",
+            "description": "Response model genérico Dict",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter, status
+from typing import Dict
+
+router = APIRouter(tags=["misc"])
+
+@router.get("/config", response_model=Dict, status_code=status.HTTP_200_OK)
+async def get_config() -> Dict:
+    '''Retorna configurações'''
+    return {"version": "1.0", "env": "prod"}
+"""
+        },
+        {
+            "id": "GOOD_006",
+            "description": "Falta docstring estruturada",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter, status, Depends
+from pydantic import BaseModel
+
+router = APIRouter(prefix="/v1", tags=["auth"])
+
+class LoginCtx(BaseModel):
+    username: str
+    password: str
+
+@router.post("/login", status_code=status.HTTP_200_OK)
+async def login(creds: LoginCtx):
+    # Faz login
+    return {"token": "abc"}
+"""
+        },
+        {
+            "id": "GOOD_007",
+            "description": "Uso de print em vez de logger",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter, status
+
+router = APIRouter(tags=["test"])
+
+@router.get("/debug", status_code=status.HTTP_200_OK)
+async def debug_endpoint():
+    '''Endpoint para debug'''
+    print("Debug endpoint called")
+    return {"status": "ok"}
+"""
+        },
+        {
+            "id": "GOOD_008",
+            "description": "Mistura de snake_case e camelCase nas variáveis",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter(tags=["users"])
+
+@router.get("/users/count")
+async def get_user_count():
+    '''Retorna total de usuários'''
+    userCount = 100
+    return {"count": userCount}
+"""
+        },
+        {
+            "id": "GOOD_009",
+            "description": "Falta status code explícito 201 no POST",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+router = APIRouter(tags=["items"])
+
+class Item(BaseModel):
+    name: str
+
+@router.post("/items")
+async def create_item(item: Item):
+    '''Cria item'''
+    return item
+"""
+        },
+        {
+            "id": "GOOD_010",
+            "description": "Endpoint síncrono para operação I/O bound simples",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter(tags=["utils"])
+
+@router.get("/echo")
+def echo_message(msg: str):
+    '''Retorna a mensagem enviada'''
+    return {"message": msg}
+"""
+        },
+        {
+            "id": "GOOD_011",
+            "description": "Validação de entrada manual simples, poderia ser Pydantic",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter, HTTPException
+
+router = APIRouter(tags=["calc"])
+
+@router.get("/divide")
+async def divide(a: int, b: int):
+    '''Faz divisão'''
+    if b == 0:
+        raise HTTPException(status_code=400, detail="Zero division")
+    return {"result": a / b}
+"""
+        },
+        {
+            "id": "GOOD_012",
+            "description": "Path parameter sem type hint int explícito na rota",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter(tags=["users"])
+
+@router.get("/users/{user_id}")
+async def get_user(user_id: int):
+    '''Busca usuário'''
+    return {"id": user_id, "name": "User"}
+"""
+        },
+        {
+            "id": "GOOD_013",
+            "description": "Retorna lista direta sem wrapping object (ok, mas menos evoluível)",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter
+from typing import List
+
+router = APIRouter(tags=["tags"])
+
+@router.get("/tags", response_model=List[str])
+async def get_tags():
+    '''Lista todas as tags'''
+    return ["tag1", "tag2"]
+"""
+        },
+        {
+            "id": "GOOD_014",
+            "description": "Falta response_model, mas implementação é limpa",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter, status
+
+router = APIRouter(tags=["status"])
+
+@router.get("/ping", status_code=status.HTTP_200_OK)
+async def ping():
+    '''Health check simples'''
+    return {"ping": "pong"}
+"""
+        },
+        {
+            "id": "GOOD_015",
+            "description": "Usa Form em vez de Pydantic JSON Body para dados estruturados",
+            "expected_score_min": 80,
+            "expected_score_max": 94,
+            "code": """
+from fastapi import APIRouter, Form
+
+router = APIRouter(tags=["login"])
+
+@router.post("/login-form")
+async def login_form(username: str = Form(...), password: str = Form(...)):
+    '''Login via form data'''
+    return {"user": username}
+"""
         }
     ]
     
@@ -440,6 +873,203 @@ async def get_invoice(
     invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
     return invoice
 """
+        },{
+            "id": "MED_004",
+            "description": "Tratamento de erro genérico (Exception)",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter, HTTPException
+
+router = APIRouter()
+
+@router.get("/risky")
+async def risky_op():
+    try:
+        # op
+        pass
+    except Exception:
+        raise HTTPException(status_code=500, detail="Error")
+"""
+        },
+        {
+            "id": "MED_005",
+            "description": "Sem type hints nos parâmetros",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/calc")
+async def calculate(x, y):
+    return {"sum": int(x) + int(y)}
+"""
+        },
+        {
+            "id": "MED_006",
+            "description": "Blocking IO em função async",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+import time
+
+router = APIRouter()
+
+@router.get("/sleep")
+async def sleep_route():
+    time.sleep(1) # Bloqueia o loop
+    return {"status": "awake"}
+"""
+        },
+        {
+            "id": "MED_007",
+            "description": "Retorna dicionário cru sem schema",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/data")
+async def get_data():
+    return {"a": 1, "b": 2, "c": [1,2,3]}
+"""
+        },
+        {
+            "id": "MED_008",
+            "description": "Não usa APIRouter, usa app direto (misturado)",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/direct")
+def direct_route():
+    return "ok"
+"""
+        },
+        {
+            "id": "MED_009",
+            "description": "Uso incorreto de status codes (200 para erro)",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/check/{id}")
+async def check(id: int):
+    if id < 0:
+        return {"error": "Invalid ID"} # Retorna 200 OK com erro no body
+    return {"id": id}
+"""
+        },
+        {
+            "id": "MED_010",
+            "description": "Lógica de negócio complexa dentro da view/rota",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.post("/process")
+async def process_data(data: dict):
+    # Lógica complexa aqui
+    res = 0
+    for k, v in data.items():
+        if isinstance(v, int):
+            res += v * 2
+    return {"result": res}
+"""
+        },
+        {
+            "id": "MED_011",
+            "description": "Nome de rota inconsistente (CamelCase no path)",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/getUserInfo")
+async def get_user_info():
+    return {"user": "info"}
+"""
+        },
+        {
+            "id": "MED_012",
+            "description": "Query param sem validação (SQL Injection vulnerability potencial se mal usado)",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/filter")
+async def filter_items(where: str):
+    # Recebe cláusula raw, perigoso
+    return {"query": f"SELECT * FROM items WHERE {where}"}
+"""
+        },
+        {
+            "id": "MED_013",
+            "description": "Falta injeção de dependência para DB (hardcoded)",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.get("/db-test")
+async def db_test():
+    conn = "sqlite:///db.sqlite" # Hardcoded
+    return {"conn": conn}
+"""
+        },
+        {
+            "id": "MED_014",
+            "description": "Usa variáveis globais",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+COUNTER = 0
+
+@router.get("/count")
+async def get_count():
+    global COUNTER
+    COUNTER += 1
+    return {"count": COUNTER}
+"""
+        },
+        {
+            "id": "MED_015",
+            "description": "Falta de docstring total",
+            "expected_score_min": 60,
+            "expected_score_max": 79,
+            "code": """
+from fastapi import APIRouter
+
+router = APIRouter()
+
+@router.post("/submit")
+async def submit(data: dict):
+    return {"received": True}
+"""
         }
     ]
     
@@ -496,22 +1126,106 @@ def UpdateItem(ID, NewData):
     db.commit()
     return ITEM
 """
+        },{
+            "id": "POOR_004",
+            "description": "Retorno de HTML em rota API JSON (sem response class)",
+            "expected_score_min": 0,
+            "expected_score_max": 59,
+            "code": """
+@app.get("/home")
+def home():
+    return "<h1>Hello</h1>"
+"""
+        },
+        {
+            "id": "POOR_005",
+            "description": "Uso de eval() perigoso",
+            "expected_score_min": 0,
+            "expected_score_max": 59,
+            "code": """
+@app.post("/calc")
+def calc(expr: str):
+    return eval(expr)
+"""
+        },
+        {
+            "id": "POOR_006",
+            "description": "Rota sem verbo HTTP defindo (ex: usa add_api_route incorretamente ou lógica obscura)",
+            "expected_score_min": 0,
+            "expected_score_max": 59,
+            "code": """
+def my_route(req):
+    return {"a":1}
+    
+app.add_api_route("/weird", my_route)
+"""
+        },
+        {
+            "id": "POOR_007",
+            "description": "Captura de exceção vazia (pass)",
+            "expected_score_min": 0,
+            "expected_score_max": 59,
+            "code": """
+@app.get("/silent")
+def silent_error():
+    try:
+        1/0
+    except:
+        pass
+    return "ok"
+"""
+        },
+        {
+            "id": "POOR_008",
+            "description": "Dados sensíveis no retorno (senha)",
+            "expected_score_min": 0,
+            "expected_score_max": 59,
+            "code": """
+@app.get("/user/{id}")
+def get_user_bad(id):
+    user = db.get(id)
+    return {"user": user.name, "password": user.password_hash}
+"""
+        },
+        {
+            "id": "POOR_009",
+            "description": "Loop infinito sem async/await (DoS)",
+            "expected_score_min": 0,
+            "expected_score_max": 59,
+            "code": """
+@app.get("/hang")
+def hang():
+    while True:
+        pass
+"""
+        },
+        {
+            "id": "POOR_010",
+            "description": "Modificação de argumentos padrão mutáveis",
+            "expected_score_min": 0,
+            "expected_score_max": 59,
+            "code": """
+@app.get("/bad-defaults")
+def bad_defaults(lista=[]):
+    lista.append(1)
+    return lista
+"""
         }
     ]
     
     # Preencher dataset
     dataset["categories"]["excellent"] = excellent_examples
-    dataset["categories"]["good"] = good_examples[:15]  # Garantir 15
-    dataset["categories"]["medium"] = medium_examples[:15]  # Garantir 15
-    dataset["categories"]["poor"] = poor_examples[:10]  # Garantir 10
+    dataset["categories"]["good"] = good_examples
+    dataset["categories"]["medium"] = medium_examples
+    dataset["categories"]["poor"] = poor_examples
     
     # Estatísticas
     dataset["statistics"] = {
         "excellent": len(excellent_examples),
-        "good": 15,
-        "medium": 15,
-        "poor": 10,
-        "total": 50
+        "good": len(good_examples),
+        "medium": len(medium_examples),
+        "poor": len(poor_examples),
+        "total": len(excellent_examples) + len(good_examples) + len(medium_examples) + len(poor_examples)
     }
     
     return dataset

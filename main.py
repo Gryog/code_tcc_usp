@@ -1,8 +1,8 @@
-from validator import FastAPICodeValidator
+from validator.validator import FastAPICodeValidator
 import os
 from client.geminiclient import GeminiClient
-from rules import RULES_STANDARD
-from config import settings
+from config.rules import RULES_STANDARD
+from config.config import settings
 from tests.testes import *
 
 def main():

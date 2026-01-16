@@ -4,14 +4,15 @@ import os
 import statistics
 from typing import List, Dict, Any
 
-def generate_charts_report(output_file: str = "benchmark_final_report.html"):
+def generate_charts_report(output_file: str = "benchmark_final_report.html", file_pattern: str = "benchmark_results_*.json"):
     """
-    Lê os arquivos de resultado do benchmark (benchmark_results_*.json)
+    Lê os arquivos de resultado do benchmark (padrão ou customizado)
     e gera um relatório HTML com tabelas comparativas e gráficos Chart.js.
     """
     
     # 1. Carregar Resultados
-    result_files = glob.glob("benchmark_results_*.json")
+    result_files = glob.glob(file_pattern)
+    print(f"🔍 Pattern '{file_pattern}' found files: {result_files}")
     if not result_files:
         print("❌ Nenhum arquivo de resultado encontrado (benchmark_results_*.json). Rode o benchmark.py primeiro.")
         return
@@ -38,6 +39,7 @@ def generate_charts_report(output_file: str = "benchmark_final_report.html"):
     
     for llm, report in data_by_llm.items():
         results = report.get("results", [])
+        print(f"📊 Processando {llm}: {len(results)} resultados encontrados.")
         scores = [r.get("overall_score", 0) for r in results]
         times = [r.get("_metadata", {}).get("response_time", 0) for r in results]
         passed = sum(1 for r in results if r.get("overall_status") == "pass")

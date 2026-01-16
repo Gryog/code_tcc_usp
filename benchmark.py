@@ -2,13 +2,15 @@ import os
 import json
 import time
 from typing import Dict, List, Any
-from config import settings as SETTINGS
-from validator import FastAPICodeValidator
+from config.config import settings as SETTINGS
+from validator.validator import FastAPICodeValidator
 from client.geminiclient import GeminiClient
 from client.mistralclient import MistralClient
 from client.openaiclient import OpenAIClient
 from tests.testes_sinteticos import gerar_dataset_sintetico
-from rules import RULES_STANDARD
+from config.rules import RULES_STANDARD
+from reports.charts_generator import generate_charts_report
+from reports.statistic_report_generator import analyze, generate_report
 
 def run_benchmark():
     """
@@ -67,15 +69,15 @@ def run_benchmark():
     else:
         print("⚠️ Mistral API Key não encontrada. Pulando...")
         
-    # OpenAI
-    if SETTINGS.OPENAI_API_KEY:
-        clients.append({
-            "name": "GPT-5-nano",
-            "client": OpenAIClient(api_key=SETTINGS.OPENAI_API_KEY, model_name="gpt-5-nano"),
-            "file_suffix": "openai"
-        })
-    else:
-        print("⚠️ OpenAI API Key não encontrada. Pulando...")
+    # # OpenAI
+    # if SETTINGS.OPENAI_API_KEY:
+    #     clients.append({
+    #         "name": "GPT-4.1-nano",
+    #         "client": OpenAIClient(api_key=SETTINGS.OPENAI_API_KEY, model_name="gpt-4.1-nano"),
+    #         "file_suffix": "openai"
+    #     })
+    # else:
+    #     print("⚠️ OpenAI API Key não encontrada. Pulando...")
 
     if not clients:
         print("❌ Nenhum cliente LLM configurado. Abortando.")
@@ -124,6 +126,13 @@ def run_benchmark():
 
     print("\n🏁 Benchmark Finalizado!")
     print(json.dumps(results_summary, indent=2, ensure_ascii=False))
+    
+    # Gera relatório com gráficos
+    generate_charts_report()
+    
+    # Gera relatório estatístico
+    analyze(results_summary)
+    generate_report(results_summary)
 
 if __name__ == "__main__":
     run_benchmark()

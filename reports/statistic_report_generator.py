@@ -1,6 +1,9 @@
 # ============================================================================
 # PARTE 3: ANÁLISE ESTATÍSTICA DOS RESULTADOS
 # ============================================================================
+import json
+import statistics
+from typing import List, Dict, Any
 
 class ResultsAnalyzer:
     """
@@ -35,7 +38,7 @@ class ResultsAnalyzer:
     
     def _analyze_general(self) -> Dict:
         """Estatísticas gerais."""
-        scores = [r.get('score', 0) for r in self.results if 'score' in r]
+        scores = [r.get('overall_score', r.get('score', 0)) for r in self.results if 'overall_score' in r or 'score' in r]
         
         return {
             "total_exemplos": len(self.results),
@@ -51,10 +54,20 @@ class ResultsAnalyzer:
         categories = {}
         
         for result in self.results:
-            cat = result.get('expected_category', result.get('category', 'unknown'))
+            cat = result.get('expected_category', result.get('category'))
+            if not cat and 'file_path' in result:
+                # Tentativa de extrair do nome do arquivo [CATEGORY] ...
+                import re
+                match = re.search(r'\[(\w+)\]', result['file_path'])
+                if match:
+                    cat = match.group(1).lower()
+            
+            if not cat:
+                cat = 'unknown'
+
             if cat not in categories:
                 categories[cat] = []
-            categories[cat].append(result.get('score', 0))
+            categories[cat].append(result.get('overall_score', result.get('score', 0)))
         
         analysis = {}
         for cat, scores in categories.items():
@@ -86,7 +99,7 @@ class ResultsAnalyzer:
     
     def _analyze_violations(self) -> Dict:
         """Análise de violações encontradas."""
-        total_violations = sum(r.get('violations', 0) for r in self.results)
+        total_violations = sum(len(r.get('violations', [])) for r in self.results)
         
         status_count = {}
         for result in self.results:
@@ -126,7 +139,7 @@ class ResultsAnalyzer:
     
     def _score_distribution(self) -> Dict:
         """Distribuição de scores por faixas."""
-        scores = [r.get('score', 0) for r in self.results]
+        scores = [r.get('overall_score', r.get('score', 0)) for r in self.results]
         
         distribution = {
             "0-20": sum(1 for s in scores if 0 <= s < 20),
@@ -217,3 +230,70 @@ class ResultsAnalyzer:
                 f.write('\n'.join(report))
         
         return '\n'.join(report)
+
+def analyze(results_summary: List[Dict[str, Any]]) -> None:
+    """
+    Função auxiliar para analisar uma lista de sumários de benchmark.
+    Carrega os arquivos JSON detalhados e executa o ResultsAnalyzer para cada um.
+    """
+    print("\n🔍 Executando Análise Estatística Detalhada...")
+    
+    for item in results_summary:
+        llm_name = item.get("llm", "Unknown")
+        filename = item.get("filename")
+        if not filename:
+            continue
+        
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                
+            results = data.get("results", [])
+            analyzer = ResultsAnalyzer(results)
+            stats = analyzer.analyze()
+            
+            # Opcional: Salvar stats de volta ou apenas imprimir
+            print(f"  > Estatísticas calculadas para {llm_name}")
+            
+        except Exception as e:
+            print(f"  ❌ Erro ao analisar {llm_name}: {e}")
+
+def generate_report(results_summary: List[Dict[str, Any]]) -> None:
+    """
+    Gera relatórios textuais para todos os LLMs do benchmark.
+    """
+    print("\n📝 Gerando Relatórios Textuais...")
+    
+    full_report = []
+    
+    for item in results_summary:
+        llm_name = item.get("llm", "Unknown")
+        filename = item.get("filename")
+        if not filename:
+             continue
+        
+        try:
+            with open(filename, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            results = data.get("results", [])
+            analyzer = ResultsAnalyzer(results)
+            
+            # Gera nome do arquivo de relatório
+            report_filename = filename.replace("benchmark_results", "report_stats").replace(".json", ".txt")
+            
+            report_content = analyzer.generate_report(save_path=report_filename)
+            
+            full_report.append(f"RELATÓRIO: {llm_name}\n{report_content}\n\n")
+            print(f"✅ Relatório salvo: {report_filename}")
+            
+        except Exception as e:
+            print(f"❌ Erro ao gerar relatório para {llm_name}: {e}")
+            
+    # Opcional: Salvar relatório unificado
+    try:
+        with open("benchmark_final_stats.txt", "w", encoding="utf-8") as f:
+            f.write("".join(full_report))
+        print("✅ Relatório unificado salvo: benchmark_final_stats.txt")
+    except Exception as e:
+        print(f"❌ Erro ao salvar relatório unificado: {e}")

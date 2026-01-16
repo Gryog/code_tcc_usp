@@ -1,5 +1,5 @@
 from client import llmclient
-import prompt
+import config.prompt
 from schemas import schema
 import json
 import time
@@ -21,7 +21,7 @@ class FastAPICodeValidator:
         rules_str = json.dumps(self.rules, indent=2, ensure_ascii=False)
 
         # Prompt Engineering estruturado
-        return prompt.VALIDATION_PROMPT_TEMPLATE.format(
+        return config.prompt.VALIDATION_PROMPT_TEMPLATE.format(
             rules_text=rules_str,
             code=code
         )
@@ -69,9 +69,14 @@ class FastAPICodeValidator:
         except Exception as e:
             return {"error": f"Erro ao ler arquivo: {str(e)}", "file_path": file_path, "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")}}
 
-    def validate_project(self, root_path: str, ignore_folders: list = None) -> Dict[str, Any]:
+    def validate_project(self, root_path: str, ignore_folders: list = None, target_patterns: list = None) -> Dict[str, Any]:
         """
         Varre um diretório recursivamente e valida arquivos Python.
+        Args:
+            root_path: Caminho raiz do projeto.
+            ignore_folders: Lista de pastas a ignorar (ex: ['.venv']).
+            target_patterns: Lista de substrings para filtrar caminhos (ex: ['routes', 'api']). 
+                             Se fornecido, analise apenas arquivos cujo path completo contenha um dos patterns.
         """
         if ignore_folders is None:
             ignore_folders = ['.venv', '.git', '__pycache__', 'venv', 'env']
@@ -86,14 +91,24 @@ class FastAPICodeValidator:
             for file in files:
                 if file.endswith('.py'):
                     full_path = os.path.join(root, file)
+                    
+                    # Logica de filtro positivo (target_patterns)
+                    if target_patterns:
+                        # Normaliza separadores para garantir match
+                        normalized_path = full_path.replace(os.sep, '/')
+                        if not any(pattern in normalized_path for pattern in target_patterns):
+                             continue
+
                     print(f"🔍 Analisando: {full_path}...")
+                    time.sleep(1.0) # Rate limiting manual
                     
                     file_result = self.validate_file(full_path)
                     
                     # Atualiza estatísticas
                     if "error" in file_result:
                         overall_stats["errors"] += 1
-                        print(f"   ❌ Erro: {file_result['error']}")
+                        error_detail = file_result.get('details', 'Sem detalhes')
+                        print(f"   ❌ Erro: {file_result['error']} - Detalhes: {error_detail}")
                     elif file_result.get("overall_status") == "fail":
                         overall_stats["failed"] += 1
                         print(f"   ⚠️  Issues found (Score: {file_result.get('overall_score')})")

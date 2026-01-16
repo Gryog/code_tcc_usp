@@ -1,0 +1,263 @@
+{
+  "summary": {
+    "passed": 0,
+    "failed": 1,
+    "errors": 0
+  },
+  "results": [
+    {
+      "overall_status": "fail",
+      "overall_score": 42,
+      "summary": "O código apresenta múltiplas violações críticas de estrutura de endpoint, tratamento de erros e tipagem, além de problemas de nomenclatura e validação de entrada.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "O endpoint '/' (função 'index') não possui uma docstring explicativa. Isso prejudica a clareza e a manutenção do código, pois não documenta a finalidade do endpoint.",
+          "suggestion": "Adicione uma docstring à função 'index' descrevendo sua funcionalidade e o que ela retorna.",
+          "line_reference": "Linha 16"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O endpoint '/' (função 'index') não define um 'response_model'. Isso impede que a documentação OpenAPI especifique a estrutura da resposta e não oferece validação automática da saída.",
+          "suggestion": "Defina um Pydantic 'response_model' (ex: 'response_model=InfoResponse') para o endpoint 'index' para documentar e validar a estrutura de saída da API.",
+          "line_reference": "Linha 15"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint '/' (função 'index') não especifica 'status_code' explicitamente. Embora o padrão 200 OK seja inferido, a explicitação melhora a clareza e a intenção do código.",
+          "suggestion": "Adicione 'status_code=status.HTTP_200_OK' ao decorador '@router.get' para o endpoint 'index', importando 'status' de 'fastapi'.",
+          "line_reference": "Linha 15"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Declara tags para organização",
+          "description": "O endpoint '/' (função 'index') não declara 'tags' para organização na documentação OpenAPI. Isso dificulta a categorização e a navegação da API.",
+          "suggestion": "Adicione 'tags=['general']' ou 'tags=['root']' ao decorador '@router.get' para o endpoint 'index'.",
+          "line_reference": "Linha 15"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "O endpoint '/api_a/{num}' (função 'view_a') não possui uma docstring explicativa.",
+          "suggestion": "Adicione uma docstring à função 'view_a' descrevendo sua funcionalidade, parâmetros e o que ela retorna.",
+          "line_reference": "Linha 25"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O endpoint '/api_a/{num}' (função 'view_a') não define um 'response_model'.",
+          "suggestion": "Defina um Pydantic 'response_model' para o endpoint 'view_a' para documentar e validar a estrutura de saída da API.",
+          "line_reference": "Linha 24"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint '/api_a/{num}' (função 'view_a') não especifica 'status_code' explicitamente.",
+          "suggestion": "Adicione 'status_code=status.HTTP_200_OK' ao decorador '@router.get' para o endpoint 'view_a'.",
+          "line_reference": "Linha 24"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "O endpoint '/api_b/{num}' (função 'view_b') não possui uma docstring explicativa.",
+          "suggestion": "Adicione uma docstring à função 'view_b' descrevendo sua funcionalidade, parâmetros e o que ela retorna.",
+          "line_reference": "Linha 34"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Define response_model",
+          "description": "O endpoint '/api_b/{num}' (função 'view_b') não define um 'response_model'.",
+          "suggestion": "Defina um Pydantic 'response_model' para o endpoint 'view_b' para documentar e validar a estrutura de saída da API.",
+          "line_reference": "Linha 33"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint '/api_b/{num}' (função 'view_b') não especifica 'status_code' explicitamente.",
+          "suggestion": "Adicione 'status_code=status.HTTP_200_OK' ao decorador '@router.get' para o endpoint 'view_b'.",
+          "line_reference": "Linha 33"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users)",
+          "description": "O nome da função 'index' é genérico e não expressa um verbo de ação claro para um endpoint GET, como 'get' ou 'read'.",
+          "suggestion": "Renomeie a função para 'get_root_info' ou 'read_root' para maior clareza e aderência às convenções REST.",
+          "line_reference": "Linha 16"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users)",
+          "description": "O nome da função 'view_a' é genérico. Para um endpoint GET que retorna dados, um verbo de ação como 'get' ou 'read' seria mais apropriado (ex: 'get_api_a').",
+          "suggestion": "Renomeie a função para 'get_api_a_data' ou 'read_api_a' para maior clareza e consistência.",
+          "line_reference": "Linha 25"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users)",
+          "description": "O nome da função 'view_b' é genérico. Para um endpoint GET que retorna dados, um verbo de ação como 'get' ou 'read' seria mais apropriado (ex: 'get_api_b').",
+          "suggestion": "Renomeie a função para 'get_api_b_data' ou 'read_api_b' para maior clareza e consistência.",
+          "line_reference": "Linha 34"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Usa tipos adequados (List, Dict, Optional, etc)",
+          "description": "O parâmetro 'auth' usa 'Depends' como type hint ('auth: Depends'). 'Depends' é um objeto de injeção de dependência, não um tipo de dado adequado para anotação de tipo do parâmetro.",
+          "suggestion": "Substitua 'auth: Depends' pelo tipo do objeto retornado por 'get_current_user' (ex: 'auth: User') ou use 'Annotated[User, Depends(get_current_user)]' (requer 'from typing import Annotated').",
+          "line_reference": "Linha 27"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Usa tipos adequados (List, Dict, Optional, etc)",
+          "description": "O parâmetro 'auth' usa 'Depends' como type hint ('auth: Depends'). 'Depends' é um objeto de injeção de dependência, não um tipo de dado adequado para anotação de tipo do parâmetro.",
+          "suggestion": "Substitua 'auth: Depends' pelo tipo do objeto retornado por 'get_current_user' (ex: 'auth: User') ou use 'Annotated[User, Depends(get_current_user)]' (requer 'from typing import Annotated').",
+          "line_reference": "Linha 36"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "A chamada para 'main_func_a(num)' é uma operação externa crítica que não está encapsulada em um bloco 'try-except'. Falhas nesta função podem resultar em erros 500 não tratados, interrompendo o serviço.",
+          "suggestion": "Envolva a chamada 'main_func_a(num)' em um bloco 'try-except' para capturar exceções e retornar respostas de erro controladas, como 'HTTPException'.",
+          "line_reference": "Linha 29"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Não há uso explícito de 'HTTPException' para lidar com falhas potenciais em 'main_func_a'. Se a função falhar, um erro 500 genérico será retornado, sem detalhes úteis para o cliente da API.",
+          "suggestion": "Dentro do bloco 'except' para 'main_func_a', utilize 'raise HTTPException(status_code=..., detail=...)', com um 'status_code' apropriado e uma mensagem de erro descritiva.",
+          "line_reference": "Linha 29"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "Como não há tratamento de exceções para 'main_func_a', não há definição explícita de códigos de status de erro. Isso leva a um status 500 genérico em caso de falha, que pode não refletir a causa real do problema.",
+          "suggestion": "Ao usar 'HTTPException' no bloco 'except', defina 'status_code' apropriados (ex: 400, 404, 422, 503) dependendo do tipo de falha ocorrida em 'main_func_a'.",
+          "line_reference": "Linha 29"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Possui try-except para operações críticas",
+          "description": "A chamada para 'main_func_b(num)' é uma operação externa crítica que não está encapsulada em um bloco 'try-except'. Falhas nesta função podem resultar em erros 500 não tratados, interrompendo o serviço.",
+          "suggestion": "Envolva a chamada 'main_func_b(num)' em um bloco 'try-except' para capturar exceções e retornar respostas de erro controladas, como 'HTTPException'.",
+          "line_reference": "Linha 38"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Usa HTTPException apropriadamente",
+          "description": "Não há uso explícito de 'HTTPException' para lidar com falhas potenciais em 'main_func_b'. Se a função falhar, um erro 500 genérico será retornado, sem detalhes úteis para o cliente da API.",
+          "suggestion": "Dentro do bloco 'except' para 'main_func_b', utilize 'raise HTTPException(status_code=..., detail=...)', com um 'status_code' apropriado e uma mensagem de erro descritiva.",
+          "line_reference": "Linha 38"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "Como não há tratamento de exceções para 'main_func_b', não há definição explícita de códigos de status de erro. Isso leva a um status 500 genérico em caso de falha, que pode não refletir a causa real do problema.",
+          "suggestion": "Ao usar 'HTTPException' no bloco 'except', defina 'status_code' apropriados (ex: 400, 404, 422, 503) dependendo do tipo de falha ocorrida em 'main_func_b'.",
+          "line_reference": "Linha 38"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "O parâmetro de path 'num' não está explicitamente definido com 'Path()'. Embora funcione, isso impede a adição de metadados, exemplos e validações extras diretamente na documentação OpenAPI.",
+          "suggestion": "Modifique 'num: int' para 'num: int = Path(..., description='Número de entrada para a API A', example=123)' para melhorar a documentação e validação.",
+          "line_reference": "Linha 26"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Define validações quando necessário",
+          "description": "Nenhuma validação específica (ex: 'gt=0', 'le=100') é definida para o parâmetro 'num'. Embora o tipo 'int' seja validado automaticamente, restrições de negócio adicionais não são impostas.",
+          "suggestion": "Use 'num: int = Path(..., gt=0)' (se o número precisar ser positivo) ou outras validações numéricas no objeto 'Path()' para impor restrições de negócio.",
+          "line_reference": "Linha 26"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Usa Query(), Path(), Body() para documentação",
+          "description": "O parâmetro de path 'num' não está explicitamente definido com 'Path()'. Embora funcione, isso impede a adição de metadados, exemplos e validações extras diretamente na documentação OpenAPI.",
+          "suggestion": "Modifique 'num: int' para 'num: int = Path(..., description='Número de entrada para a API B', example=456)' para melhorar a documentação e validação.",
+          "line_reference": "Linha 35"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation",
+          "check_failed": "Define validações quando necessário",
+          "description": "Nenhuma validação específica (ex: 'gt=0', 'le=100') é definida para o parâmetro 'num'. Embora o tipo 'int' seja validado automaticamente, restrições de negócio adicionais não são impostas.",
+          "suggestion": "Use 'num: int = Path(..., gt=0)' (se o número precisar ser positivo) ou outras validações numéricas no objeto 'Path()' para impor restrições de negócio.",
+          "line_reference": "Linha 35"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Usa APIRouter ao invés de FastAPI app"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Variáveis em snake_case",
+            "Classes em PascalCase",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation"
+          ]
+        },
+        {
+          "rule_category": "input_validation",
+          "checks_passed": [
+            "Usa Pydantic models para body requests"
+          ]
+        },
+        {
+          "rule_category": "async_usage",
+          "checks_passed": [
+            "Preferência por funções async quando possível"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 55.07,
+        "timestamp": "2026-01-16 00:28:14"
+      },
+      "file_path": "temp_repos/fastapi-nano\\svc\\routes\\views.py"
+    }
+  ],
+  "timestamp": "2026-01-16 00:28:14",
+  "benchmark_metadata": {
+    "llm_name": "Gemini 2.5-flash",
+    "repo_name": "fastapi-nano",
+    "repo_url": "https://github.com/rednafi/fastapi-nano",
+    "total_time": 56.07
+  }
+}
