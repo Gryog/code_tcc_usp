@@ -11,6 +11,7 @@ from config.rules import RULES_STANDARD
 from reports.charts_generator import generate_charts_report
 from reports.statistic_report_generator import analyze, generate_report
 from extraction.repo_collector import RepoCollector
+from extraction.teste_colletor import TesteRepoCollector
 
 def run_repo_benchmark():
     """
@@ -21,8 +22,8 @@ def run_repo_benchmark():
     # 1. Configurar Repositórios Alvo
     repos = [
         "https://github.com/rednafi/fastapi-nano",
-        # "https://github.com/nsidnev/fastapi-realworld-example-app",
-        # "https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
+        "https://github.com/nsidnev/fastapi-realworld-example-app",
+        #"https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
     ]
     
     # 2. Configurar Clientes LLM
@@ -57,7 +58,7 @@ def run_repo_benchmark():
 
     # 3. Iterar sobre Repositórios
     for repo_url in repos:
-        collector = RepoCollector(repo_url)
+        collector = TesteRepoCollector(repo_url)
         target_dir = collector.clone_repository()
         
         if not target_dir:
@@ -127,7 +128,7 @@ def run_repo_benchmark():
                 with open(filename, 'w', encoding='utf-8') as f:
                     json.dump(report, f, indent=2, ensure_ascii=False)
                 
-                print(f"  ✅ Concluído ({report['benchmark_metadata']['total_time']}s). Salvo: {filename}")
+                print(f"✅ Concluído ({report['benchmark_metadata']['total_time']}s). Salvo: {filename}")
                 
                 results_summary.append({
                     "llm": f"{llm_name} ({collector.repo_name})",
@@ -136,7 +137,7 @@ def run_repo_benchmark():
                 })
                 
             except Exception as e:
-                print(f"  ❌ Erro ao validar com {llm_name}: {e}")
+                print(f"❌ Erro ao validar com {llm_name}: {e}")
         
         # Limpeza após todos os LLMs rodarem neste repo
         collector.cleanup()
@@ -151,7 +152,7 @@ def run_repo_benchmark():
     try:
         analyze(results_summary)
         generate_report(results_summary)
-        generate_charts_report(output_file="benchmark_repos_report.html", file_pattern="repo_results_*.json")
+        generate_charts_report(file_pattern="repo_results_*.json", output_file="benchmark_repos_report.html")
     except Exception as e:
         print(f"⚠️ Erro na geração de relatório final: {e}")
 

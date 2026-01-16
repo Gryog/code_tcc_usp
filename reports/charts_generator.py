@@ -4,7 +4,7 @@ import os
 import statistics
 from typing import List, Dict, Any
 
-def generate_charts_report(output_file: str = "benchmark_final_report.html", file_pattern: str = "benchmark_results_*.json"):
+def generate_charts_report(file_pattern: str, output_file: str = "benchmark_final_report.html"):
     """
     Lê os arquivos de resultado do benchmark (padrão ou customizado)
     e gera um relatório HTML com tabelas comparativas e gráficos Chart.js.
@@ -14,7 +14,7 @@ def generate_charts_report(output_file: str = "benchmark_final_report.html", fil
     result_files = glob.glob(file_pattern)
     print(f"🔍 Pattern '{file_pattern}' found files: {result_files}")
     if not result_files:
-        print("❌ Nenhum arquivo de resultado encontrado (benchmark_results_*.json). Rode o benchmark.py primeiro.")
+        print("❌ Nenhum arquivo de resultado encontrado. Rode o benchmark.py primeiro.")
         return
 
     data_by_llm = {}

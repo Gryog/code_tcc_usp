@@ -16,7 +16,8 @@ class GeminiClient(LLMClient):
                 model=self.model_name,
                 contents=prompt,
                 config=types.GenerateContentConfig(
-                    response_mime_type="application/json"
+                    response_mime_type="application/json",
+                    temperature=0.2,
                 ),
             )
             return json.loads(response.text)
