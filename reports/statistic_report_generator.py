@@ -3,6 +3,7 @@
 # ============================================================================
 import json
 import statistics
+from pathlib import Path
 from typing import List, Dict, Any
 
 class ResultsAnalyzer:
@@ -38,7 +39,11 @@ class ResultsAnalyzer:
     
     def _analyze_general(self) -> Dict:
         """Estatísticas gerais."""
-        scores = [r.get('overall_score', r.get('score', 0)) for r in self.results if 'overall_score' in r or 'score' in r]
+        scores = [
+            r.get('overall_score', r.get('score', 0))
+            for r in self.results
+            if 'overall_score' in r or 'score' in r
+        ]
         
         return {
             "total_exemplos": len(self.results),
@@ -103,7 +108,7 @@ class ResultsAnalyzer:
         
         status_count = {}
         for result in self.results:
-            status = result.get('status', 'unknown')
+            status = result.get('overall_status', result.get('status', 'unknown'))
             status_count[status] = status_count.get(status, 0) + 1
         
         return {
@@ -119,7 +124,7 @@ class ResultsAnalyzer:
         
         for result in self.results:
             if 'expected_score_min' in result and 'expected_score_max' in result:
-                score = result.get('score', 0)
+                score = result.get('overall_score', result.get('score', 0))
                 min_expected = result['expected_score_min']
                 max_expected = result['expected_score_max']
                 
@@ -280,7 +285,12 @@ def generate_report(results_summary: List[Dict[str, Any]]) -> None:
             analyzer = ResultsAnalyzer(results)
             
             # Gera nome do arquivo de relatório
-            report_filename = filename.replace("benchmark_results", "report_stats").replace(".json", ".txt")
+            if "benchmark_results" in filename:
+                report_filename = filename.replace("benchmark_results", "report_stats").replace(".json", ".txt")
+            elif "repo_results" in filename:
+                report_filename = filename.replace("repo_results", "report_stats").replace(".json", ".txt")
+            else:
+                report_filename = f"report_stats_{Path(filename).stem}.txt"
             
             report_content = analyzer.generate_report(save_path=report_filename)
             

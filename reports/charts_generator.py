@@ -1,6 +1,5 @@
 import json
 import glob
-import os
 import statistics
 from typing import List, Dict, Any
 
@@ -14,7 +13,7 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
     result_files = glob.glob(file_pattern)
     print(f"🔍 Pattern '{file_pattern}' found files: {result_files}")
     if not result_files:
-        print("❌ Nenhum arquivo de resultado encontrado. Rode o benchmark.py primeiro.")
+        print(f"❌ Nenhum arquivo de resultado encontrado ({file_pattern}). Rode o benchmark.py primeiro.")
         return
 
     data_by_llm = {}
@@ -40,9 +39,13 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
     for llm, report in data_by_llm.items():
         results = report.get("results", [])
         print(f"📊 Processando {llm}: {len(results)} resultados encontrados.")
-        scores = [r.get("overall_score", 0) for r in results]
-        times = [r.get("_metadata", {}).get("response_time", 0) for r in results]
+        scores = [r.get("overall_score", r.get("score", 0)) for r in results]
+        times = [
+            r.get("response_time", r.get("_metadata", {}).get("response_time", 0))
+            for r in results
+        ]
         passed = sum(1 for r in results if r.get("overall_status") == "pass")
+        warnings = sum(1 for r in results if r.get("overall_status") == "warning")
         failed = sum(1 for r in results if r.get("overall_status") == "fail")
         errors = sum(1 for r in results if "error" in r)
         
@@ -55,6 +58,7 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
             "avg_score": round(statistics.mean(scores), 2) if scores else 0,
             "avg_time": round(statistics.mean(times), 2) if times else 0,
             "total_passed": passed,
+            "total_warnings": warnings,
             "total_failed": failed,
             "total_errors": errors,
             "total": len(results),
@@ -97,12 +101,13 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
                         <th>Score Médio</th>
                         <th>Tempo Médio (s)</th>
                         <th>Aprovados</th>
+                        <th>Avisos</th>
                         <th>Reprovados</th>
                         <th>Erros API</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {''.join(f"<tr><td>{s['name']}</td><td>{s['avg_score']}</td><td>{s['avg_time']}</td><td style='color:green'>{s['total_passed']}</td><td style='color:orange'>{s['total_failed']}</td><td style='color:red'>{s['total_errors']}</td></tr>" for s in stats)}
+                    {''.join(f"<tr><td>{s['name']}</td><td>{s['avg_score']}</td><td>{s['avg_time']}</td><td style='color:green'>{s['total_passed']}</td><td style='color:goldenrod'>{s['total_warnings']}</td><td style='color:orange'>{s['total_failed']}</td><td style='color:red'>{s['total_errors']}</td></tr>" for s in stats)}
                 </tbody>
             </table>
 
@@ -132,6 +137,7 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
             const scores = {json.dumps([s['avg_score'] for s in stats])};
             const times = {json.dumps([s['avg_time'] for s in stats])};
             const passed = {json.dumps([s['total_passed'] for s in stats])};
+            const warnings = {json.dumps([s['total_warnings'] for s in stats])};
             const failed = {json.dumps([s['total_failed'] for s in stats])};
             const errors = {json.dumps([s['total_errors'] for s in stats])};
 
@@ -187,6 +193,11 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
                             label: 'Aprovados',
                             data: passed,
                             backgroundColor: '#2ecc71',
+                        }},
+                        {{
+                            label: 'Avisos',
+                            data: warnings,
+                            backgroundColor: '#f39c12',
                         }},
                         {{
                             label: 'Reprovados',
