@@ -3,7 +3,7 @@ import os
 from client.geminiclient import GeminiClient
 from config.rules import RULES_STANDARD
 from config.config import settings
-from tests.testes import *
+
 
 def main():
     import sys
@@ -22,7 +22,7 @@ def main():
 
     # Scan do projeto (Pode ser substituído por validator.validate(codigo_str) que o relatório funcionará igual)
     report = validator.validate_project(target_dir)
-    #report = validator.validate(EXAMPLE_1_IDEAL)
+    # report = validator.validate(EXAMPLE_1_IDEAL)
     # Salva relatórios
     validator.save_report_json(report, "validation_report.json")
     validator.save_report_html(report, "validation_report.html")

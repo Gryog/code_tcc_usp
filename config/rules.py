@@ -2,13 +2,15 @@ import json
 import os
 from typing import Dict
 
+
 def load_rules(file_path: str = "rules.json") -> Dict:
     """Carrega regras de validação de um arquivo JSON."""
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Arquivo de regras não encontrado: {file_path}")
-    
-    with open(file_path, 'r', encoding='utf-8') as f:
+
+    with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
+
 
 # Carrega as regras padrão
 try:

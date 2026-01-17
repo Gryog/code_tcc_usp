@@ -99,7 +99,7 @@ def run_benchmark():
         
         # Executa Batch
         try:
-            report = validator.validate_batch(batch_input)
+            report = validator.validate_batch(batch_input, rate_limit_s=1.0)
             
             # Adiciona metadados do benchmark ao relatório
             report["benchmark_metadata"] = {

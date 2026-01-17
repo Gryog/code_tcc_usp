@@ -1,33 +1,37 @@
 import json
 import glob
 import statistics
-from typing import List, Dict, Any
 
-def generate_charts_report(file_pattern: str, output_file: str = "benchmark_final_report.html"):
+
+def generate_charts_report(
+    file_pattern: str, output_file: str = "benchmark_final_report.html"
+):
     """
     Lê os arquivos de resultado do benchmark (padrão ou customizado)
     e gera um relatório HTML com tabelas comparativas e gráficos Chart.js.
     """
-    
+
     # 1. Carregar Resultados
     result_files = glob.glob(file_pattern)
     print(f"🔍 Pattern '{file_pattern}' found files: {result_files}")
     if not result_files:
-        print(f"❌ Nenhum arquivo de resultado encontrado ({file_pattern}). Rode o benchmark.py primeiro.")
+        print(
+            f"❌ Nenhum arquivo de resultado encontrado ({file_pattern}). Rode o benchmark.py primeiro."
+        )
         return
 
     data_by_llm = {}
-    
+
     for file_path in result_files:
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                
+
             llm_name = data.get("benchmark_metadata", {}).get("llm_name", "Unknown")
             # Caso o nome venha duplicado ou algo do tipo
             if llm_name in data_by_llm:
                 llm_name = f"{llm_name} ({file_path})"
-                
+
             data_by_llm[llm_name] = data
             print(f"📦 Carregado: {file_path} -> {llm_name}")
         except Exception as e:
@@ -35,7 +39,7 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
 
     # 2. Processar Métricas
     stats = []
-    
+
     for llm, report in data_by_llm.items():
         results = report.get("results", [])
         print(f"📊 Processando {llm}: {len(results)} resultados encontrados.")
@@ -48,23 +52,25 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
         warnings = sum(1 for r in results if r.get("overall_status") == "warning")
         failed = sum(1 for r in results if r.get("overall_status") == "fail")
         errors = sum(1 for r in results if "error" in r)
-        
+
         # Acurácia (Simplificada: Score Médio vs Categoria Esperada)
         # Assumindo que o dataset sintético tem scores esperados.
         # Aqui vamos usar apenas a média geral para comparação.
-        
-        stats.append({
-            "name": llm,
-            "avg_score": round(statistics.mean(scores), 2) if scores else 0,
-            "avg_time": round(statistics.mean(times), 2) if times else 0,
-            "total_passed": passed,
-            "total_warnings": warnings,
-            "total_failed": failed,
-            "total_errors": errors,
-            "total": len(results),
-            "raw_scores": scores,
-            "raw_times": times
-        })
+
+        stats.append(
+            {
+                "name": llm,
+                "avg_score": round(statistics.mean(scores), 2) if scores else 0,
+                "avg_time": round(statistics.mean(times), 2) if times else 0,
+                "total_passed": passed,
+                "total_warnings": warnings,
+                "total_failed": failed,
+                "total_errors": errors,
+                "total": len(results),
+                "raw_scores": scores,
+                "raw_times": times,
+            }
+        )
 
     # 3. Gerar HTML
     html_content = f"""
@@ -107,7 +113,7 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
                     </tr>
                 </thead>
                 <tbody>
-                    {''.join(f"<tr><td>{s['name']}</td><td>{s['avg_score']}</td><td>{s['avg_time']}</td><td style='color:green'>{s['total_passed']}</td><td style='color:goldenrod'>{s['total_warnings']}</td><td style='color:orange'>{s['total_failed']}</td><td style='color:red'>{s['total_errors']}</td></tr>" for s in stats)}
+                    {"".join(f"<tr><td>{s['name']}</td><td>{s['avg_score']}</td><td>{s['avg_time']}</td><td style='color:green'>{s['total_passed']}</td><td style='color:goldenrod'>{s['total_warnings']}</td><td style='color:orange'>{s['total_failed']}</td><td style='color:red'>{s['total_errors']}</td></tr>" for s in stats)}
                 </tbody>
             </table>
 
@@ -133,13 +139,13 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
         </div>
 
         <script>
-            const models = {json.dumps([s['name'] for s in stats])};
-            const scores = {json.dumps([s['avg_score'] for s in stats])};
-            const times = {json.dumps([s['avg_time'] for s in stats])};
-            const passed = {json.dumps([s['total_passed'] for s in stats])};
-            const warnings = {json.dumps([s['total_warnings'] for s in stats])};
-            const failed = {json.dumps([s['total_failed'] for s in stats])};
-            const errors = {json.dumps([s['total_errors'] for s in stats])};
+            const models = {json.dumps([s["name"] for s in stats])};
+            const scores = {json.dumps([s["avg_score"] for s in stats])};
+            const times = {json.dumps([s["avg_time"] for s in stats])};
+            const passed = {json.dumps([s["total_passed"] for s in stats])};
+            const warnings = {json.dumps([s["total_warnings"] for s in stats])};
+            const failed = {json.dumps([s["total_failed"] for s in stats])};
+            const errors = {json.dumps([s["total_errors"] for s in stats])};
 
             // Gráfico de Scores
             new Chart(document.getElementById('scoreChart'), {{
@@ -233,11 +239,12 @@ def generate_charts_report(file_pattern: str, output_file: str = "benchmark_fina
     </body>
     </html>
     """
-    
-    with open(output_file, 'w', encoding='utf-8') as f:
+
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write(html_content)
-    
+
     print(f"📊 Relatório Comparativo gerado com sucesso: {output_file}")
+
 
 if __name__ == "__main__":
     generate_charts_report()

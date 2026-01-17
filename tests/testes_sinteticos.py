@@ -2,50 +2,40 @@
 # Inclui: 50 casos sintéticos + Coleta automática + Análise estatística
 # ============================================================================
 
-import json
-import time
-import re
-from pathlib import Path
-from typing import List, Dict, Any
 from datetime import datetime
-import statistics
 
 # ============================================================================
 # PARTE 1: 50 CASOS DE TESTE SINTÉTICOS
 # ============================================================================
 
+
 def gerar_dataset_sintetico():
     """
     Gera 50 casos de teste sintéticos bem distribuídos.
-    
+
     Distribuição:
     - 10 Excelentes (95-100)
     - 15 Bons (80-94)
     - 15 Médios (60-79)
     - 10 Ruins (0-59)
     """
-    
+
     dataset = {
         "metadata": {
             "name": "FastAPI Synthetic Test Dataset",
             "version": "1.0",
             "date": datetime.now().isoformat(),
             "total_examples": 50,
-            "description": "Casos sintéticos para validação de código FastAPI"
+            "description": "Casos sintéticos para validação de código FastAPI",
         },
-        "categories": {
-            "excellent": [],
-            "good": [],
-            "medium": [],
-            "poor": []
-        },
-        "statistics": {}
+        "categories": {"excellent": [], "good": [], "medium": [], "poor": []},
+        "statistics": {},
     }
-    
+
     # ========================================================================
     # CATEGORIA: EXCELENTE (10 exemplos) - Score esperado: 95-100
     # ========================================================================
-    
+
     excellent_examples = [
         {
             "id": "EXC_001",
@@ -92,7 +82,7 @@ async def get_users(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro ao buscar usuários: {str(e)}"
         )
-"""
+""",
         },
         {
             "id": "EXC_002",
@@ -150,7 +140,7 @@ async def create_product(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro ao criar produto: {str(e)}"
         )
-"""
+""",
         },
         {
             "id": "EXC_003",
@@ -211,7 +201,7 @@ async def update_order(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro ao atualizar pedido: {str(e)}"
         )
-"""
+""",
         },
         # Adicionar mais 7 exemplos excelentes...
         {
@@ -263,8 +253,9 @@ async def delete_category(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro ao deletar categoria: {str(e)}"
         )
-"""
-        },{
+""",
+        },
+        {
             "id": "EXC_005",
             "description": "Endpoint com Background Tasks e status 202",
             "expected_score_min": 95,
@@ -305,7 +296,7 @@ async def send_notification(
     '''
     background_tasks.add_task(send_email_background, email_data.email, email_data.content)
     return {"message": "Email queued for sending"}
-"""
+""",
         },
         {
             "id": "EXC_006",
@@ -353,7 +344,7 @@ async def upload_file(
         )
         
     return {"filename": file.filename, "content_type": file.content_type}
-"""
+""",
         },
         {
             "id": "EXC_007",
@@ -397,7 +388,7 @@ async def search_items(
     if filters.min_price:
         query = query.filter(Item.price >= filters.min_price)
     return query.all()
-"""
+""",
         },
         {
             "id": "EXC_008",
@@ -428,7 +419,7 @@ async def delete_user_admin(
     '''Endpoint administrativo seguro para remoção de usuários.'''
     # Lógica de deleção
     pass
-"""
+""",
         },
         {
             "id": "EXC_009",
@@ -456,7 +447,7 @@ async def health_check(db: Session = Depends(get_db)) -> dict:
         return {"status": "healthy", "database": "connected"}
     except Exception:
         return {"status": "unhealthy", "database": "disconnected"}
-"""
+""",
         },
         {
             "id": "EXC_010",
@@ -489,15 +480,14 @@ async def export_data_csv() -> StreamingResponse:
         media_type="text/csv",
         headers={"Content-Disposition": "attachment; filename=data.csv"}
     )
-"""
-        }
+""",
+        },
     ]
-    
-    
+
     # ========================================================================
     # CATEGORIA: BOM (15 exemplos) - Score esperado: 80-94
     # ========================================================================
-    
+
     good_examples = [
         {
             "id": "GOOD_001",
@@ -527,7 +517,7 @@ async def get_items(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=str(e)
         )
-"""
+""",
         },
         {
             "id": "GOOD_002",
@@ -555,7 +545,7 @@ async def create_task(task: TaskCreate, db: Session = Depends(get_db)) -> TaskRe
         return new_task
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-"""
+""",
         },
         {
             "id": "GOOD_003",
@@ -594,8 +584,9 @@ async def get_reports(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro: {str(e)}"
         )
-"""
-        },{
+""",
+        },
+        {
             "id": "GOOD_004",
             "description": "Faltam tags e description no Query",
             "expected_score_min": 80,
@@ -609,7 +600,7 @@ router = APIRouter()
 async def search(q: str = Query(None)):
     '''Busca simples'''
     return {"query": q}
-"""
+""",
         },
         {
             "id": "GOOD_005",
@@ -626,7 +617,7 @@ router = APIRouter(tags=["misc"])
 async def get_config() -> Dict:
     '''Retorna configurações'''
     return {"version": "1.0", "env": "prod"}
-"""
+""",
         },
         {
             "id": "GOOD_006",
@@ -647,7 +638,7 @@ class LoginCtx(BaseModel):
 async def login(creds: LoginCtx):
     # Faz login
     return {"token": "abc"}
-"""
+""",
         },
         {
             "id": "GOOD_007",
@@ -664,7 +655,7 @@ async def debug_endpoint():
     '''Endpoint para debug'''
     print("Debug endpoint called")
     return {"status": "ok"}
-"""
+""",
         },
         {
             "id": "GOOD_008",
@@ -681,7 +672,7 @@ async def get_user_count():
     '''Retorna total de usuários'''
     userCount = 100
     return {"count": userCount}
-"""
+""",
         },
         {
             "id": "GOOD_009",
@@ -701,7 +692,7 @@ class Item(BaseModel):
 async def create_item(item: Item):
     '''Cria item'''
     return item
-"""
+""",
         },
         {
             "id": "GOOD_010",
@@ -717,7 +708,7 @@ router = APIRouter(tags=["utils"])
 def echo_message(msg: str):
     '''Retorna a mensagem enviada'''
     return {"message": msg}
-"""
+""",
         },
         {
             "id": "GOOD_011",
@@ -735,7 +726,7 @@ async def divide(a: int, b: int):
     if b == 0:
         raise HTTPException(status_code=400, detail="Zero division")
     return {"result": a / b}
-"""
+""",
         },
         {
             "id": "GOOD_012",
@@ -751,7 +742,7 @@ router = APIRouter(tags=["users"])
 async def get_user(user_id: int):
     '''Busca usuário'''
     return {"id": user_id, "name": "User"}
-"""
+""",
         },
         {
             "id": "GOOD_013",
@@ -768,7 +759,7 @@ router = APIRouter(tags=["tags"])
 async def get_tags():
     '''Lista todas as tags'''
     return ["tag1", "tag2"]
-"""
+""",
         },
         {
             "id": "GOOD_014",
@@ -784,7 +775,7 @@ router = APIRouter(tags=["status"])
 async def ping():
     '''Health check simples'''
     return {"ping": "pong"}
-"""
+""",
         },
         {
             "id": "GOOD_015",
@@ -800,14 +791,14 @@ router = APIRouter(tags=["login"])
 async def login_form(username: str = Form(...), password: str = Form(...)):
     '''Login via form data'''
     return {"user": username}
-"""
-        }
+""",
+        },
     ]
-    
+
     # ========================================================================
     # CATEGORIA: MÉDIO (15 exemplos) - Score esperado: 60-79
     # ========================================================================
-    
+
     medium_examples = [
         {
             "id": "MED_001",
@@ -828,7 +819,7 @@ async def get_customers(db: Session = Depends(get_db)):
         return customers
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-"""
+""",
         },
         {
             "id": "MED_002",
@@ -847,7 +838,7 @@ def getUserData(user_id: int, db=Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="Not found")
     return user
-"""
+""",
         },
         {
             "id": "MED_003",
@@ -872,8 +863,9 @@ async def get_invoice(
     '''Busca fatura por ID'''
     invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
     return invoice
-"""
-        },{
+""",
+        },
+        {
             "id": "MED_004",
             "description": "Tratamento de erro genérico (Exception)",
             "expected_score_min": 60,
@@ -890,7 +882,7 @@ async def risky_op():
         pass
     except Exception:
         raise HTTPException(status_code=500, detail="Error")
-"""
+""",
         },
         {
             "id": "MED_005",
@@ -905,7 +897,7 @@ router = APIRouter()
 @router.get("/calc")
 async def calculate(x, y):
     return {"sum": int(x) + int(y)}
-"""
+""",
         },
         {
             "id": "MED_006",
@@ -922,7 +914,7 @@ router = APIRouter()
 async def sleep_route():
     time.sleep(1) # Bloqueia o loop
     return {"status": "awake"}
-"""
+""",
         },
         {
             "id": "MED_007",
@@ -937,7 +929,7 @@ router = APIRouter()
 @router.get("/data")
 async def get_data():
     return {"a": 1, "b": 2, "c": [1,2,3]}
-"""
+""",
         },
         {
             "id": "MED_008",
@@ -952,7 +944,7 @@ app = FastAPI()
 @app.get("/direct")
 def direct_route():
     return "ok"
-"""
+""",
         },
         {
             "id": "MED_009",
@@ -969,7 +961,7 @@ async def check(id: int):
     if id < 0:
         return {"error": "Invalid ID"} # Retorna 200 OK com erro no body
     return {"id": id}
-"""
+""",
         },
         {
             "id": "MED_010",
@@ -989,7 +981,7 @@ async def process_data(data: dict):
         if isinstance(v, int):
             res += v * 2
     return {"result": res}
-"""
+""",
         },
         {
             "id": "MED_011",
@@ -1004,7 +996,7 @@ router = APIRouter()
 @router.get("/getUserInfo")
 async def get_user_info():
     return {"user": "info"}
-"""
+""",
         },
         {
             "id": "MED_012",
@@ -1020,7 +1012,7 @@ router = APIRouter()
 async def filter_items(where: str):
     # Recebe cláusula raw, perigoso
     return {"query": f"SELECT * FROM items WHERE {where}"}
-"""
+""",
         },
         {
             "id": "MED_013",
@@ -1036,7 +1028,7 @@ router = APIRouter()
 async def db_test():
     conn = "sqlite:///db.sqlite" # Hardcoded
     return {"conn": conn}
-"""
+""",
         },
         {
             "id": "MED_014",
@@ -1054,7 +1046,7 @@ async def get_count():
     global COUNTER
     COUNTER += 1
     return {"count": COUNTER}
-"""
+""",
         },
         {
             "id": "MED_015",
@@ -1069,14 +1061,14 @@ router = APIRouter()
 @router.post("/submit")
 async def submit(data: dict):
     return {"received": True}
-"""
-        }
+""",
+        },
     ]
-    
+
     # ========================================================================
     # CATEGORIA: RUIM (10 exemplos) - Score esperado: 0-59
     # ========================================================================
-    
+
     poor_examples = [
         {
             "id": "POOR_001",
@@ -1091,7 +1083,7 @@ app = FastAPI()
 @app.get("/data")
 def get():
     return db.query(Data).all()
-"""
+""",
         },
         {
             "id": "POOR_002",
@@ -1111,7 +1103,7 @@ def create(data):
     db.add(obj)
     db.commit()
     return {"status": "ok"}
-"""
+""",
         },
         {
             "id": "POOR_003",
@@ -1125,8 +1117,9 @@ def UpdateItem(ID, NewData):
     ITEM.data = NewData
     db.commit()
     return ITEM
-"""
-        },{
+""",
+        },
+        {
             "id": "POOR_004",
             "description": "Retorno de HTML em rota API JSON (sem response class)",
             "expected_score_min": 0,
@@ -1135,7 +1128,7 @@ def UpdateItem(ID, NewData):
 @app.get("/home")
 def home():
     return "<h1>Hello</h1>"
-"""
+""",
         },
         {
             "id": "POOR_005",
@@ -1146,7 +1139,7 @@ def home():
 @app.post("/calc")
 def calc(expr: str):
     return eval(expr)
-"""
+""",
         },
         {
             "id": "POOR_006",
@@ -1158,7 +1151,7 @@ def my_route(req):
     return {"a":1}
     
 app.add_api_route("/weird", my_route)
-"""
+""",
         },
         {
             "id": "POOR_007",
@@ -1173,7 +1166,7 @@ def silent_error():
     except:
         pass
     return "ok"
-"""
+""",
         },
         {
             "id": "POOR_008",
@@ -1185,7 +1178,7 @@ def silent_error():
 def get_user_bad(id):
     user = db.get(id)
     return {"user": user.name, "password": user.password_hash}
-"""
+""",
         },
         {
             "id": "POOR_009",
@@ -1197,7 +1190,7 @@ def get_user_bad(id):
 def hang():
     while True:
         pass
-"""
+""",
         },
         {
             "id": "POOR_010",
@@ -1209,23 +1202,26 @@ def hang():
 def bad_defaults(lista=[]):
     lista.append(1)
     return lista
-"""
-        }
+""",
+        },
     ]
-    
+
     # Preencher dataset
     dataset["categories"]["excellent"] = excellent_examples
     dataset["categories"]["good"] = good_examples
     dataset["categories"]["medium"] = medium_examples
     dataset["categories"]["poor"] = poor_examples
-    
+
     # Estatísticas
     dataset["statistics"] = {
         "excellent": len(excellent_examples),
         "good": len(good_examples),
         "medium": len(medium_examples),
         "poor": len(poor_examples),
-        "total": len(excellent_examples) + len(good_examples) + len(medium_examples) + len(poor_examples)
+        "total": len(excellent_examples)
+        + len(good_examples)
+        + len(medium_examples)
+        + len(poor_examples),
     }
-    
+
     return dataset

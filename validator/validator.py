@@ -7,6 +7,7 @@ import os
 from pydantic import ValidationError
 from typing import Dict, Any
 
+
 class FastAPICodeValidator:
     def __init__(self, llm_client: llmclient.LLMClient, rules: Dict):
         """
@@ -22,8 +23,7 @@ class FastAPICodeValidator:
 
         # Prompt Engineering estruturado
         return config.prompt.VALIDATION_PROMPT_TEMPLATE.format(
-            rules_text=rules_str,
-            code=code
+            rules_text=rules_str, code=code
         )
 
     def validate(self, code: str) -> Dict[str, Any]:
@@ -43,43 +43,62 @@ class FastAPICodeValidator:
 
             # 3. Adiciona metadados de execução
             result_dict = validated_data.model_dump()
-            result_dict['_metadata'] = {
-                'response_time': round(time.time() - start_time, 2),
-                'timestamp': time.strftime("%Y-%m-%d %H:%M:%S")
+            response_time = round(time.time() - start_time, 2)
+            result_dict["_metadata"] = {
+                "response_time": response_time,
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
             }
+            result_dict["response_time"] = response_time
             return result_dict
 
         except ValidationError as e:
-            return {"error": "O modelo retornou um JSON com schema inválido", "details": str(e), "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")}}
+            return {
+                "error": "O modelo retornou um JSON com schema inválido",
+                "details": str(e),
+                "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")},
+            }
         except Exception as e:
-            return {"error": "Erro sistêmico na validação", "details": str(e), "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")}}
+            return {
+                "error": "Erro sistêmico na validação",
+                "details": str(e),
+                "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")},
+            }
 
     def validate_file(self, file_path: str) -> Dict[str, Any]:
         """Valida um arquivo específico."""
         if not os.path.exists(file_path):
-             return {"error": f"Arquivo não encontrado: {file_path}", "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")}}
-        
+            return {
+                "error": f"Arquivo não encontrado: {file_path}",
+                "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")},
+            }
+
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 code = f.read()
-            
+
             result = self.validate(code)
-            result['file_path'] = file_path
+            result["file_path"] = file_path
             return result
         except Exception as e:
-            return {"error": f"Erro ao ler arquivo: {str(e)}", "file_path": file_path, "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")}}
+            return {
+                "error": f"Erro ao ler arquivo: {str(e)}",
+                "file_path": file_path,
+                "_metadata": {"timestamp": time.strftime("%Y-%m-%d %H:%M:%S")},
+            }
 
-    def validate_project(self, root_path: str, ignore_folders: list = None, target_patterns: list = None) -> Dict[str, Any]:
+    def validate_project(
+        self, root_path: str, ignore_folders: list = None, target_patterns: list = None
+    ) -> Dict[str, Any]:
         """
         Varre um diretório recursivamente e valida arquivos Python.
         Args:
             root_path: Caminho raiz do projeto.
             ignore_folders: Lista de pastas a ignorar (ex: ['.venv']).
-            target_patterns: Lista de substrings para filtrar caminhos (ex: ['routes', 'api']). 
+            target_patterns: Lista de substrings para filtrar caminhos (ex: ['routes', 'api']).
                              Se fornecido, analise apenas arquivos cujo path completo contenha um dos patterns.
         """
         if ignore_folders is None:
-            ignore_folders = ['.venv', '.git', '__pycache__', 'venv', 'env']
+            ignore_folders = [".venv", ".git", "__pycache__", "venv", "env"]
 
         results = []
         overall_stats = {"passed": 0, "failed": 0, "errors": 0}
@@ -89,42 +108,50 @@ class FastAPICodeValidator:
             dirs[:] = [d for d in dirs if d not in ignore_folders]
 
             for file in files:
-                if file.endswith('.py'):
+                if file.endswith(".py"):
                     full_path = os.path.join(root, file)
-                    
+
                     # Logica de filtro positivo (target_patterns)
                     if target_patterns:
                         # Normaliza separadores para garantir match
-                        normalized_path = full_path.replace(os.sep, '/')
-                        if not any(pattern in normalized_path for pattern in target_patterns):
-                             continue
+                        normalized_path = full_path.replace(os.sep, "/")
+                        if not any(
+                            pattern in normalized_path for pattern in target_patterns
+                        ):
+                            continue
 
                     print(f"🔍 Analisando: {full_path}...")
-                    time.sleep(1.0) # Rate limiting manual
-                    
+                    time.sleep(1.0)  # Rate limiting manual
+
                     file_result = self.validate_file(full_path)
-                    
+
                     # Atualiza estatísticas
                     if "error" in file_result:
                         overall_stats["errors"] += 1
-                        error_detail = file_result.get('details', 'Sem detalhes')
-                        print(f"   ❌ Erro: {file_result['error']} - Detalhes: {error_detail}")
+                        error_detail = file_result.get("details", "Sem detalhes")
+                        print(
+                            f"   ❌ Erro: {file_result['error']} - Detalhes: {error_detail}"
+                        )
                     elif file_result.get("overall_status") == "fail":
                         overall_stats["failed"] += 1
-                        print(f"   ⚠️  Issues found (Score: {file_result.get('overall_score')})")
+                        print(
+                            f"   ⚠️  Issues found (Score: {file_result.get('overall_score')})"
+                        )
                     else:
                         overall_stats["passed"] += 1
                         print(f"   ✅ OK (Score: {file_result.get('overall_score')})")
-                    
+
                     results.append(file_result)
-        
+
         return {
             "summary": overall_stats,
             "results": results,
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
         }
 
-    def validate_batch(self, codes: Dict[str, str]) -> Dict[str, Any]:
+    def validate_batch(
+        self, codes: Dict[str, str], rate_limit_s: float = 0.0
+    ) -> Dict[str, Any]:
         """
         Valida múltiplos trechos de código fornecidos como um dicionário (nome -> código).
         Retorna um relatório consolidado.
@@ -134,15 +161,15 @@ class FastAPICodeValidator:
 
         for name, code in codes.items():
             print(f"🔍 Analisando: {name}...")
-            
+
             # Reutiliza logica de validação unica
             result = self.validate(code)
-            result['file_path'] = name # Usa o nome como "caminho"
-            
+            result["file_path"] = name  # Usa o nome como "caminho"
+
             # Atualiza estatísticas
             if "error" in result:
                 overall_stats["errors"] += 1
-                error_detail = result.get('details', 'Sem detalhes')
+                error_detail = result.get("details", "Sem detalhes")
                 print(f"   ❌ Erro: {result['error']} - Detalhes: {error_detail}")
             elif result.get("overall_status") == "fail":
                 overall_stats["failed"] += 1
@@ -150,13 +177,15 @@ class FastAPICodeValidator:
             else:
                 overall_stats["passed"] += 1
                 print(f"   ✅ OK (Score: {result.get('overall_score')})")
-            
+
             results.append(result)
-        
+            if rate_limit_s > 0:
+                time.sleep(rate_limit_s)
+
         return {
             "summary": overall_stats,
             "results": results,
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
         }
 
     def _normalize_report(self, report: Dict) -> Dict:
@@ -166,27 +195,29 @@ class FastAPICodeValidator:
         """
         if "results" in report:
             return report
-        
+
         # Constrói wrapper para resultado único
         is_error = "error" in report
         is_fail = report.get("overall_status") == "fail"
-        
+
         summary = {
             "passed": 0 if (is_error or is_fail) else 1,
             "failed": 1 if (not is_error and is_fail) else 0,
-            "errors": 1 if is_error else 0
+            "errors": 1 if is_error else 0,
         }
-        
+
         return {
             "summary": summary,
             "results": [report],
-            "timestamp": report.get("_metadata", {}).get("timestamp", time.strftime("%Y-%m-%d %H:%M:%S"))
+            "timestamp": report.get("_metadata", {}).get(
+                "timestamp", time.strftime("%Y-%m-%d %H:%M:%S")
+            ),
         }
 
     def save_report_json(self, report: Dict, path: str):
         """Salva o relatório em JSON."""
         normalized = self._normalize_report(report)
-        with open(path, 'w', encoding='utf-8') as f:
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(normalized, f, indent=2, ensure_ascii=False)
         print(f"💾 Relatório JSON salvo em: {path}")
 
@@ -246,59 +277,59 @@ class FastAPICodeValidator:
             <div class="container">
                 <div class="header">
                     <h1>Code Validator Report</h1>
-                    <p>Gerado em: {report.get('timestamp')}</p>
+                    <p>Gerado em: {report.get("timestamp")}</p>
                 </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <span class="stat-value" style="color: var(--success)">{report.get('summary', {}).get('passed', 0)}</span>
+                        <span class="stat-value" style="color: var(--success)">{report.get("summary", {}).get("passed", 0)}</span>
                         <span class="stat-label">Arquivos Aprovados</span>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-value" style="color: var(--error)">{report.get('summary', {}).get('failed', 0)}</span>
+                        <span class="stat-value" style="color: var(--error)">{report.get("summary", {}).get("failed", 0)}</span>
                         <span class="stat-label">Arquivos Reprovados</span>
                     </div>
                     <div class="stat-card">
-                        <span class="stat-value" style="color: var(--warning)">{report.get('summary', {}).get('errors', 0)}</span>
+                        <span class="stat-value" style="color: var(--warning)">{report.get("summary", {}).get("errors", 0)}</span>
                         <span class="stat-label">Erros de Leitura</span>
                     </div>
                 </div>
 
                 <h2>Detalhes da Análise</h2>
         """
-        
-        for i, file_res in enumerate(report.get('results', [])):
+
+        for i, file_res in enumerate(report.get("results", [])):
             card_id = f"file-{i}"
-            score = file_res.get('overall_score', 0)
-            status = file_res.get('overall_status', 'fail')
-            badge_class = "badge-pass" if status == 'pass' else "badge-fail"
-            
+            score = file_res.get("overall_score", 0)
+            status = file_res.get("overall_status", "fail")
+            badge_class = "badge-pass" if status == "pass" else "badge-fail"
+
             html_content += f"""
             <div id="{card_id}" class="file-card">
                 <div class="file-header" onclick="toggle('{card_id}')">
-                    <span class="file-name">{file_res.get('file_path')}</span>
+                    <span class="file-name">{file_res.get("file_path")}</span>
                     <div>
                         <span style="margin-right: 15px; color: #94a3b8;">Score: {score}/100</span>
                         <span class="badge {badge_class}">{status.upper()}</span>
                     </div>
                 </div>
                 <div class="file-content">
-                    <p style="color: #cbd5e1; margin-top: 15px;"><em>{file_res.get('summary')}</em></p>
+                    <p style="color: #cbd5e1; margin-top: 15px;"><em>{file_res.get("summary")}</em></p>
             """
-            
+
             if "error" in file_res:
-                 html_content += f"<div class='violation v-error'><strong>❌ Erro Fatal:</strong> {file_res['error']}</div>"
-            
-            for v in file_res.get('violations', []):
-                sev = v.get('severity', 'error')
-                icon = "🔴" if sev == 'error' else "🟡" if sev == 'warning' else "🔵"
+                html_content += f"<div class='violation v-error'><strong>❌ Erro Fatal:</strong> {file_res['error']}</div>"
+
+            for v in file_res.get("violations", []):
+                sev = v.get("severity", "error")
+                icon = "🔴" if sev == "error" else "🟡" if sev == "warning" else "🔵"
                 html_content += f"""
                     <div class="violation v-{sev}">
-                        <div class="v-title">{icon} [{v['rule_category']}] {v['description']}</div>
-                        <div class="v-suggestion">💡 Sugestão: {v['suggestion']}</div>
+                        <div class="v-title">{icon} [{v["rule_category"]}] {v["description"]}</div>
+                        <div class="v-suggestion">💡 Sugestão: {v["suggestion"]}</div>
                     </div>
                 """
-                
+
             html_content += """
                 </div>
             </div>
@@ -310,8 +341,8 @@ class FastAPICodeValidator:
         </body>
         </html>
         """
-        
-        with open(path, 'w', encoding='utf-8') as f:
+
+        with open(path, "w", encoding="utf-8") as f:
             f.write(html_content)
         print(f"💾 Relatório HTML salvo em: {path}")
 
@@ -324,10 +355,15 @@ class FastAPICodeValidator:
         from rich import box
 
         console = Console()
-        
+
         # Header
         console.print()
-        console.print(Panel.fit("[bold cyan]🛡️  FastAPI Code Validator Relatório[/bold cyan]", border_style="cyan"))
+        console.print(
+            Panel.fit(
+                "[bold cyan]🛡️  FastAPI Code Validator Relatório[/bold cyan]",
+                border_style="cyan",
+            )
+        )
         console.print(f"[dim]Data: {report.get('timestamp')}[/dim]\n")
 
         # Stat Summary
@@ -336,7 +372,7 @@ class FastAPICodeValidator:
         grid_table.add_column(justify="center")
         grid_table.add_column(justify="center")
         grid_table.add_column(justify="center")
-        
+
         grid_table.add_row(
             f"[green bold]{summary.get('passed', 0)}[/green bold] Aprovados",
             f"[red bold]{summary.get('failed', 0)}[/red bold] Reprovados",
@@ -346,24 +382,39 @@ class FastAPICodeValidator:
         console.print()
 
         # Detalhes
-        table = Table(title="Detalhamento por Arquivo", box=box.ROUNDED, header_style="bold magenta")
+        table = Table(
+            title="Detalhamento por Arquivo",
+            box=box.ROUNDED,
+            header_style="bold magenta",
+        )
         table.add_column("Arquivo", style="cyan")
         table.add_column("Score", justify="right")
         table.add_column("Status", justify="center")
         table.add_column("Violações", justify="right")
 
         for res in report.get("results", []):
-            fname = res.get("file_path", "N/A").split("\\")[-1].split("/")[-1] # Simplifica nome
+            fname = (
+                res.get("file_path", "N/A").split("\\")[-1].split("/")[-1]
+            )  # Simplifica nome
             score = res.get("overall_score", 0)
             status = res.get("overall_status", "fail")
-            
-            status_style = "[green]PASS[/green]" if status == "pass" else "[red]FAIL[/red]"
-            if "error" in res: status_style = "[bold red]ERROR[/bold red]"
-            
+
+            status_style = (
+                "[green]PASS[/green]" if status == "pass" else "[red]FAIL[/red]"
+            )
+            if "error" in res:
+                status_style = "[bold red]ERROR[/bold red]"
+
             violations_count = len(res.get("violations", []))
-            v_style = "[dim]-[/dim]" if violations_count == 0 else f"[red]{violations_count}[/red]"
+            v_style = (
+                "[dim]-[/dim]"
+                if violations_count == 0
+                else f"[red]{violations_count}[/red]"
+            )
 
             table.add_row(fname, str(score), status_style, v_style)
 
         console.print(table)
-        console.print("\n[dim]Para detalhes completos, verifique validation_report.html[/dim]\n")
+        console.print(
+            "\n[dim]Para detalhes completos, verifique validation_report.html[/dim]\n"
+        )
