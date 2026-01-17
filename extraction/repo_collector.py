@@ -106,8 +106,10 @@ class RepoCollector:
                 with open(py_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                found = self._parse_endpoints(
-                    content, py_file.name, str(py_file.relative_to(repo_path))
+                found = self._extract_endpoints_from_ast(
+                    content=content,
+                    filename=py_file.name,
+                    relative_path=str(py_file.relative_to(repo_path)),
                 )
                 if found:
                     endpoints.extend(found)
@@ -121,26 +123,7 @@ class RepoCollector:
         print(f"✅ Total de endpoints extraídos: {len(endpoints)}")
         return endpoints
 
-    def _parse_endpoints(
-        self, content: str, filename: str, relative_path: str
-    ) -> List[Dict]:
-        """
-        Parse endpoints de um arquivo Python usando Regex.
 
-        Args:
-            content: Conteúdo do arquivo
-            filename: Nome do arquivo
-            relative_path: Caminho relativo do arquivo no repo
-        """
-        endpoints = []
-
-        endpoints = self._extract_endpoints_from_ast(
-            content=content,
-            filename=filename,
-            relative_path=relative_path,
-        )
-
-        return endpoints
 
     def _collect_router_names(
         self,

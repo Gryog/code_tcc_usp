@@ -11,13 +11,15 @@ def generate_charts_report(
     e gera um relatório HTML com tabelas comparativas e gráficos Chart.js.
     """
 
+    report_context = "Dataset Sintético"
+    if "repo_results" in file_pattern or "repos" in output_file:
+        report_context = "Repositórios Reais"
+
     # 1. Carregar Resultados
     result_files = glob.glob(file_pattern)
     print(f"🔍 Pattern '{file_pattern}' found files: {result_files}")
     if not result_files:
-        print(
-            f"❌ Nenhum arquivo de resultado encontrado ({file_pattern}). Rode o benchmark.py primeiro."
-        )
+        print(f"❌ Nenhum arquivo de resultado encontrado ({file_pattern}). Rode o benchmark.py primeiro.")
         return
 
     data_by_llm = {}
@@ -96,7 +98,7 @@ def generate_charts_report(
     <body>
         <div class="container">
             <h1>📊 Relatório Comparativo de LLMs</h1>
-            <p style="text-align:center">Comparação de performance na validação de código FastAPI</p>
+            <p style="text-align:center">Comparação de performance na validação de código FastAPI • {report_context}</p>
             
             <!-- Tabela Estatística -->
             <h2>Estatísticas Gerais</h2>

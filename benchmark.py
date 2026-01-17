@@ -128,7 +128,10 @@ def run_benchmark():
     print(json.dumps(results_summary, indent=2, ensure_ascii=False))
     
     # Gera relatório com gráficos
-    generate_charts_report()
+    generate_charts_report(
+            file_pattern="benchmark_results_*.json",
+            output_file="benchmark_report.html",
+        )
     
     # Gera relatório estatístico
     analyze(results_summary)

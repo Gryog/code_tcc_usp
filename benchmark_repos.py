@@ -137,6 +137,8 @@ def run_repo_benchmark():
                     "repo_url": repo_url,
                     "total_time": round(time.time() - start_time, 2),
                     "total_endpoints": len(endpoints),
+                    "skipped_files_count": len(collector.skipped_files),
+                    "skipped_files": collector.skipped_files,
                 }
 
                 # Salvar resultado
