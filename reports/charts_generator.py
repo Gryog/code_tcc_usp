@@ -248,5 +248,192 @@ def generate_charts_report(
     print(f"📊 Relatório Comparativo gerado com sucesso: {output_file}")
 
 
+def generate_comparison_report(
+    file_pattern: str, output_file: str = "benchmark_comparison_report.html"
+):
+    """
+    Gera um relatório HTML detalhado comparando as respostas de cada LLM lado a lado para cada caso de teste.
+    """
+    result_files = glob.glob(file_pattern)
+    if not result_files:
+        print(f"❌ Nenhum arquivo encontrado para comparação ({file_pattern})")
+        return
+
+    # 1. Carregar dados
+    data_by_llm = {}
+    test_cases = {}  # Map: id -> {code: str, description: str, llm_results: {llm: result}}
+
+    for file_path in result_files:
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            
+            llm_name = data.get("benchmark_metadata", {}).get("llm_name", "Unknown")
+            data_by_llm[llm_name] = data
+            
+            for result in data.get("results", []):
+                # Extrai ID do filename ou path
+                # Ex: [EXCELLENT] EXC_001 -> id="EXC_001"
+                file_id = result.get("file_path", "unknown")
+                
+                if file_id not in test_cases:
+                    test_cases[file_id] = {
+                        "id": file_id,
+                        "code": result.get("code_snippet", ""), # Se não tiver snippet no result, vai ficar vazio por enquanto
+                        "llm_results": {}
+                    }
+                
+                # Se o codigo ainda estiver vazio, tenta preencher
+                if not test_cases[file_id]["code"] and result.get("code_snippet"):
+                    test_cases[file_id]["code"] = result.get("code_snippet")
+
+                test_cases[file_id]["llm_results"][llm_name] = result
+
+        except Exception as e:
+            print(f"⚠️ Erro ao processar {file_path} para comparação: {e}")
+
+    llm_names = list(data_by_llm.keys())
+
+    # 2. Gerar HTML
+    html = f"""
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Comparação Detalhada de LLMs</title>
+        <style>
+            body {{ font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; }}
+            .container {{ max-width: 95%; margin: 0 auto; }}
+            .card {{ background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }}
+            .card-header {{ background: #34495e; color: white; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }}
+            .card-content {{ padding: 20px; display: none; }}
+            .comparison-grid {{ display: grid; grid-template-columns: 30% repeat({len(llm_names)}, 1fr); gap: 15px; }}
+            .code-column {{ background: #272822; color: #f8f8f2; padding: 10px; border-radius: 5px; font-family: monospace; white-space: pre-wrap; font-size: 0.85em; max-height: 500px; overflow-y: auto; }}
+            .llm-column {{ border: 1px solid #ddd; border-radius: 5px; padding: 10px; background: #fff; }}
+            .status-pass {{ color: green; font-weight: bold; }}
+            .status-fail {{ color: red; font-weight: bold; }}
+            .status-warning {{ color: orange; font-weight: bold; }}
+            .violation-item {{ background: #fff3cd; padding: 5px; margin: 5px 0; border-left: 3px solid #ffc107; font-size: 0.9em; }}
+            .violation-critical {{ background: #f8d7da; border-left: 3px solid #dc3545; }}
+            .meta-info {{ font-size: 0.8em; color: #666; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }}
+        </style>
+        <script>
+            function toggleCard(id) {{
+                var content = document.getElementById('content-' + id);
+                if (content.style.display === 'block') {{
+                    content.style.display = 'none';
+                }} else {{
+                    content.style.display = 'block';
+                }}
+            }}
+            function expandAll() {{
+                var contents = document.getElementsByClassName('card-content');
+                for(var i=0; i<contents.length; i++) contents[i].style.display = 'block';
+            }}
+            function collapseAll() {{
+                var contents = document.getElementsByClassName('card-content');
+                for(var i=0; i<contents.length; i++) contents[i].style.display = 'none';
+            }}
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🔍 Comparação Lado a Lado ({len(test_cases)} casos)</h1>
+            <div style="margin-bottom: 20px;">
+                <button onclick="expandAll()" style="padding: 10px; cursor: pointer;">Expandir Todos</button>
+                <button onclick="collapseAll()" style="padding: 10px; cursor: pointer;">Recolher Todos</button>
+            </div>
+    """
+
+    for case_id, case_data in sorted(test_cases.items()):
+        # Tenta pegar descrição de algum resultado
+        desc = "Sem descrição"
+        for r in case_data["llm_results"].values():
+            if r.get("metadata", {}).get("description"):
+                desc = r.get("metadata", {}).get("description")
+                break
+        
+        html += f"""
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('{case_id}')">
+                    <span><strong>{case_id}</strong>: {desc}</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-{case_id}" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">{case_data['code'].replace('<', '&lt;').replace('>', '&gt;')}</div>
+        """
+
+        for llm in llm_names:
+            res = case_data["llm_results"].get(llm)
+            if not res:
+                html += "<div class='llm-column'><em>N/A</em></div>"
+                continue
+            
+            status_class = f"status-{res.get('overall_status', 'unknown')}"
+            score = res.get('overall_score', res.get('score', 0))
+            
+            # Recall info
+            recall_badges = ""
+            expected_kws = res.get("expected_keywords") or res.get("metadata", {}).get("expected_keywords")
+            if expected_kws:
+                # Checa recall rapidinho aqui tbm para visualização
+                full_text = (res.get("summary", "") + " " + " ".join([v.get("description","") for v in res.get("violations", [])])).lower()
+                found_kws = [k for k in expected_kws if k.lower() in full_text]
+                if found_kws:
+                    recall_badges = f"<div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: {', '.join(found_kws)}</span></div>"
+                else:
+                    recall_badges = f"<div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: {', '.join(expected_kws)}</span></div>"
+
+            html += f"""
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>{llm}</strong><br>
+                        Score: <strong>{score}</strong> | <span class="{status_class}">{res.get('overall_status')}</span>
+                        <br>Tempo: {res.get('response_time', 0)}s
+                        {recall_badges}
+                    </div>
+                    <div class="violations-list">
+            """
+            
+            for v in res.get("violations", []):
+                # Check critical
+                is_crit = "critic" in v.get("category", "").lower() or "high" in v.get("severity", "").lower()
+                cls = "violation-critical" if is_crit else "violation-item"
+                html += f"<div class='{cls}'><strong>{v.get('category')}</strong>: {v.get('description')}</div>"
+            
+            if not res.get("violations"):
+                html += "<div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>"
+
+            html += """
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            """
+            html += res.get("summary", "Sem resumo")[:300] + "..."
+            html += """
+                    </div>
+                </div>
+            """
+
+        html += """
+                    </div>
+                </div>
+            </div>
+        """
+
+    html += """
+        </div>
+    </body>
+    </html>
+    """
+    
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(html)
+    
+    print(f"📊 Relatório Detalhado gerado: {output_file}")
+
+
 if __name__ == "__main__":
-    generate_charts_report()
+    generate_charts_report("benchmark_results_*.json")
+

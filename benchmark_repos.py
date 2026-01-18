@@ -7,9 +7,10 @@ from client.geminiclient import GeminiClient
 from client.mistralclient import MistralClient
 from client.openaiclient import OpenAIClient
 from config.rules import RULES_STANDARD
-from reports.charts_generator import generate_charts_report
+from reports.charts_generator import generate_charts_report, generate_comparison_report
 from reports.statistic_report_generator import analyze, generate_report
 from extraction.repo_collector import RepoCollector
+from validator.heuristics import ValidationHeuristics
 
 
 def run_repo_benchmark():
@@ -21,8 +22,8 @@ def run_repo_benchmark():
     # 1. Configurar Repositórios Alvo
     repos = [
         "https://github.com/rednafi/fastapi-nano",
-        # "https://github.com/nsidnev/fastapi-realworld-example-app",
-        # "https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
+        "https://github.com/nsidnev/fastapi-realworld-example-app",
+        "https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
     ]
 
     # 2. Configurar Clientes LLM
@@ -129,6 +130,15 @@ def run_repo_benchmark():
                             **orig_ep["metadata"],
                         }
                         res["source_file"] = orig_ep["source"]
+                        
+                        # Injeta Snippet
+                        if ep_id in endpoint_codes:
+                            res["code_snippet"] = endpoint_codes[ep_id]
+                            
+                            # Injeta Heurísticas (Recall)
+                            inferred_keywords = ValidationHeuristics.infer_expected_keywords(res["code_snippet"])
+                            if inferred_keywords:
+                                res["expected_keywords"] = inferred_keywords
 
                 # Metadados do Benchmark
                 report["benchmark_metadata"] = {
@@ -177,6 +187,10 @@ def run_repo_benchmark():
         generate_charts_report(
             file_pattern="repo_results_*.json",
             output_file="benchmark_repos_report.html",
+        )
+        generate_comparison_report(
+            file_pattern="repo_results_*.json",
+            output_file="benchmark_repos_comparison_report.html"
         )
     except Exception as e:
         print(f"⚠️ Erro na geração de relatório final: {e}")

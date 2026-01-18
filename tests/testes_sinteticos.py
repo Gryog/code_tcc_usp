@@ -607,6 +607,7 @@ async def search(q: str = Query(None)):
             "description": "Response model genérico Dict",
             "expected_score_min": 80,
             "expected_score_max": 94,
+            "expected_keywords": ["response_model", "Dict", "schema", "Pydantic"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict
@@ -645,6 +646,7 @@ async def login(creds: LoginCtx):
             "description": "Uso de print em vez de logger",
             "expected_score_min": 80,
             "expected_score_max": 94,
+            "expected_keywords": ["print", "logger", "logging"],
             "code": """
 from fastapi import APIRouter, status
 
@@ -904,6 +906,7 @@ async def calculate(x, y):
             "description": "Blocking IO em função async",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_keywords": ["blocking", "bloqueante", "async", "def", "threadpool", "run_in_executor"],
             "code": """
 from fastapi import APIRouter
 import time
@@ -1019,6 +1022,7 @@ async def filter_items(where: str):
             "description": "Falta injeção de dependência para DB (hardcoded)",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_keywords": ["hardcoded", "dependency injection", "depends", "db session"],
             "code": """
 from fastapi import APIRouter
 
@@ -1090,6 +1094,7 @@ def get():
             "description": "Endpoint sem validação de entrada e sem tratamento de erros",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling"],
             "code": """
 from fastapi import FastAPI
 
@@ -1135,6 +1140,7 @@ def home():
             "description": "Uso de eval() perigoso",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_keywords": ["eval", "exec", "security", "code injection", "rce"],
             "code": """
 @app.post("/calc")
 def calc(expr: str):
@@ -1173,6 +1179,7 @@ def silent_error():
             "description": "Dados sensíveis no retorno (senha)",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_keywords": ["password", "senha", "hash", "leak", "security", "response_model"],
             "code": """
 @app.get("/user/{id}")
 def get_user_bad(id):
@@ -1185,6 +1192,7 @@ def get_user_bad(id):
             "description": "Loop infinito sem async/await (DoS)",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_keywords": ["loop", "infinite", "dos", "block", "cpu"],
             "code": """
 @app.get("/hang")
 def hang():

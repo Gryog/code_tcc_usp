@@ -33,6 +33,7 @@ class ResultsAnalyzer:
             "performance": self._analyze_performance(),
             "violacoes": self._analyze_violations(),
             "acuracia": self._calculate_accuracy(),
+            "recall": self._calculate_recall(),
             "distribuicao_scores": self._score_distribution(),
         }
 
@@ -148,6 +149,54 @@ class ResultsAnalyzer:
             "taxa_erro": round(100 - accuracy, 2),
         }
 
+    def _calculate_recall(self) -> Dict:
+        """
+        Calcula a métrica de Recall baseada em palavras-chave esperadas.
+        Verifica se o LLM mencionou os termos chave na descrição das violações.
+        """
+        total_with_keywords = 0
+        detected_count = 0
+
+        for result in self.results:
+            expected_keywords = result.get("expected_keywords")
+            
+            # Se não tiver keywords, tenta buscar no metadata ou raw (dependendo de onde o benchmark injetar)
+            if not expected_keywords:
+                expected_keywords = result.get("metadata", {}).get("expected_keywords")
+
+            if not expected_keywords:
+                continue
+
+            total_with_keywords += 1
+            
+            # Coleta textos gerados pelo LLM
+            llm_texts = []
+            # Descrições das violações
+            for v in result.get("violations", []):
+                llm_texts.append(v.get("description", "").lower())
+                llm_texts.append(v.get("suggestion", "").lower())
+            
+            # Resumo geral
+            llm_texts.append(result.get("summary", "").lower())
+            
+            full_text = " ".join(llm_texts)
+            
+            # Verifica se PELO MENOS UMA keyword foi encontrada
+            # (Critério flexível: se encontrou um dos problemas chave, já conta ponto)
+            found = any(k.lower() in full_text for k in expected_keywords)
+            
+            if found:
+                detected_count += 1
+
+        recall_rate = (detected_count / total_with_keywords * 100) if total_with_keywords > 0 else 0
+
+        return {
+            "total_analisados": total_with_keywords,
+            "detectados": detected_count,
+            "nao_detectados": total_with_keywords - detected_count,
+            "recall_rate": round(recall_rate, 2)
+        }
+
     def _score_distribution(self) -> Dict:
         """Distribuição de scores por faixas."""
         scores = [r.get("overall_score", r.get("score", 0)) for r in self.results]
@@ -226,6 +275,14 @@ class ResultsAnalyzer:
         report.append(f"  Predições incorretas: {acc['predicoes_incorretas']}")
         report.append(f"  Acurácia percentual: {acc['acuracia_percentual']}%")
         report.append(f"  Taxa de erro: {acc['taxa_erro']}%")
+        report.append("")
+
+        # Recall
+        report.append("🧠 RECALL (Detecção de palavras-chave):")
+        rec = self.stats.get("recall", {})
+        report.append(f"  Exemplos com keywords: {rec.get('total_analisados', 0)}")
+        report.append(f"  Detectados: {rec.get('detectados', 0)}")
+        report.append(f"  Recall Rate: {rec.get('recall_rate', 0)}%")
         report.append("")
 
         # Distribuição de scores

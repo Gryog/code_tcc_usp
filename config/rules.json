@@ -9,8 +9,7 @@
                 "Possui docstring explicativa",
                 "Define response_model",
                 "Especifica status_code explicitamente",
-                "Declara tags para organização",
-                "Usa APIRouter ao invés de FastAPI app"
+                "Declara tags para organização"
             ]
         },
         "naming_conventions": {
@@ -52,14 +51,6 @@
                 "Usa Pydantic models para body requests",
                 "Usa Query(), Path(), Body() para documentação",
                 "Define validações quando necessário"
-            ]
-        },
-        "async_usage": {
-            "enabled": true,
-            "severity": "info",
-            "description": "Valida uso de async",
-            "checks": [
-                "Preferência por funções async quando possível"
             ]
         }
     }

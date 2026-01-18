@@ -9,7 +9,7 @@ from client.mistralclient import MistralClient
 from client.openaiclient import OpenAIClient
 from tests.testes_sinteticos import gerar_dataset_sintetico
 from config.rules import RULES_STANDARD
-from reports.charts_generator import generate_charts_report
+from reports.charts_generator import generate_charts_report, generate_comparison_report
 from reports.statistic_report_generator import analyze, generate_report
 
 def run_benchmark():
@@ -101,6 +101,36 @@ def run_benchmark():
         try:
             report = validator.validate_batch(batch_input, rate_limit_s=1.0)
             
+            # RE-INJECT METADATA (Keywords)
+            # Como o validator não retorna os metadados do input, precisamos mapear de volta
+            # O validator retorna lista de resultados.
+            # Precisamos iterar e encontrar o exemplo original pelo ID/File Path
+            
+            for result in report.get("results", []):
+                file_id_tag = result.get("file_path", "") # Ex: [EXCELLENT] EXC_001
+                # Tenta extrair ID "EXC_001"
+                import re
+                match = re.search(r" ([\w_]+)$", file_id_tag)
+                if match:
+                    ex_id = match.group(1)
+                    # Busca nos exemplos originais
+                    found_ex = None
+                    for cat in examples:
+                        for ex in examples[cat]:
+                            if ex["id"] == ex_id:
+                                found_ex = ex
+                                break
+                        if found_ex: break
+                    
+                    if found_ex:
+                        result["expected_keywords"] = found_ex.get("expected_keywords", [])
+                        result["expected_score_min"] = found_ex.get("expected_score_min")
+                        result["expected_score_max"] = found_ex.get("expected_score_max")
+
+                # INJECT CODE SNIPPET FROM INPUT
+                if file_id_tag in batch_input:
+                    result["code_snippet"] = batch_input[file_id_tag]
+
             # Adiciona metadados do benchmark ao relatório
             report["benchmark_metadata"] = {
                 "llm_name": llm_name,
@@ -130,8 +160,14 @@ def run_benchmark():
     # Gera relatório com gráficos
     generate_charts_report(
             file_pattern="benchmark_results_*.json",
-            output_file="benchmark_report.html",
+            output_file="benchmark_final_report.html",
         )
+
+    # Gera relatório comparativo detalhado
+    generate_comparison_report(
+        file_pattern="benchmark_results_*.json",
+        output_file="benchmark_comparison_report.html"
+    )
     
     # Gera relatório estatístico
     analyze(results_summary)
