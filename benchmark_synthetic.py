@@ -13,12 +13,16 @@ from reports.charts_generator import generate_charts_report, generate_comparison
 from reports.statistic_report_generator import analyze, generate_report
 from validator.heuristics import ValidationHeuristics
 
-def run_benchmark():
+def run_benchmark(run_id=None, skip_reporting=False):
     """
     Executa o benchmark completo comparando diferentes LLMs
     usando o dataset sintético de 50 exemplos.
+    Args:
+        run_id: Identificador opcional da execução.
+        skip_reporting: Se True, não gera relatórios finais automaticamente.
     """
-    print("🚀 Iniciando Benchmark de LLMs...")
+    run_msg = f" (Run {run_id})" if run_id is not None else ""
+    print(f"🚀 Iniciando Benchmark de LLMs...{run_msg}")
     
     # 1. Carregar Dataset Sintético
     print("📦 Gerando dataset sintético...")
@@ -158,7 +162,8 @@ def run_benchmark():
             }
             
             # Salva resultado individual
-            filename = f"results/sinteticos/synthetic_results_{suffix}.json"
+            run_suffix = f"_run{run_id}" if run_id is not None else ""
+            filename = f"results/sinteticos/synthetic_results_{suffix}{run_suffix}.json"
             with open(filename, 'w', encoding='utf-8') as f:
                 json.dump(report, f, indent=2, ensure_ascii=False)
             
@@ -176,6 +181,10 @@ def run_benchmark():
     print("\n🏁 Benchmark Finalizado!")
     print(json.dumps(results_summary, indent=2, ensure_ascii=False))
     
+    if skip_reporting:
+        print("⏩ Pulando geração de relatórios (skip_reporting=True)")
+        return
+
     # Gera relatório com gráficos
     generate_charts_report(
             file_pattern="results/sinteticos/synthetic_results_*.json",

@@ -277,16 +277,6 @@ def generate_charts_report(
                 for s in stats
             )}
 
-            <h2>Detalhes de Status e Keywords</h2>
-            {"".join(
-                f"<div class='chart-box' style='margin-bottom:20px;'>"
-                f"<h3>{s['name']}</h3>"
-                f"<p><strong>Status:</strong> Accuracy {_format_percent(s['status_metrics']['accuracy'], s['status_metrics']['total'] > 0)} | Macro F1 {_format_percent(s['status_metrics']['macro_f1'], s['status_metrics']['total'] > 0)} | Weighted F1 {_format_percent(s['status_metrics']['weighted_f1'], s['status_metrics']['total'] > 0)}</p>"
-                f"<p><strong>Keywords:</strong> F1 {_format_percent(s['keyword_metrics']['f1'], s['keyword_metrics']['total_examples'] > 0)} | Cobertura {_format_percent(s['keyword_metrics']['coverage'], s['keyword_metrics']['total_examples'] > 0)} | Keywords únicas {s['keyword_metrics']['unique_keywords']} | Média keywords/exemplo {round(s['keyword_metrics']['avg_keywords'], 2)}</p>"
-                f"</div>"
-                for s in stats
-            )}
-
 
             <!-- Gráficos -->
             <div class="charts-grid">
@@ -305,7 +295,7 @@ def generate_charts_report(
             </div>
 
             <div class="footer">
-                <p>Gerado automaticamente pelo Antigravity • {len(result_files)} datasets processados</p>
+                <p>{len(result_files)} datasets processados</p>
             </div>
         </div>
 

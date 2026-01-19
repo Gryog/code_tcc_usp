@@ -13,17 +13,21 @@ from extraction.repo_collector import RepoCollector
 from validator.heuristics import ValidationHeuristics
 
 
-def run_repo_benchmark():
+def run_repo_benchmark(run_id=None, skip_reporting=False):
     """
     Executa benchmark em repositórios reais do GitHub.
+    Args:
+        run_id: Identificador opcional da execução.
+        skip_reporting: Se True, não gera relatórios finais automaticamente.
     """
-    print("🚀 Iniciando Benchmark de Repositórios Reais...")
+    run_msg = f" (Run {run_id})" if run_id is not None else ""
+    print(f"🚀 Iniciando Benchmark de Repositórios Reais...{run_msg}")
 
     # 1. Configurar Repositórios Alvo
     repos = [
         "https://github.com/rednafi/fastapi-nano",
-        #"https://github.com/nsidnev/fastapi-realworld-example-app",
-        #"https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
+        "https://github.com/nsidnev/fastapi-realworld-example-app",
+        "https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
     ]
 
     # 2. Configurar Clientes LLM
@@ -80,12 +84,6 @@ def run_repo_benchmark():
         # Extrair endpoints usando a nova lógica (parecido com RealWorldCollector)
         endpoints = collector.extract_endpoints()
 
-        if "new_endpoints.json" in os.listdir():
-            open("new_endpoints.json", "a").write(json.dumps(endpoints))
-        else:
-            with open("new_endpoints.json", "w") as f:
-                json.dump(endpoints, f, indent=4)
-
         if not endpoints:
             print(f"⚠️ Nenhum endpoint encontrado em {collector.repo_name}.")
             collector.cleanup()
@@ -102,8 +100,9 @@ def run_repo_benchmark():
             suffix = item["file_suffix"]
 
             # Check if result already exists
-            filename = f"results/repositorios/repo_results_{suffix}_{collector.repo_name}.json"
-            if os.path.exists(filename):
+            run_suffix = f"_run{run_id}" if run_id is not None else ""
+            filename = f"results/repositorios/repo_results_{suffix}_{collector.repo_name}{run_suffix}.json"
+            if os.path.exists(filename) and run_id is None:
                 print(
                     f"  ⏭️  Skipping {llm_name} for {collector.repo_name} (Result exists: {filename})"
                 )
@@ -196,6 +195,10 @@ def run_repo_benchmark():
         collector.cleanup()
 
     print("\n🏁 Benchmark de Repositórios Finalizado!")
+    
+    if skip_reporting:
+        print("⏩ Pulando geração de relatórios (skip_reporting=True)")
+        return
 
     # Gera relatórios finais (Reaproveitando geradores existentes)
     # Nota: generate_charts_report pode precisar de ajuste se esperar estrutura exata do benchmark sintético,
