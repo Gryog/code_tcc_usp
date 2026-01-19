@@ -1,7 +1,135 @@
 import json
 import glob
+import re
 import statistics
 
+def _calculate_status_metrics(results):
+    labels = ("pass", "warning", "fail")
+    confusion = {label: {l: 0 for l in labels} for label in labels}
+    total = 0
+
+    for result in results:
+        expected = result.get("expected_status")
+        if not expected:
+            expected_category = result.get("expected_category")
+            if expected_category:
+                category = expected_category.lower()
+                if category in ("excellent", "good"):
+                    expected = "pass"
+                elif category == "medium":
+                    expected = "warning"
+                elif category == "poor":
+                    expected = "fail"
+        if not expected:
+            file_path = result.get("file_path", "")
+            match = re.search(r"\[(\w+)\]", file_path)
+            if match:
+                category = match.group(1).lower()
+                if category in ("excellent", "good"):
+                    expected = "pass"
+                elif category == "medium":
+                    expected = "warning"
+                elif category == "poor":
+                    expected = "fail"
+        predicted = result.get("overall_status")
+        if expected not in labels or predicted not in labels:
+            continue
+        confusion[expected][predicted] += 1
+        total += 1
+
+    per_label = {}
+    correct = 0
+    for label in labels:
+        tp = confusion[label][label]
+        fp = sum(confusion[other][label] for other in labels if other != label)
+        fn = sum(confusion[label][other] for other in labels if other != label)
+        precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+        recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+        f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0
+        per_label[label] = {"precision": precision, "recall": recall, "f1": f1, "support": tp + fn}
+        correct += tp
+
+    accuracy = (correct / total) if total > 0 else 0
+    labels_with_support = [label for label in labels if per_label[label]["support"] > 0]
+    macro_f1 = (
+        sum(per_label[label]["f1"] for label in labels_with_support) / len(labels_with_support)
+        if labels_with_support
+        else 0
+    )
+    weighted_f1 = 0
+    for label in labels:
+        support = per_label[label]["support"]
+        if total > 0 and support > 0:
+            weighted_f1 += per_label[label]["f1"] * (support / total)
+
+    return {
+        "total": total,
+        "accuracy": accuracy,
+        "macro_f1": macro_f1,
+        "weighted_f1": weighted_f1,
+        "confusion": confusion,
+    }
+
+
+def _format_percent(value, enabled=True):
+    if not enabled:
+        return "N/A"
+    return f"{round(value * 100, 2)}%"
+
+
+def _calculate_keyword_metrics(results):
+    keyword_pool = set()
+    total_expected_keywords = 0
+    for result in results:
+        expected_keywords = result.get("expected_keywords") or result.get("metadata", {}).get(
+            "expected_keywords"
+        )
+        if expected_keywords:
+            keyword_pool.update(k.lower() for k in expected_keywords)
+            total_expected_keywords += len(expected_keywords)
+
+    total_tp = 0
+    total_fp = 0
+    total_fn = 0
+    total_examples = 0
+    total_results = len(results)
+
+    for result in results:
+        expected_keywords = result.get("expected_keywords") or result.get("metadata", {}).get(
+            "expected_keywords"
+        )
+        if not expected_keywords:
+            continue
+
+        total_examples += 1
+        expected_set = {k.lower() for k in expected_keywords}
+
+        llm_texts = []
+        for v in result.get("violations", []):
+            llm_texts.append(v.get("description", "").lower())
+            llm_texts.append(v.get("suggestion", "").lower())
+        llm_texts.append(result.get("summary", "").lower())
+        full_text = " ".join(llm_texts)
+
+        predicted_set = {k for k in keyword_pool if k in full_text}
+
+        total_tp += len(expected_set & predicted_set)
+        total_fp += len(predicted_set - expected_set)
+        total_fn += len(expected_set - predicted_set)
+
+    precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0
+    recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0
+    f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0
+
+    return {
+        "total_examples": total_examples,
+        "coverage": (total_examples / total_results) if total_results > 0 else 0,
+        "avg_keywords": (total_expected_keywords / total_examples) if total_examples > 0 else 0,
+        "unique_keywords": len(keyword_pool),
+        "precision": precision,
+        "recall": recall,
+        "f1": f1,
+    }
 
 def generate_charts_report(
     file_pattern: str, output_file: str = "benchmark_final_report.html"
@@ -59,6 +187,9 @@ def generate_charts_report(
         # Assumindo que o dataset sintético tem scores esperados.
         # Aqui vamos usar apenas a média geral para comparação.
 
+        status_metrics = _calculate_status_metrics(results)
+        keyword_metrics = _calculate_keyword_metrics(results)
+
         stats.append(
             {
                 "name": llm,
@@ -69,6 +200,8 @@ def generate_charts_report(
                 "total_failed": failed,
                 "total_errors": errors,
                 "total": len(results),
+                "status_metrics": status_metrics,
+                "keyword_metrics": keyword_metrics,
                 "raw_scores": scores,
                 "raw_times": times,
             }
@@ -112,12 +245,38 @@ def generate_charts_report(
                         <th>Avisos</th>
                         <th>Reprovados</th>
                         <th>Erros API</th>
+                        <th>Status Accuracy</th>
+                        <th>Status Macro F1</th>
+                        <th>Keyword F1</th>
+                        <th>Keyword Cobertura</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {"".join(f"<tr><td>{s['name']}</td><td>{s['avg_score']}</td><td>{s['avg_time']}</td><td style='color:green'>{s['total_passed']}</td><td style='color:goldenrod'>{s['total_warnings']}</td><td style='color:orange'>{s['total_failed']}</td><td style='color:red'>{s['total_errors']}</td></tr>" for s in stats)}
+                    {"".join(
+                        f"<tr><td>{s['name']}</td><td>{s['avg_score']}</td><td>{s['avg_time']}</td>"
+                        f"<td style='color:green'>{s['total_passed']}</td>"
+                        f"<td style='color:goldenrod'>{s['total_warnings']}</td>"
+                        f"<td style='color:orange'>{s['total_failed']}</td>"
+                        f"<td style='color:red'>{s['total_errors']}</td>"
+                        f"<td>{_format_percent(s['status_metrics']['accuracy'], s['status_metrics']['total'] > 0)}</td>"
+                        f"<td>{_format_percent(s['status_metrics']['macro_f1'], s['status_metrics']['total'] > 0)}</td>"
+                        f"<td>{_format_percent(s['keyword_metrics']['f1'], s['keyword_metrics']['total_examples'] > 0)}</td>"
+                        f"<td>{_format_percent(s['keyword_metrics']['coverage'], s['keyword_metrics']['total_examples'] > 0)}</td></tr>"
+                        for s in stats
+                    )}
                 </tbody>
             </table>
+
+            <h2>Detalhes de Status e Keywords</h2>
+            {"".join(
+                f"<div class='chart-box' style='margin-bottom:20px;'>"
+                f"<h3>{s['name']}</h3>"
+                f"<p><strong>Status:</strong> Accuracy {_format_percent(s['status_metrics']['accuracy'], s['status_metrics']['total'] > 0)} | Macro F1 {_format_percent(s['status_metrics']['macro_f1'], s['status_metrics']['total'] > 0)} | Weighted F1 {_format_percent(s['status_metrics']['weighted_f1'], s['status_metrics']['total'] > 0)}</p>"
+                f"<p><strong>Keywords:</strong> F1 {_format_percent(s['keyword_metrics']['f1'], s['keyword_metrics']['total_examples'] > 0)} | Cobertura {_format_percent(s['keyword_metrics']['coverage'], s['keyword_metrics']['total_examples'] > 0)} | Keywords únicas {s['keyword_metrics']['unique_keywords']} | Média keywords/exemplo {round(s['keyword_metrics']['avg_keywords'], 2)}</p>"
+                f"</div>"
+                for s in stats
+            )}
+
 
             <!-- Gráficos -->
             <div class="charts-grid">
@@ -377,7 +536,6 @@ def generate_comparison_report(
             recall_badges = ""
             expected_kws = res.get("expected_keywords") or res.get("metadata", {}).get("expected_keywords")
             if expected_kws:
-                # Checa recall rapidinho aqui tbm para visualização
                 full_text = (res.get("summary", "") + " " + " ".join([v.get("description","") for v in res.get("violations", [])])).lower()
                 found_kws = [k for k in expected_kws if k.lower() in full_text]
                 if found_kws:
@@ -398,9 +556,10 @@ def generate_comparison_report(
             
             for v in res.get("violations", []):
                 # Check critical
-                is_crit = "critic" in v.get("category", "").lower() or "high" in v.get("severity", "").lower()
+                rule_cat = v.get("rule_category", v.get("category", "Geral"))
+                is_crit = "critic" in rule_cat.lower() or "high" in v.get("severity", "").lower() or "error" in v.get("severity", "").lower()
                 cls = "violation-critical" if is_crit else "violation-item"
-                html += f"<div class='{cls}'><strong>{v.get('category')}</strong>: {v.get('description')}</div>"
+                html += f"<div class='{cls}'><strong>{rule_cat}</strong>: {v.get('description')}</div>"
             
             if not res.get("violations"):
                 html += "<div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>"
@@ -410,7 +569,7 @@ def generate_comparison_report(
                     <div style='margin-top:10px; font-size:0.85em; color:#555;'>
                         <strong>Resumo:</strong><br>
             """
-            html += res.get("summary", "Sem resumo")[:300] + "..."
+            html += res.get("summary", "Sem resumo")[:500] + "..."
             html += """
                     </div>
                 </div>

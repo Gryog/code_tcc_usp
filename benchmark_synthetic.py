@@ -11,6 +11,7 @@ from tests.testes_sinteticos import gerar_dataset_sintetico
 from config.rules import RULES_STANDARD
 from reports.charts_generator import generate_charts_report, generate_comparison_report
 from reports.statistic_report_generator import analyze, generate_report
+from validator.heuristics import ValidationHeuristics
 
 def run_benchmark():
     """
@@ -85,6 +86,9 @@ def run_benchmark():
 
     # 3. Executar Validações
     results_summary = []
+    
+    # Garantir que diretórios de saída existam
+    os.makedirs("results/sinteticos", exist_ok=True)
 
     for item in clients:
         llm_name = item["name"]
@@ -115,17 +119,32 @@ def run_benchmark():
                     ex_id = match.group(1)
                     # Busca nos exemplos originais
                     found_ex = None
-                    for cat in examples:
-                        for ex in examples[cat]:
+                    found_category = None
+                    for cat, examples_by_category in examples.items():
+                        for ex in examples_by_category:
                             if ex["id"] == ex_id:
                                 found_ex = ex
+                                found_category = cat
                                 break
                         if found_ex: break
                     
                     if found_ex:
-                        result["expected_keywords"] = found_ex.get("expected_keywords", [])
+                        expected_keywords = found_ex.get("expected_keywords", [])
+                        if not expected_keywords:
+                            expected_keywords = ValidationHeuristics.infer_expected_keywords(
+                                found_ex["code"]
+                            )
+                        result["expected_keywords"] = expected_keywords
                         result["expected_score_min"] = found_ex.get("expected_score_min")
                         result["expected_score_max"] = found_ex.get("expected_score_max")
+                        if found_category:
+                            result["expected_category"] = found_category
+                            if found_category in ("excellent", "good"):
+                                result["expected_status"] = "pass"
+                            elif found_category == "medium":
+                                result["expected_status"] = "warning"
+                            elif found_category == "poor":
+                                result["expected_status"] = "fail"
 
                 # INJECT CODE SNIPPET FROM INPUT
                 if file_id_tag in batch_input:
@@ -139,7 +158,7 @@ def run_benchmark():
             }
             
             # Salva resultado individual
-            filename = f"benchmark_results_{suffix}.json"
+            filename = f"results/sinteticos/synthetic_results_{suffix}.json"
             with open(filename, 'w', encoding='utf-8') as f:
                 json.dump(report, f, indent=2, ensure_ascii=False)
             
@@ -159,14 +178,14 @@ def run_benchmark():
     
     # Gera relatório com gráficos
     generate_charts_report(
-            file_pattern="benchmark_results_*.json",
-            output_file="benchmark_final_report.html",
+            file_pattern="results/sinteticos/synthetic_results_*.json",
+            output_file="results/benchmark_synthetic_final_report.html",
         )
 
     # Gera relatório comparativo detalhado
     generate_comparison_report(
-        file_pattern="benchmark_results_*.json",
-        output_file="benchmark_comparison_report.html"
+        file_pattern="results/sinteticos/synthetic_results_*.json",
+        output_file="results/benchmark_synthetic_comparison_report.html"
     )
     
     # Gera relatório estatístico

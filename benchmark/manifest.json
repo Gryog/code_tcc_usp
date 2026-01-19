@@ -1,0 +1,304 @@
+[
+    {
+        "file": "benchmark\\cases\\EXC_001.py",
+        "expected_violations": [],
+        "description": "Endpoint GET completo com paginação e documentação"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_002.py",
+        "expected_violations": [],
+        "description": "Endpoint POST com validação Pydantic completa"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_003.py",
+        "expected_violations": [],
+        "description": "Endpoint PUT com validação de existência"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_004.py",
+        "expected_violations": [],
+        "description": "Endpoint DELETE com soft delete"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_005.py",
+        "expected_violations": [],
+        "description": "Endpoint com Background Tasks e status 202"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_006.py",
+        "expected_violations": [],
+        "description": "Endpoint de Upload de Arquivo com Validação"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_007.py",
+        "expected_violations": [],
+        "description": "Endpoint de Busca Complexa com Dependência de Filtro"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_008.py",
+        "expected_violations": [],
+        "description": "Endpoint com autenticação OAuth2 e Scopes"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_009.py",
+        "expected_violations": [],
+        "description": "Health Check Endpoint Robusto"
+    },
+    {
+        "file": "benchmark\\cases\\EXC_010.py",
+        "expected_violations": [],
+        "description": "Endpoint com StreamingResponse"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_001.py",
+        "expected_violations": [],
+        "description": "Endpoint sem tags explícitas (mas tem outras boas práticas)"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_002.py",
+        "expected_violations": [],
+        "description": "Endpoint com docstring simples (não estruturada)"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_003.py",
+        "expected_violations": [],
+        "description": "Endpoint sem Query() explícito para parâmetros"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_004.py",
+        "expected_violations": [],
+        "description": "Faltam tags e description no Query"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_005.py",
+        "expected_violations": [],
+        "description": "Response model genérico Dict"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_006.py",
+        "expected_violations": [],
+        "description": "Falta docstring estruturada"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_007.py",
+        "expected_violations": [],
+        "description": "Uso de print em vez de logger"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_008.py",
+        "expected_violations": [],
+        "description": "Mistura de snake_case e camelCase nas variáveis"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_009.py",
+        "expected_violations": [],
+        "description": "Falta status code explícito 201 no POST"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_010.py",
+        "expected_violations": [],
+        "description": "Endpoint síncrono para operação I/O bound simples"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_011.py",
+        "expected_violations": [],
+        "description": "Validação de entrada manual simples, poderia ser Pydantic"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_012.py",
+        "expected_violations": [],
+        "description": "Path parameter sem type hint int explícito na rota"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_013.py",
+        "expected_violations": [],
+        "description": "Retorna lista direta sem wrapping object (ok, mas menos evoluível)"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_014.py",
+        "expected_violations": [],
+        "description": "Falta response_model, mas implementação é limpa"
+    },
+    {
+        "file": "benchmark\\cases\\GOOD_015.py",
+        "expected_violations": [],
+        "description": "Usa Form em vez de Pydantic JSON Body para dados estruturados"
+    },
+    {
+        "file": "benchmark\\cases\\MED_001.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Endpoint sem response_model"
+    },
+    {
+        "file": "benchmark\\cases\\MED_002.py",
+        "expected_violations": [
+            "naming_conventions"
+        ],
+        "description": "Endpoint com nome inadequado e sem type hints completos"
+    },
+    {
+        "file": "benchmark\\cases\\MED_003.py",
+        "expected_violations": [
+            "error_handling"
+        ],
+        "description": "Endpoint sem tratamento adequado de erros"
+    },
+    {
+        "file": "benchmark\\cases\\MED_004.py",
+        "expected_violations": [
+            "error_handling"
+        ],
+        "description": "Tratamento de erro genérico (Exception)"
+    },
+    {
+        "file": "benchmark\\cases\\MED_005.py",
+        "expected_violations": [
+            "type_hints"
+        ],
+        "description": "Sem type hints nos parâmetros"
+    },
+    {
+        "file": "benchmark\\cases\\MED_006.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Blocking IO em função async"
+    },
+    {
+        "file": "benchmark\\cases\\MED_007.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Retorna dicionário cru sem schema"
+    },
+    {
+        "file": "benchmark\\cases\\MED_008.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Não usa APIRouter, usa app direto (misturado)"
+    },
+    {
+        "file": "benchmark\\cases\\MED_009.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Uso incorreto de status codes (200 para erro)"
+    },
+    {
+        "file": "benchmark\\cases\\MED_010.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Lógica de negócio complexa dentro da view/rota"
+    },
+    {
+        "file": "benchmark\\cases\\MED_011.py",
+        "expected_violations": [
+            "naming_conventions"
+        ],
+        "description": "Nome de rota inconsistente (CamelCase no path)"
+    },
+    {
+        "file": "benchmark\\cases\\MED_012.py",
+        "expected_violations": [
+            "input_validation"
+        ],
+        "description": "Query param sem validação (SQL Injection vulnerability potencial se mal usado)"
+    },
+    {
+        "file": "benchmark\\cases\\MED_013.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Falta injeção de dependência para DB (hardcoded)"
+    },
+    {
+        "file": "benchmark\\cases\\MED_014.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Usa variáveis globais"
+    },
+    {
+        "file": "benchmark\\cases\\MED_015.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Falta de docstring total"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_001.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Endpoint mínimo sem boas práticas"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_002.py",
+        "expected_violations": [
+            "input_validation",
+            "error_handling"
+        ],
+        "description": "Endpoint sem validação de entrada e sem tratamento de erros"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_003.py",
+        "expected_violations": [
+            "naming_conventions",
+            "endpoint_structure"
+        ],
+        "description": "Endpoint com múltiplas violações críticas"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_004.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Retorno de HTML em rota API JSON (sem response class)"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_005.py",
+        "expected_violations": [
+            "input_validation"
+        ],
+        "description": "Uso de eval() perigoso"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_006.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Rota sem verbo HTTP defindo (ex: usa add_api_route incorretamente ou lógica obscura)"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_007.py",
+        "expected_violations": [
+            "error_handling"
+        ],
+        "description": "Captura de exceção vazia (pass)"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_008.py",
+        "expected_violations": [
+            "input_validation"
+        ],
+        "description": "Dados sensíveis no retorno (senha)"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_009.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Loop infinito sem async/await (DoS)"
+    },
+    {
+        "file": "benchmark\\cases\\POOR_010.py",
+        "expected_violations": [
+            "endpoint_structure"
+        ],
+        "description": "Modificação de argumentos padrão mutáveis"
+    }
+]

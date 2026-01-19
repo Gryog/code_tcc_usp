@@ -65,6 +65,9 @@ def run_repo_benchmark():
     results_summary = []
 
     # 3. Iterar sobre Repositórios
+    # Garantir diretório de saída
+    os.makedirs("results/repositorios", exist_ok=True)
+
     for repo_url in repos:
         collector = RepoCollector(repo_url)
         target_dir = collector.clone_repository()
@@ -92,7 +95,7 @@ def run_repo_benchmark():
             suffix = item["file_suffix"]
 
             # Check if result already exists
-            filename = f"repo_results_{suffix}_{collector.repo_name}.json"
+            filename = f"results/repositorios/repo_results_{suffix}_{collector.repo_name}.json"
             if os.path.exists(filename):
                 print(
                     f"  ⏭️  Skipping {llm_name} for {collector.repo_name} (Result exists: {filename})"
@@ -120,6 +123,14 @@ def run_repo_benchmark():
 
                 # Adiciona metadados extras aos resultados
                 # (validate_batch usa o ID como file_path, vamos enriquecer se precisar)
+                def derive_expected_status(violations):
+                    severities = {v.get("severity", "").lower() for v in violations or []}
+                    if "error" in severities:
+                        return "fail"
+                    if "warning" in severities:
+                        return "warning"
+                    return "pass"
+
                 for res in report.get("results", []):
                     ep_id = res.get("file_path")
                     # Encontra o endpoint original para pegar mais metadados se quiser
@@ -140,6 +151,10 @@ def run_repo_benchmark():
                             if inferred_keywords:
                                 res["expected_keywords"] = inferred_keywords
 
+                    if "expected_status" not in res:
+                        res["expected_status"] = derive_expected_status(res.get("violations", []))
+                        res["expected_status_source"] = "derived_from_violations"
+
                 # Metadados do Benchmark
                 report["benchmark_metadata"] = {
                     "llm_name": llm_name,
@@ -152,7 +167,6 @@ def run_repo_benchmark():
                 }
 
                 # Salvar resultado
-                filename = f"repo_results_{suffix}_{collector.repo_name}.json"
                 with open(filename, "w", encoding="utf-8") as f:
                     json.dump(report, f, indent=2, ensure_ascii=False)
 
@@ -185,12 +199,12 @@ def run_repo_benchmark():
         analyze(results_summary)
         generate_report(results_summary)
         generate_charts_report(
-            file_pattern="repo_results_*.json",
-            output_file="benchmark_repos_report.html",
+            file_pattern="results/repositorios/repo_results_*.json",
+            output_file="results/benchmark_repos_report.html",
         )
         generate_comparison_report(
-            file_pattern="repo_results_*.json",
-            output_file="benchmark_repos_comparison_report.html"
+            file_pattern="results/repositorios/repo_results_*.json",
+            output_file="results/benchmark_repos_comparison_report.html"
         )
     except Exception as e:
         print(f"⚠️ Erro na geração de relatório final: {e}")

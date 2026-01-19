@@ -1,6 +1,7 @@
 # ============================================================================
 # PARTE 3: ANÁLISE ESTATÍSTICA DOS RESULTADOS
 # ============================================================================
+import os
 import json
 import statistics
 from pathlib import Path
@@ -34,6 +35,8 @@ class ResultsAnalyzer:
             "violacoes": self._analyze_violations(),
             "acuracia": self._calculate_accuracy(),
             "recall": self._calculate_recall(),
+            "status_metricas": self._calculate_status_metrics(),
+            "keyword_metricas": self._calculate_keyword_metrics(),
             "distribuicao_scores": self._score_distribution(),
         }
 
@@ -197,6 +200,154 @@ class ResultsAnalyzer:
             "recall_rate": round(recall_rate, 2)
         }
 
+    def _calculate_status_metrics(self) -> Dict:
+        """Calcula métricas de classificação para o status (pass/warning/fail)."""
+        labels = ("pass", "warning", "fail")
+        confusion = {label: {l: 0 for l in labels} for label in labels}
+        total = 0
+
+        for result in self.results:
+            expected = result.get("expected_status")
+            predicted = result.get("overall_status")
+            if expected not in labels or predicted not in labels:
+                continue
+            confusion[expected][predicted] += 1
+            total += 1
+
+        per_label = {}
+        correct = 0
+        for label in labels:
+            tp = confusion[label][label]
+            fp = sum(confusion[other][label] for other in labels if other != label)
+            fn = sum(confusion[label][other] for other in labels if other != label)
+            precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+            recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+            f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0
+            per_label[label] = {
+                "precision": round(precision * 100, 2),
+                "recall": round(recall * 100, 2),
+                "f1": round(f1 * 100, 2),
+                "suporte": tp + fn,
+            }
+            correct += tp
+
+        accuracy = (correct / total * 100) if total > 0 else 0
+        labels_with_support = [label for label in labels if per_label[label]["suporte"] > 0]
+        macro_precision = (
+            sum(per_label[label]["precision"] for label in labels_with_support)
+            / len(labels_with_support)
+            if labels_with_support
+            else 0
+        )
+        macro_recall = (
+            sum(per_label[label]["recall"] for label in labels_with_support)
+            / len(labels_with_support)
+            if labels_with_support
+            else 0
+        )
+        macro_f1 = (
+            sum(per_label[label]["f1"] for label in labels_with_support)
+            / len(labels_with_support)
+            if labels_with_support
+            else 0
+        )
+
+        weighted_precision = 0
+        weighted_recall = 0
+        weighted_f1 = 0
+        for label in labels:
+            support = per_label[label]["suporte"]
+            if total > 0 and support > 0:
+                weight = support / total
+                weighted_precision += per_label[label]["precision"] * weight
+                weighted_recall += per_label[label]["recall"] * weight
+                weighted_f1 += per_label[label]["f1"] * weight
+
+        return {
+            "total_avaliados": total,
+            "accuracy": round(accuracy, 2),
+            "macro_avg": {
+                "precision": round(macro_precision, 2),
+                "recall": round(macro_recall, 2),
+                "f1": round(macro_f1, 2),
+            },
+            "weighted_avg": {
+                "precision": round(weighted_precision, 2),
+                "recall": round(weighted_recall, 2),
+                "f1": round(weighted_f1, 2),
+            },
+            "matriz_confusao": confusion,
+            "por_status": per_label,
+        }
+
+    def _calculate_keyword_metrics(self) -> Dict:
+        """Calcula precisão/recall/F1 para keywords esperadas nos testes sintéticos."""
+        keyword_pool = set()
+        total_expected_keywords = 0
+        for result in self.results:
+            expected_keywords = result.get("expected_keywords") or result.get("metadata", {}).get(
+                "expected_keywords"
+            )
+            if expected_keywords:
+                keyword_pool.update(k.lower() for k in expected_keywords)
+                total_expected_keywords += len(expected_keywords)
+
+        total_tp = 0
+        total_fp = 0
+        total_fn = 0
+        total_examples = 0
+        total_results = len(self.results)
+
+        for result in self.results:
+            expected_keywords = result.get("expected_keywords") or result.get("metadata", {}).get(
+                "expected_keywords"
+            )
+            if not expected_keywords:
+                continue
+
+            total_examples += 1
+            expected_set = {k.lower() for k in expected_keywords}
+
+            llm_texts = []
+            for v in result.get("violations", []):
+                llm_texts.append(v.get("description", "").lower())
+                llm_texts.append(v.get("suggestion", "").lower())
+            llm_texts.append(result.get("summary", "").lower())
+            full_text = " ".join(llm_texts)
+
+            predicted_set = {k for k in keyword_pool if k in full_text}
+
+            tp = len(expected_set & predicted_set)
+            fp = len(predicted_set - expected_set)
+            fn = len(expected_set - predicted_set)
+
+            total_tp += tp
+            total_fp += fp
+            total_fn += fn
+
+        precision = total_tp / (total_tp + total_fp) if (total_tp + total_fp) > 0 else 0
+        recall = total_tp / (total_tp + total_fn) if (total_tp + total_fn) > 0 else 0
+        f1 = (2 * precision * recall / (precision + recall)) if (precision + recall) > 0 else 0
+
+        return {
+            "total_exemplos": total_examples,
+            "cobertura_percentual": round((total_examples / total_results) * 100, 2)
+            if total_results > 0
+            else 0,
+            "media_keywords_por_exemplo": round(
+                total_expected_keywords / total_examples, 2
+            )
+            if total_examples > 0
+            else 0,
+            "total_keywords_unicas": len(keyword_pool),
+            "tp": total_tp,
+            "fp": total_fp,
+            "fn": total_fn,
+            "precision": round(precision * 100, 2),
+            "recall": round(recall * 100, 2),
+            "f1": round(f1 * 100, 2),
+        }
+
     def _score_distribution(self) -> Dict:
         """Distribuição de scores por faixas."""
         scores = [r.get("overall_score", r.get("score", 0)) for r in self.results]
@@ -285,6 +436,56 @@ class ResultsAnalyzer:
         report.append(f"  Recall Rate: {rec.get('recall_rate', 0)}%")
         report.append("")
 
+        # Métricas de status
+        report.append("✅ CLASSIFICAÇÃO POR STATUS (pass/warning/fail):")
+        status_metrics = self.stats.get("status_metricas", {})
+        total_status_examples = status_metrics.get("total_avaliados", 0)
+        report.append(f"  Total avaliados: {total_status_examples}")
+        report.append(f"  Accuracy: {status_metrics.get('accuracy', 0)}%")
+        macro_avg = status_metrics.get("macro_avg", {})
+        weighted_avg = status_metrics.get("weighted_avg", {})
+        if total_status_examples > 0:
+            report.append(
+                f"  Macro Avg: Precision {macro_avg.get('precision', 0)}% | Recall {macro_avg.get('recall', 0)}% | F1 {macro_avg.get('f1', 0)}%"
+            )
+            report.append(
+                f"  Weighted Avg: Precision {weighted_avg.get('precision', 0)}% | Recall {weighted_avg.get('recall', 0)}% | F1 {weighted_avg.get('f1', 0)}%"
+            )
+        else:
+            report.append("  Macro Avg: Precision N/A | Recall N/A | F1 N/A")
+            report.append("  Weighted Avg: Precision N/A | Recall N/A | F1 N/A")
+        per_status = status_metrics.get("por_status", {})
+        for status, data in per_status.items():
+            report.append(
+                f"  {status.upper()}: Precision {data['precision']}% | Recall {data['recall']}% | F1 {data['f1']}% | Suporte {data['suporte']}"
+            )
+        confusion = status_metrics.get("matriz_confusao", {})
+        if confusion:
+            report.append("  Matriz de Confusão (esperado -> predito):")
+            for expected, predicted in confusion.items():
+                row = ", ".join(f"{label}:{count}" for label, count in predicted.items())
+                report.append(f"    {expected.upper()}: {row}")
+        report.append("")
+
+        # Métricas de keywords
+        report.append("🔎 PRECISÃO/RECALL/F1 (Keywords):")
+        keyword_metrics = self.stats.get("keyword_metricas", {})
+        total_keyword_examples = keyword_metrics.get("total_exemplos", 0)
+        report.append(f"  Total exemplos: {total_keyword_examples}")
+        report.append(
+            f"  Cobertura: {keyword_metrics.get('cobertura_percentual', 0)}% | Keywords únicas: {keyword_metrics.get('total_keywords_unicas', 0)} | Média keywords/exemplo: {keyword_metrics.get('media_keywords_por_exemplo', 0)}"
+        )
+        report.append(
+            f"  TP: {keyword_metrics.get('tp', 0)} | FP: {keyword_metrics.get('fp', 0)} | FN: {keyword_metrics.get('fn', 0)}"
+        )
+        if total_keyword_examples > 0:
+            report.append(
+                f"  Precision: {keyword_metrics.get('precision', 0)}% | Recall: {keyword_metrics.get('recall', 0)}% | F1: {keyword_metrics.get('f1', 0)}%"
+            )
+        else:
+            report.append("  Precision: N/A | Recall: N/A | F1: N/A")
+        report.append("")
+
         # Distribuição de scores
         report.append("📊 DISTRIBUIÇÃO DE SCORES:")
         dist = self.stats["distribuicao_scores"]
@@ -351,22 +552,30 @@ def generate_report(results_summary: List[Dict[str, Any]]) -> None:
             analyzer = ResultsAnalyzer(results)
 
             # Gera nome do arquivo de relatório
-            if "benchmark_results" in filename:
-                report_filename = filename.replace(
-                    "benchmark_results", "report_stats"
-                ).replace(".json", ".txt")
-            elif "repo_results" in filename:
-                report_filename = filename.replace(
-                    "repo_results", "report_stats"
-                ).replace(".json", ".txt")
+            # Forçar salvamento na pasta 'results/'
+            base_name = os.path.basename(filename)
+            
+            if "synthetic_results" in base_name:
+                report_filename = os.path.join(
+                    "results/sinteticos", 
+                    base_name.replace("synthetic_results", "synthetic_report_stats").replace(".json", ".txt")
+                )
+            elif "repo_results" in base_name:
+                report_filename = os.path.join(
+                    "results/repositorios",
+                    base_name.replace("repo_results", "repo_report_stats").replace(".json", ".txt")
+                )
             else:
-                report_filename = f"report_stats_{Path(filename).stem}.txt"
+                report_filename = os.path.join(
+                    "results",
+                    f"report_stats_{Path(base_name).stem}.txt"
+                )
 
             report_content = analyzer.generate_report(save_path=report_filename)
 
             report_block = f"RELATÓRIO: {llm_name}\n{report_content}\n\n"
             full_report.append(report_block)
-            if filename.startswith("repo_results"):
+            if filename.startswith("results/repositorios") or "repo_results" in filename:
                 repo_report.append(report_block)
             print(f"✅ Relatório salvo: {report_filename}")
 
@@ -375,16 +584,17 @@ def generate_report(results_summary: List[Dict[str, Any]]) -> None:
 
     # Opcional: Salvar relatório unificado
     try:
-        with open("benchmark_final_stats.txt", "w", encoding="utf-8") as f:
+        with open("results/synthetic_final_stats.txt", "w", encoding="utf-8") as f:
             f.write("".join(full_report))
-        print("✅ Relatório unificado salvo: benchmark_final_stats.txt")
+        print("✅ Relatório unificado salvo: results/synthetic_final_stats.txt")
     except Exception as e:
         print(f"❌ Erro ao salvar relatório unificado: {e}")
 
     if repo_report:
         try:
-            with open("repo_final_stats.txt", "w", encoding="utf-8") as f:
+            with open("results/repo_final_stats.txt", "w", encoding="utf-8") as f:
                 f.write("".join(repo_report))
-            print("✅ Relatório unificado salvo: repo_final_stats.txt")
+            print("✅ Relatório unificado salvo: results/repo_final_stats.txt")
         except Exception as e:
             print(f"❌ Erro ao salvar relatório de repositórios: {e}")
+
