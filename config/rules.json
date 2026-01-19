@@ -7,9 +7,21 @@
             "description": "Valida estrutura básica do endpoint",
             "checks": [
                 "Possui docstring explicativa",
-                "Define response_model",
+                "Define response_model quando a resposta possui corpo JSON (N/A para 204/Response/Streaming/FileResponse)",
                 "Especifica status_code explicitamente",
                 "Declara tags para organização"
+            ]
+        },
+        "http_semantics": {
+            "enabled": true,
+            "severity": "error",
+            "description": "Valida semântica HTTP (método, status codes, corpo da resposta, idempotência básica)",
+            "checks": [
+                "Define status_code explicitamente no decorator",
+                "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+                "Se status_code for 204, não retorna corpo (return None/Response sem content)",
+                "Se status_code for 201 e cria recurso, retorna representação do recurso ou referência consistente (opcional: Location header)",
+                "PUT/PATCH atualizam e retornam representação consistente do recurso (ou 204 sem body), sem alterar semântica"
             ]
         },
         "naming_conventions": {
@@ -17,9 +29,9 @@
             "severity": "warning",
             "description": "Valida convenções de nomenclatura",
             "checks": [
-                "Nome da função em snake_case com verbo de ação (ex: get_users)",
-                "Variáveis em snake_case",
-                "Classes em PascalCase",
+                "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+                "Parâmetros e variáveis em snake_case",
+                "Modelos/Pydantic e classes em PascalCase",
                 "Parâmetros seguem convenção Python"
             ]
         },
@@ -30,7 +42,8 @@
             "checks": [
                 "Todos parâmetros possuem type hints",
                 "Função possui return type annotation",
-                "Usa tipos adequados (List, Dict, Optional, etc)"
+                "Usa tipos adequados (List, Dict, Optional, etc)",
+                "Evita retorno genérico (ex: dict) quando pode usar BaseModel/TypedDict/dict[str, str] (preferir BaseModel)"
             ]
         },
         "error_handling": {
@@ -43,14 +56,16 @@
                 "Define status codes corretos para erros"
             ]
         },
-        "input_validation": {
+        "input_validation_and_openapi": {
             "enabled": true,
             "severity": "warning",
-            "description": "Valida entrada de dados",
+            "description": "Valida validação de entrada e documentação (Path/Query/Body) sem forçar padrões incorretos",
             "checks": [
-                "Usa Pydantic models para body requests",
-                "Usa Query(), Path(), Body() para documentação",
-                "Define validações quando necessário"
+                "Body requests usam Pydantic models (N/A se não há body)",
+                "Parâmetros de path usam Path() quando há constraints/descrição (ex: gt=0, uuid) (N/A se não há path params)",
+                "Parâmetros de query usam Query() quando há paginação/filtros/constraints (N/A se não há query params)",
+                "Modelos Pydantic usam Field/constraints quando necessário (min_length, ge/le, regex, EmailStr etc.)",
+                "Não usa Body() para dependências (ex: BackgroundTasks, Session via Depends)"
             ]
         }
     }

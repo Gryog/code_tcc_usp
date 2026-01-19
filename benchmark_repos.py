@@ -22,8 +22,8 @@ def run_repo_benchmark():
     # 1. Configurar Repositórios Alvo
     repos = [
         "https://github.com/rednafi/fastapi-nano",
-        "https://github.com/nsidnev/fastapi-realworld-example-app",
-        "https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
+        #"https://github.com/nsidnev/fastapi-realworld-example-app",
+        #"https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
     ]
 
     # 2. Configurar Clientes LLM

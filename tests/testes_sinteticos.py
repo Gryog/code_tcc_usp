@@ -14,8 +14,8 @@ def gerar_dataset_sintetico():
     Gera 50 casos de teste sintéticos bem distribuídos.
 
     Distribuição:
-    - 10 Excelentes (95-100)
-    - 15 Bons (80-94)
+    - 10 Excelentes (90-100)
+    - 15 Bons (80-89)
     - 15 Médios (60-79)
     - 10 Ruins (0-59)
     """
@@ -33,14 +33,14 @@ def gerar_dataset_sintetico():
     }
 
     # ========================================================================
-    # CATEGORIA: EXCELENTE (10 exemplos) - Score esperado: 95-100
+    # CATEGORIA: EXCELENTE (10 exemplos) - Score esperado: 90-100
     # ========================================================================
 
     excellent_examples = [
         {
             "id": "EXC_001",
             "description": "Endpoint GET completo com paginação e documentação",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
@@ -87,7 +87,7 @@ async def get_users(
         {
             "id": "EXC_002",
             "description": "Endpoint POST com validação Pydantic completa",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -145,7 +145,7 @@ async def create_product(
         {
             "id": "EXC_003",
             "description": "Endpoint PUT com validação de existência",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status, Path
@@ -203,27 +203,27 @@ async def update_order(
         )
 """,
         },
-        # Adicionar mais 7 exemplos excelentes...
         {
             "id": "EXC_004",
             "description": "Endpoint DELETE com soft delete",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status, Path
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1", tags=["categories"])
 
 @router.delete(
-    "/categories/{category_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=DeleteResponse,
+    status_code=status.HTTP_200_OK,
     tags=["categories"]
 )
 async def delete_category(
     category_id: int = Path(..., gt=0, description="ID da categoria"),
     db: Session = Depends(get_db)
-) -> None:
+) -> DeleteResponse:
     '''
     Remove uma categoria (soft delete).
     
@@ -258,121 +258,136 @@ async def delete_category(
         {
             "id": "EXC_005",
             "description": "Endpoint com Background Tasks e status 202",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
-from fastapi import APIRouter, BackgroundTasks, status
-from pydantic import BaseModel, EmailStr
+from fastapi import APIRouter, BackgroundTasks, HTTPException, status, Body
+from pydantic import BaseModel, EmailStr, Field
 
 router = APIRouter(prefix="/api/v1", tags=["notifications"])
 
+
 class EmailSchema(BaseModel):
     email: EmailStr
-    subject: str
-    content: str
+    subject: str = Field(..., min_length=1, description="Assunto do email")
+    content: str = Field(..., min_length=1, description="Conteúdo do email")
 
-def send_email_background(email: str, content: str):
+
+class NotificationQueuedResponse(BaseModel):
+    message: str
+
+
+def send_email_background(email: str, subject: str, content: str) -> None:
     # Simula envio de email
     pass
 
+
 @router.post(
     "/send-email",
+    response_model=NotificationQueuedResponse,
     status_code=status.HTTP_202_ACCEPTED,
     tags=["notifications"]
 )
 async def send_notification(
-    email_data: EmailSchema,
-    background_tasks: BackgroundTasks
-) -> dict:
+    email_data: EmailSchema = Body(..., description="Dados do email para envio em background"),
+    background_tasks: BackgroundTasks = ...
+) -> NotificationQueuedResponse:
     '''
     Envia notificação por email em background.
-    
+
     Args:
         email_data: Dados do email
         background_tasks: Gerenciador de tarefas em background
-        
+
     Returns:
-        Mensagem de confirmação
+        Mensagem de confirmação de enfileiramento
+
+    Raises:
+        HTTPException: Erro 500 caso falhe ao enfileirar a tarefa
     '''
-    background_tasks.add_task(send_email_background, email_data.email, email_data.content)
-    return {"message": "Email queued for sending"}
+    try:
+        background_tasks.add_task(
+            send_email_background,
+            email_data.email,
+            email_data.subject,
+            email_data.content
+        )
+        return NotificationQueuedResponse(message="Email queued for sending")
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao enfileirar envio de email: {str(e)}"
+        )
 """,
         },
         {
             "id": "EXC_006",
             "description": "Endpoint de Upload de Arquivo com Validação",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
-from typing import Dict
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/v1", tags=["files"])
 
 @router.post(
     "/upload",
-    response_model=Dict[str, str],
+    response_model=FileUploadResponse,
     status_code=status.HTTP_201_CREATED,
     tags=["files"]
 )
 async def upload_file(
     file: UploadFile = File(..., description="Arquivo de imagem (max 5MB)")
-) -> Dict[str, str]:
+) -> FileUploadResponse:
     '''
     Faz upload de um arquivo de imagem.
-    
-    Args:
-        file: Arquivo enviado pelo cliente
-        
-    Returns:
-        Metadados do arquivo salvo
-        
-    Raises:
-        HTTPException: Se arquivo não for imagem ou muito grande
     '''
-    if not file.content_type.startswith('image/'):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Apenas imagens são permitidas"
+    try:
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Apenas imagens são permitidas"
+            )
+
+        contents = await file.read()
+
+        if len(contents) > 5 * 1024 * 1024:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="Arquivo muito grande (max 5MB)"
+            )
+
+        return FileUploadResponse(
+            filename=file.filename,
+            content_type=file.content_type
         )
-    
-    contents = await file.read()
-    if len(contents) > 5 * 1024 * 1024:
+    except HTTPException:
+        raise
+    except Exception:
         raise HTTPException(
-            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail="Arquivo muito grande (max 5MB)"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro ao processar arquivo"
         )
-        
-    return {"filename": file.filename, "content_type": file.content_type}
 """,
         },
         {
             "id": "EXC_007",
             "description": "Endpoint de Busca Complexa com Dependência de Filtro",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, HTTPException, status
 from typing import Optional, List
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1", tags=["items"])
-
-class ItemFilter(BaseModel):
-    q: Optional[str] = None
-    min_price: Optional[float] = None
-    max_price: Optional[float] = None
-
-async def parse_filter(
-    q: Optional[str] = Query(None, description="Termo de busca"),
-    min_price: Optional[float] = Query(None, ge=0, description="Preço mínimo"),
-    max_price: Optional[float] = Query(None, ge=0, description="Preço máximo")
-) -> ItemFilter:
-    return ItemFilter(q=q, min_price=min_price, max_price=max_price)
 
 @router.get(
     "/search",
     response_model=List[ItemResponse],
+    status_code=status.HTTP_200_OK,
     tags=["items"]
 )
 async def search_items(
@@ -382,18 +397,28 @@ async def search_items(
     '''
     Busca itens com filtros complexos.
     '''
-    query = db.query(Item)
-    if filters.q:
-        query = query.filter(Item.name.contains(filters.q))
-    if filters.min_price:
-        query = query.filter(Item.price >= filters.min_price)
-    return query.all()
+    try:
+        query = db.query(Item)
+
+        if filters.q:
+            query = query.filter(Item.name.contains(filters.q))
+        if filters.min_price is not None:
+            query = query.filter(Item.price >= filters.min_price)
+        if filters.max_price is not None:
+            query = query.filter(Item.price <= filters.max_price)
+
+        return query.all()
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro ao buscar itens"
+        )
 """,
         },
         {
             "id": "EXC_008",
             "description": "Endpoint com autenticação OAuth2 e Scopes",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
 from fastapi import APIRouter, Depends, Security, status
@@ -412,19 +437,37 @@ async def get_current_user(security_scopes: SecurityScopes, token: str = Depends
     tags=["admin"]
 )
 async def delete_user_admin(
-    user_id: int,
+    user_id: int = Path(..., gt=0, description="ID do usuário"),
     current_user: User = Security(get_current_user, scopes=["admin"]),
     db: Session = Depends(get_db)
 ) -> None:
-    '''Endpoint administrativo seguro para remoção de usuários.'''
-    # Lógica de deleção
-    pass
+    '''
+    Endpoint administrativo seguro para remoção de usuários.
+    '''
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário não encontrado"
+            )
+
+        db.delete(user)
+        db.commit()
+    except HTTPException:
+        raise
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro ao remover usuário"
+        )
 """,
         },
         {
             "id": "EXC_009",
             "description": "Health Check Endpoint Robusto",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
 from fastapi import APIRouter, status, Depends
@@ -436,23 +479,26 @@ router = APIRouter(tags=["health"])
     "/health",
     status_code=status.HTTP_200_OK,
     tags=["health"],
-    response_model=dict
+    response_model=HealthResponse
 )
-async def health_check(db: Session = Depends(get_db)) -> dict:
+async def health_check(db: Session = Depends(get_db)) -> HealthResponse:
     '''
     Verifica a saúde da aplicação e conexão com banco.
     '''
     try:
         db.execute(text("SELECT 1"))
-        return {"status": "healthy", "database": "connected"}
+        return HealthResponse(status="healthy", database="connected")
     except Exception:
-        return {"status": "unhealthy", "database": "disconnected"}
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Banco indisponível"
+        )
 """,
         },
         {
             "id": "EXC_010",
             "description": "Endpoint com StreamingResponse",
-            "expected_score_min": 95,
+            "expected_score_min": 90,
             "expected_score_max": 100,
             "code": """
 from fastapi import APIRouter, status
@@ -485,7 +531,7 @@ async def export_data_csv() -> StreamingResponse:
     ]
 
     # ========================================================================
-    # CATEGORIA: BOM (15 exemplos) - Score esperado: 80-94
+    # CATEGORIA: BOM (15 exemplos) - Score esperado: 80-89
     # ========================================================================
 
     good_examples = [
@@ -493,7 +539,7 @@ async def export_data_csv() -> StreamingResponse:
             "id": "GOOD_001",
             "description": "Endpoint sem tags explícitas (mas tem outras boas práticas)",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -503,7 +549,8 @@ router = APIRouter(prefix="/api/v1")
 @router.get(
     "/items",
     response_model=List[ItemResponse],
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=["items"]
 )
 async def get_items(
     db: Session = Depends(get_db)
@@ -523,7 +570,7 @@ async def get_items(
             "id": "GOOD_002",
             "description": "Endpoint com docstring simples (não estruturada)",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter, HTTPException, status
 
@@ -544,14 +591,14 @@ async def create_task(task: TaskCreate, db: Session = Depends(get_db)) -> TaskRe
         db.refresh(new_task)
         return new_task
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro ao criar tarefa")
 """,
         },
         {
             "id": "GOOD_003",
             "description": "Endpoint sem Query() explícito para parâmetros",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -566,8 +613,8 @@ router = APIRouter(prefix="/api/v1", tags=["reports"])
     tags=["reports"]
 )
 async def get_reports(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=100),
     db: Session = Depends(get_db)
 ) -> List[ReportResponse]:
     '''
@@ -590,23 +637,23 @@ async def get_reports(
             "id": "GOOD_004",
             "description": "Faltam tags e description no Query",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter, Query
 
-router = APIRouter()
+router = APIRouter(tags=["search"])
 
-@router.get("/search")
-async def search(q: str = Query(None)):
+@router.get("/search", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["search"])
+async def search(q: Optional[str] = Query(None)) -> Dict[str, str]:
     '''Busca simples'''
-    return {"query": q}
+    return {"query": q or ""}
 """,
         },
         {
             "id": "GOOD_005",
             "description": "Response model genérico Dict",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "expected_keywords": ["response_model", "Dict", "schema", "Pydantic"],
             "code": """
 from fastapi import APIRouter, status
@@ -614,8 +661,8 @@ from typing import Dict
 
 router = APIRouter(tags=["misc"])
 
-@router.get("/config", response_model=Dict, status_code=status.HTTP_200_OK)
-async def get_config() -> Dict:
+@router.get("/config", response_model=Dict[str, str], status_code=status.HTTP_200_OK, tags=["misc"])
+async def get_config() -> Dict[str, str]:
     '''Retorna configurações'''
     return {"version": "1.0", "env": "prod"}
 """,
@@ -624,28 +671,27 @@ async def get_config() -> Dict:
             "id": "GOOD_006",
             "description": "Falta docstring estruturada",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter, status, Depends
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/v1", tags=["auth"])
 
-class LoginCtx(BaseModel):
-    username: str
-    password: str
-
-@router.post("/login", status_code=status.HTTP_200_OK)
-async def login(creds: LoginCtx):
-    # Faz login
-    return {"token": "abc"}
+@router.post("/login", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["auth"])
+async def login(creds: LoginCtx) -> Dict[str, str]:
+    '''Faz login e retorna um token.'''
+    try:
+        return {"token": "abc"}
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro no login")
 """,
         },
         {
             "id": "GOOD_007",
             "description": "Uso de print em vez de logger",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "expected_keywords": ["print", "logger", "logging"],
             "code": """
 from fastapi import APIRouter, status
@@ -653,7 +699,7 @@ from fastapi import APIRouter, status
 router = APIRouter(tags=["test"])
 
 @router.get("/debug", status_code=status.HTTP_200_OK)
-async def debug_endpoint():
+async def debug_endpoint() -> Dict[str, str]:
     '''Endpoint para debug'''
     print("Debug endpoint called")
     return {"status": "ok"}
@@ -663,24 +709,24 @@ async def debug_endpoint():
             "id": "GOOD_008",
             "description": "Mistura de snake_case e camelCase nas variáveis",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter
 
 router = APIRouter(tags=["users"])
 
-@router.get("/users/count")
-async def get_user_count():
+@router.get("/users/count", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["users"])
+async def get_user_count() -> Dict[str, int]:
     '''Retorna total de usuários'''
-    userCount = 100
-    return {"count": userCount}
+    user_count = 100
+    return {"count": user_count}
 """,
         },
         {
             "id": "GOOD_009",
             "description": "Falta status code explícito 201 no POST",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -690,7 +736,7 @@ router = APIRouter(tags=["items"])
 class Item(BaseModel):
     name: str
 
-@router.post("/items")
+@router.post("/items", status_code=status.HTTP_201_CREATED)
 async def create_item(item: Item):
     '''Cria item'''
     return item
@@ -700,14 +746,14 @@ async def create_item(item: Item):
             "id": "GOOD_010",
             "description": "Endpoint síncrono para operação I/O bound simples",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter
 
 router = APIRouter(tags=["utils"])
 
-@router.get("/echo")
-def echo_message(msg: str):
+@router.get("/echo", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["utils"])
+def echo_message(msg: str = Query(...)) -> Dict[str, str]:
     '''Retorna a mensagem enviada'''
     return {"message": msg}
 """,
@@ -716,17 +762,17 @@ def echo_message(msg: str):
             "id": "GOOD_011",
             "description": "Validação de entrada manual simples, poderia ser Pydantic",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter, HTTPException
 
 router = APIRouter(tags=["calc"])
 
-@router.get("/divide")
-async def divide(a: int, b: int):
+@router.get("/divide", status_code=status.HTTP_200_OK, response_model=Dict[str, float], tags=["calc"])
+async def divide(a: int, b: int) -> Dict[str, float]:
     '''Faz divisão'''
     if b == 0:
-        raise HTTPException(status_code=400, detail="Zero division")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Zero division")
     return {"result": a / b}
 """,
         },
@@ -734,7 +780,7 @@ async def divide(a: int, b: int):
             "id": "GOOD_012",
             "description": "Path parameter sem type hint int explícito na rota",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter
 
@@ -750,15 +796,15 @@ async def get_user(user_id: int):
             "id": "GOOD_013",
             "description": "Retorna lista direta sem wrapping object (ok, mas menos evoluível)",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter
 from typing import List
 
 router = APIRouter(tags=["tags"])
 
-@router.get("/tags", response_model=List[str])
-async def get_tags():
+@router.get("/tags", response_model=List[str], status_code=status.HTTP_200_OK, tags=["tags"])
+async def get_tags() -> List[str]:
     '''Lista todas as tags'''
     return ["tag1", "tag2"]
 """,
@@ -767,14 +813,14 @@ async def get_tags():
             "id": "GOOD_014",
             "description": "Falta response_model, mas implementação é limpa",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter, status
 
 router = APIRouter(tags=["status"])
 
-@router.get("/ping", status_code=status.HTTP_200_OK)
-async def ping():
+@router.get("/ping", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["status"])
+async def ping() -> Dict[str, str]:
     '''Health check simples'''
     return {"ping": "pong"}
 """,
@@ -783,14 +829,14 @@ async def ping():
             "id": "GOOD_015",
             "description": "Usa Form em vez de Pydantic JSON Body para dados estruturados",
             "expected_score_min": 80,
-            "expected_score_max": 94,
+            "expected_score_max": 89,
             "code": """
 from fastapi import APIRouter, Form
 
 router = APIRouter(tags=["login"])
 
-@router.post("/login-form")
-async def login_form(username: str = Form(...), password: str = Form(...)):
+@router.post("/login-form", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["login"])
+async def login_form(username: str = Form(...), password: str = Form(...)) -> Dict[str, str]:
     '''Login via form data'''
     return {"user": username}
 """,
@@ -808,19 +854,21 @@ async def login_form(username: str = Form(...), password: str = Form(...)):
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from typing import List
 
 router = APIRouter(prefix="/api/v1", tags=["customers"])
 
-@router.get("/customers", status_code=200)
-async def get_customers(db: Session = Depends(get_db)):
+@router.get("/customers", status_code=status.HTTP_200_OK, response_model=List[dict])
+async def get_customers(db: Session = Depends(get_db)) -> List[dict]:
     '''Retorna lista de clientes'''
     try:
         customers = db.query(Customer).all()
         return customers
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro ao buscar clientes")
+
 """,
         },
         {
@@ -829,17 +877,19 @@ async def get_customers(db: Session = Depends(get_db)):
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException, status
+from sqlalchemy.orm import Session
 
 app = FastAPI()
 
-@app.get("/user/{user_id}")
-def getUserData(user_id: int, db=Depends(get_db)):
+@app.get("/user/{user_id}", status_code=status.HTTP_200_OK)
+def get_user_data(user_id: int, db: Session = Depends(get_db)):
     '''Busca dados do usuário'''
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     return user
+
 """,
         },
         {
@@ -848,7 +898,7 @@ def getUserData(user_id: int, db=Depends(get_db)):
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status, Path
 from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["invoices"])
@@ -856,15 +906,24 @@ router = APIRouter(tags=["invoices"])
 @router.get(
     "/invoices/{invoice_id}",
     response_model=InvoiceResponse,
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    tags=["invoices"]
 )
 async def get_invoice(
-    invoice_id: int,
+    invoice_id: int = Path(..., gt=0),
     db: Session = Depends(get_db)
 ) -> InvoiceResponse:
     '''Busca fatura por ID'''
-    invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
-    return invoice
+    try:
+        invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
+        if not invoice:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found")
+        return invoice
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro ao buscar fatura")
+
 """,
         },
         {
@@ -873,17 +932,19 @@ async def get_invoice(
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
+from typing import Dict
 
-router = APIRouter()
+router = APIRouter(tags=["risky"])
 
-@router.get("/risky")
-async def risky_op():
+@router.get("/risky", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["risky"])
+async def risky_op() -> Dict[str, str]:
+    '''Executa operação arriscada'''
     try:
-        # op
-        pass
+        return {"status": "ok"}
     except Exception:
-        raise HTTPException(status_code=500, detail="Error")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error")
+
 """,
         },
         {
@@ -892,13 +953,16 @@ async def risky_op():
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from typing import Dict
 
-router = APIRouter()
+router = APIRouter(tags=["calc"])
 
-@router.get("/calc")
-async def calculate(x, y):
-    return {"sum": int(x) + int(y)}
+@router.get("/calc", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["calc"])
+async def calculate(x: int, y: int) -> Dict[str, int]:
+    '''Calcula soma'''
+    return {"sum": x + y}
+
 """,
         },
         {
@@ -908,15 +972,18 @@ async def calculate(x, y):
             "expected_score_max": 79,
             "expected_keywords": ["blocking", "bloqueante", "async", "def", "threadpool", "run_in_executor"],
             "code": """
-from fastapi import APIRouter
-import time
+from fastapi import APIRouter, status
+from typing import Dict
+import asyncio
 
-router = APIRouter()
+router = APIRouter(tags=["sleep"])
 
-@router.get("/sleep")
-async def sleep_route():
-    time.sleep(1) # Bloqueia o loop
+@router.get("/sleep", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["sleep"])
+async def sleep_route() -> Dict[str, str]:
+    '''Simula espera sem bloquear o loop'''
+    await asyncio.sleep(1)
     return {"status": "awake"}
+
 """,
         },
         {
@@ -925,13 +992,16 @@ async def sleep_route():
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from typing import Dict, Any
 
-router = APIRouter()
+router = APIRouter(tags=["data"])
 
-@router.get("/data")
-async def get_data():
-    return {"a": 1, "b": 2, "c": [1,2,3]}
+@router.get("/data", status_code=status.HTTP_200_OK, response_model=Dict[str, Any], tags=["data"])
+async def get_data() -> Dict[str, Any]:
+    '''Retorna dados simples'''
+    return {"a": 1, "b": 2, "c": [1, 2, 3]}
+
 """,
         },
         {
@@ -940,13 +1010,16 @@ async def get_data():
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import FastAPI
+from fastapi import FastAPI, status
+from typing import Dict
 
 app = FastAPI()
 
-@app.get("/direct")
-def direct_route():
-    return "ok"
+@app.get("/direct", status_code=status.HTTP_200_OK, response_model=Dict[str, str])
+def direct_route() -> Dict[str, str]:
+    '''Rota direta'''
+    return {"status": "ok"}
+
 """,
         },
         {
@@ -955,15 +1028,18 @@ def direct_route():
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
+from typing import Dict
 
-router = APIRouter()
+router = APIRouter(tags=["check"])
 
-@router.get("/check/{id}")
-async def check(id: int):
+@router.get("/check/{id}", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["check"])
+async def check(id: int) -> Dict[str, int]:
+    '''Valida ID'''
     if id < 0:
-        return {"error": "Invalid ID"} # Retorna 200 OK com erro no body
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid ID")
     return {"id": id}
+
 """,
         },
         {
@@ -972,18 +1048,19 @@ async def check(id: int):
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from typing import Dict
 
-router = APIRouter()
+router = APIRouter(tags=["process"])
 
-@router.post("/process")
-async def process_data(data: dict):
-    # Lógica complexa aqui
+@router.post("/process", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["process"])
+async def process_data(data: Dict[str, int]) -> Dict[str, int]:
+    '''Processa dados numéricos'''
     res = 0
-    for k, v in data.items():
-        if isinstance(v, int):
-            res += v * 2
+    for _, v in data.items():
+        res += v * 2
     return {"result": res}
+
 """,
         },
         {
@@ -992,13 +1069,16 @@ async def process_data(data: dict):
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from typing import Dict
 
-router = APIRouter()
+router = APIRouter(tags=["users"])
 
-@router.get("/getUserInfo")
-async def get_user_info():
+@router.get("/user-info", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["users"])
+async def get_user_info() -> Dict[str, str]:
+    '''Retorna info do usuário'''
     return {"user": "info"}
+
 """,
         },
         {
@@ -1007,14 +1087,16 @@ async def get_user_info():
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, status, Query
+from typing import Dict
 
-router = APIRouter()
+router = APIRouter(tags=["filter"])
 
-@router.get("/filter")
-async def filter_items(where: str):
-    # Recebe cláusula raw, perigoso
+@router.get("/filter", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["filter"])
+async def filter_items(where: str = Query(..., min_length=1, description="Filtro (não usar SQL raw)")) -> Dict[str, str]:
+    '''Filtra itens (exemplo)'''
     return {"query": f"SELECT * FROM items WHERE {where}"}
+
 """,
         },
         {
@@ -1024,14 +1106,17 @@ async def filter_items(where: str):
             "expected_score_max": 79,
             "expected_keywords": ["hardcoded", "dependency injection", "depends", "db session"],
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+from typing import Dict
 
-router = APIRouter()
+router = APIRouter(tags=["db"])
 
-@router.get("/db-test")
-async def db_test():
-    conn = "sqlite:///db.sqlite" # Hardcoded
-    return {"conn": conn}
+@router.get("/db-test", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["db"])
+async def db_test(db: Session = Depends(get_db)) -> Dict[str, str]:
+    '''Teste simples de acesso ao DB'''
+    return {"status": "ok"}
+
 """,
         },
         {
@@ -1040,16 +1125,19 @@ async def db_test():
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from typing import Dict
 
-router = APIRouter()
+router = APIRouter(tags=["count"])
 COUNTER = 0
 
-@router.get("/count")
-async def get_count():
+@router.get("/count", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["count"])
+async def get_count() -> Dict[str, int]:
+    '''Incrementa contador global'''
     global COUNTER
     COUNTER += 1
     return {"count": COUNTER}
+
 """,
         },
         {
@@ -1058,13 +1146,16 @@ async def get_count():
             "expected_score_min": 60,
             "expected_score_max": 79,
             "code": """
-from fastapi import APIRouter
+from fastapi import APIRouter, status
+from typing import Dict, Any
 
-router = APIRouter()
+router = APIRouter(tags=["submit"])
 
-@router.post("/submit")
-async def submit(data: dict):
+@router.post("/submit", status_code=status.HTTP_200_OK, response_model=Dict[str, bool], tags=["submit"])
+async def submit(data: Dict[str, Any]) -> Dict[str, bool]:
+    '''Recebe dados e confirma recebimento'''
     return {"received": True}
+
 """,
         },
     ]

@@ -18,6 +18,7 @@ class GeminiClient(LLMClient):
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
                     temperature=0.2,
+                    top_p=0.9,
                 ),
             )
             return json.loads(response.text)

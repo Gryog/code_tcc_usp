@@ -5,7 +5,7 @@ from .llmclient import LLMClient
 
 
 class MistralClient(LLMClient):
-    def __init__(self, api_key: str, model_name: str = "mistral-small-latest"):
+    def __init__(self, api_key: str, model_name: str = "mistral-small-2506"):
         self.client = Mistral(api_key=api_key)
         self.model_name = model_name
 
@@ -23,6 +23,8 @@ class MistralClient(LLMClient):
                     "type": "json_object",
                 },
                 temperature=0.2,
+                max_tokens=2048,
+                top_p=0.9,
             )
 
             response_content = chat_response.choices[0].message.content
