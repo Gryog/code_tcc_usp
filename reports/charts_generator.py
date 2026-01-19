@@ -193,6 +193,7 @@ def generate_charts_report(
         stats.append(
             {
                 "name": llm,
+                "repo_name": report.get("benchmark_metadata", {}).get("repo_name", "Unknown"),
                 "avg_score": round(statistics.mean(scores), 2) if scores else 0,
                 "avg_time": round(statistics.mean(times), 2) if times else 0,
                 "total_passed": passed,
@@ -233,39 +234,48 @@ def generate_charts_report(
             <h1>📊 Relatório Comparativo de LLMs</h1>
             <p style="text-align:center">Comparação de performance na validação de código FastAPI • {report_context}</p>
             
-            <!-- Tabela Estatística -->
-            <h2>Estatísticas Gerais</h2>
-            <table class="summary-table">
-                <thead>
-                    <tr>
-                        <th>Modelo LLM</th>
-                        <th>Score Médio</th>
-                        <th>Tempo Médio (s)</th>
-                        <th>Aprovados</th>
-                        <th>Avisos</th>
-                        <th>Reprovados</th>
-                        <th>Erros API</th>
-                        <th>Status Accuracy</th>
-                        <th>Status Macro F1</th>
-                        <th>Keyword F1</th>
-                        <th>Keyword Cobertura</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {"".join(
-                        f"<tr><td>{s['name']}</td><td>{s['avg_score']}</td><td>{s['avg_time']}</td>"
-                        f"<td style='color:green'>{s['total_passed']}</td>"
-                        f"<td style='color:goldenrod'>{s['total_warnings']}</td>"
-                        f"<td style='color:orange'>{s['total_failed']}</td>"
-                        f"<td style='color:red'>{s['total_errors']}</td>"
-                        f"<td>{_format_percent(s['status_metrics']['accuracy'], s['status_metrics']['total'] > 0)}</td>"
-                        f"<td>{_format_percent(s['status_metrics']['macro_f1'], s['status_metrics']['total'] > 0)}</td>"
-                        f"<td>{_format_percent(s['keyword_metrics']['f1'], s['keyword_metrics']['total_examples'] > 0)}</td>"
-                        f"<td>{_format_percent(s['keyword_metrics']['coverage'], s['keyword_metrics']['total_examples'] > 0)}</td></tr>"
-                        for s in stats
-                    )}
-                </tbody>
-            </table>
+            <!-- Tabelas Estatísticas -->
+            <h2>Estatísticas por Modelo</h2>
+            {"".join(
+                f"""
+                <div class="chart-box" style="margin-bottom: 25px;">
+                    <h3 style="margin-bottom:10px; border-left: 4px solid #3498db; padding-left: 10px;">{s['name']}</h3>
+                    <table class="summary-table" style="margin-top: 5px;">
+                        <thead>
+                            <tr>
+                                <th>Repo</th>
+                                <th>Score Médio</th>
+                                <th>Tempo Médio (s)</th>
+                                <th>Aprovados</th>
+                                <th>Avisos</th>
+                                <th>Reprovados</th>
+                                <th>Erros API</th>
+                                <th>Status Accuracy</th>
+                                <th>Status Macro F1</th>
+                                <th>Keyword F1</th>
+                                <th>Keyword Cobertura</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{s['repo_name']}</td>
+                                <td>{s['avg_score']}</td>
+                                <td>{s['avg_time']}</td>
+                                <td style='color:green'>{s['total_passed']}</td>
+                                <td style='color:goldenrod'>{s['total_warnings']}</td>
+                                <td style='color:blue'>{s['total_failed']}</td>
+                                <td style='color:red'>{s['total_errors']}</td>
+                                <td>{_format_percent(s['status_metrics']['accuracy'], s['status_metrics']['total'] > 0)}</td>
+                                <td>{_format_percent(s['status_metrics']['macro_f1'], s['status_metrics']['total'] > 0)}</td>
+                                <td>{_format_percent(s['keyword_metrics']['f1'], s['keyword_metrics']['total_examples'] > 0)}</td>
+                                <td>{_format_percent(s['keyword_metrics']['coverage'], s['keyword_metrics']['total_examples'] > 0)}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                """
+                for s in stats
+            )}
 
             <h2>Detalhes de Status e Keywords</h2>
             {"".join(

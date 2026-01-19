@@ -1,0 +1,976 @@
+[
+    {
+        "id": "FASTAPI-NANO_AUTH_login_for_access_token_1",
+        "source": "svc\\core\\auth.py",
+        "method": "POST",
+        "route": "/token",
+        "function_name": "login_for_access_token",
+        "code": "@router.post(\"/token\", response_model=Token)\nasync def login_for_access_token(\n    form_data: OAuth2PasswordRequestForm = Depends(),\n) -> dict[str, str]:\n    user = authenticate_user(\n        fake_users_db,\n        form_data.username,\n        form_data.password,\n    )\n\n    if not user:\n        raise HTTPException(\n            status_code=HTTPStatus.UNAUTHORIZED,\n            detail=\"Incorrect username or password\",\n            headers={\"WWW-Authenticate\": \"Bearer\"},\n        )\n\n    access_token_expires = timedelta(\n        seconds=config.API_ACCESS_TOKEN_EXPIRE_MINUTES,\n    )\n    access_token = create_access_token(\n        data={\"sub\": user.username},  # type: ignore\n        expires_delta=access_token_expires,\n    )\n    return {\"access_token\": access_token, \"token_type\": \"bearer\"}",
+        "metadata": {
+            "has_async": true,
+            "lines": 25,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-NANO_VIEWS_index_1",
+        "source": "svc\\routes\\views.py",
+        "method": "GET",
+        "route": "/",
+        "function_name": "index",
+        "code": "@router.get(\"/\")\nasync def index() -> dict[str, str]:\n    return {\n        \"info\": \"This is the index page of fastapi-nano. \"\n        \"You probably want to go to 'http://<hostname:port>/docs'.\",\n    }",
+        "metadata": {
+            "has_async": true,
+            "lines": 6,
+            "expected_violations": [
+                "endpoint_structure",
+                "naming_conventions"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code",
+                "action_verb"
+            ]
+        }
+    }
+        {
+        "id": "FASTAPI-NANO_VIEWS_view_a_2",
+        "source": "svc\\routes\\views.py",
+        "method": "GET",
+        "route": "/api_a/{num}",
+        "function_name": "view_a",
+        "code": "@router.get(\"/api_a/{num}\", tags=[\"api_a\"])\nasync def view_a(\n    num: int,\n    auth: Depends = Depends(get_current_user),\n) -> dict[str, int]:\n    result = main_func_a(num)\n    logger.info(f\"API A: {result}\")\n    return result",
+        "metadata": {
+            "has_async": true,
+            "lines": 8,
+            "expected_violations": [
+                "endpoint_structure",
+                "naming_conventions",
+                "type_hints"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code",
+                "generic_name",
+                "adequate_types"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-NANO_VIEWS_view_b_3",
+        "source": "svc\\routes\\views.py",
+        "method": "GET",
+        "route": "/api_b/{num}",
+        "function_name": "view_b",
+        "code": "@router.get(\"/api_b/{num}\", tags=[\"api_b\"])\nasync def view_b(\n    num: int,\n    auth: Depends = Depends(get_current_user),\n) -> dict[str, int]:\n    result = main_func_b(num)\n    logger.info(f\"API B: {result}\")\n    return result",
+        "metadata": {
+            "has_async": true,
+            "lines": 8,
+            "expected_violations": [
+                "endpoint_structure",
+                "naming_conventions",
+                "type_hints"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code",
+                "generic_name",
+                "adequate_types"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_TEST_422_ERROR_route_for_test_1",
+        "source": "tests\\test_api\\test_errors\\test_422_error.py",
+        "method": "GET",
+        "route": "/wrong_path/{param}",
+        "function_name": "route_for_test",
+        "code": "@app.get(\"/wrong_path/{param}\")\n    def route_for_test(param: int) -> None:  # pragma: no cover\n        pass",
+        "metadata": {
+            "has_async": false,
+            "lines": 3,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_login_1",
+        "source": "app\\api\\routes\\authentication.py",
+        "method": "POST",
+        "route": "/login",
+        "function_name": "login",
+        "code": "@router.post(\"/login\", response_model=UserInResponse, name=\"auth:login\")\nasync def login(\n    user_login: UserInLogin = Body(..., embed=True, alias=\"user\"),\n    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),\n    settings: AppSettings = Depends(get_app_settings),\n) -> UserInResponse:\n    wrong_login_error = HTTPException(\n        status_code=HTTP_400_BAD_REQUEST,\n        detail=strings.INCORRECT_LOGIN_INPUT,\n    )\n\n    try:\n        user = await users_repo.get_user_by_email(email=user_login.email)\n    except EntityDoesNotExist as existence_error:\n        raise wrong_login_error from existence_error\n\n    if not user.check_password(user_login.password):\n        raise wrong_login_error\n\n    token = jwt.create_access_token_for_user(\n        user,\n        str(settings.secret_key.get_secret_value()),\n    )\n    return UserInResponse(\n        user=UserWithToken(\n            username=user.username,\n            email=user.email,\n            bio=user.bio,\n            image=user.image,\n            token=token,\n        ),\n    )",
+        "metadata": {
+            "has_async": true,
+            "lines": 32,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_register_2",
+        "source": "app\\api\\routes\\authentication.py",
+        "method": "POST",
+        "route": "",
+        "function_name": "register",
+        "code": "@router.post(\n    \"\",\n    status_code=HTTP_201_CREATED,\n    response_model=UserInResponse,\n    name=\"auth:register\",\n)\nasync def register(\n    user_create: UserInCreate = Body(..., embed=True, alias=\"user\"),\n    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),\n    settings: AppSettings = Depends(get_app_settings),\n) -> UserInResponse:\n    if await check_username_is_taken(users_repo, user_create.username):\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.USERNAME_TAKEN,\n        )\n\n    if await check_email_is_taken(users_repo, user_create.email):\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.EMAIL_TAKEN,\n        )\n\n    user = await users_repo.create_user(**user_create.dict())\n\n    token = jwt.create_access_token_for_user(\n        user,\n        str(settings.secret_key.get_secret_value()),\n    )\n    return UserInResponse(\n        user=UserWithToken(\n            username=user.username,\n            email=user.email,\n            bio=user.bio,\n            image=user.image,\n            token=token,\n        ),\n    )",
+        "metadata": {
+            "has_async": true,
+            "lines": 38,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_list_comments_for_article_1",
+        "source": "app\\api\\routes\\comments.py",
+        "method": "GET",
+        "route": "",
+        "function_name": "list_comments_for_article",
+        "code": "@router.get(\n    \"\",\n    response_model=ListOfCommentsInResponse,\n    name=\"comments:get-comments-for-article\",\n)\nasync def list_comments_for_article(\n    article: Article = Depends(get_article_by_slug_from_path),\n    user: Optional[User] = Depends(get_current_user_authorizer(required=False)),\n    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),\n) -> ListOfCommentsInResponse:\n    comments = await comments_repo.get_comments_for_article(article=article, user=user)\n    return ListOfCommentsInResponse(comments=comments)",
+        "metadata": {
+            "has_async": true,
+            "lines": 12,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_create_comment_for_article_2",
+        "source": "app\\api\\routes\\comments.py",
+        "method": "POST",
+        "route": "",
+        "function_name": "create_comment_for_article",
+        "code": "@router.post(\n    \"\",\n    status_code=status.HTTP_201_CREATED,\n    response_model=CommentInResponse,\n    name=\"comments:create-comment-for-article\",\n)\nasync def create_comment_for_article(\n    comment_create: CommentInCreate = Body(..., embed=True, alias=\"comment\"),\n    article: Article = Depends(get_article_by_slug_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),\n) -> CommentInResponse:\n    comment = await comments_repo.create_comment_for_article(\n        body=comment_create.body,\n        article=article,\n        user=user,\n    )\n    return CommentInResponse(comment=comment)",
+        "metadata": {
+            "has_async": true,
+            "lines": 18,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_delete_comment_from_article_3",
+        "source": "app\\api\\routes\\comments.py",
+        "method": "DELETE",
+        "route": "/{comment_id}",
+        "function_name": "delete_comment_from_article",
+        "code": "@router.delete(\n    \"/{comment_id}\",\n    status_code=status.HTTP_204_NO_CONTENT,\n    name=\"comments:delete-comment-from-article\",\n    dependencies=[Depends(check_comment_modification_permissions)],\n    response_class=Response,\n)\nasync def delete_comment_from_article(\n    comment: Comment = Depends(get_comment_by_id_from_path),\n    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),\n) -> None:\n    await comments_repo.delete_comment(comment=comment)",
+        "metadata": {
+            "has_async": true,
+            "lines": 12,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_retrieve_profile_by_username_1",
+        "source": "app\\api\\routes\\profiles.py",
+        "method": "GET",
+        "route": "/{username}",
+        "function_name": "retrieve_profile_by_username",
+        "code": "@router.get(\n    \"/{username}\",\n    response_model=ProfileInResponse,\n    name=\"profiles:get-profile\",\n)\nasync def retrieve_profile_by_username(\n    profile: Profile = Depends(get_profile_by_username_from_path),\n) -> ProfileInResponse:\n    return ProfileInResponse(profile=profile)",
+        "metadata": {
+            "has_async": true,
+            "lines": 9,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_follow_for_user_2",
+        "source": "app\\api\\routes\\profiles.py",
+        "method": "POST",
+        "route": "/{username}/follow",
+        "function_name": "follow_for_user",
+        "code": "@router.post(\n    \"/{username}/follow\",\n    response_model=ProfileInResponse,\n    name=\"profiles:follow-user\",\n)\nasync def follow_for_user(\n    profile: Profile = Depends(get_profile_by_username_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    profiles_repo: ProfilesRepository = Depends(get_repository(ProfilesRepository)),\n) -> ProfileInResponse:\n    if user.username == profile.username:\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.UNABLE_TO_FOLLOW_YOURSELF,\n        )\n\n    if profile.following:\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.USER_IS_ALREADY_FOLLOWED,\n        )\n\n    await profiles_repo.add_user_into_followers(\n        target_user=profile,\n        requested_user=user,\n    )\n\n    return ProfileInResponse(profile=profile.copy(update={\"following\": True}))",
+        "metadata": {
+            "has_async": true,
+            "lines": 28,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_unsubscribe_from_user_3",
+        "source": "app\\api\\routes\\profiles.py",
+        "method": "DELETE",
+        "route": "/{username}/follow",
+        "function_name": "unsubscribe_from_user",
+        "code": "@router.delete(\n    \"/{username}/follow\",\n    response_model=ProfileInResponse,\n    name=\"profiles:unsubscribe-from-user\",\n)\nasync def unsubscribe_from_user(\n    profile: Profile = Depends(get_profile_by_username_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    profiles_repo: ProfilesRepository = Depends(get_repository(ProfilesRepository)),\n) -> ProfileInResponse:\n    if user.username == profile.username:\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.UNABLE_TO_UNSUBSCRIBE_FROM_YOURSELF,\n        )\n\n    if not profile.following:\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.USER_IS_NOT_FOLLOWED,\n        )\n\n    await profiles_repo.remove_user_from_followers(\n        target_user=profile,\n        requested_user=user,\n    )\n\n    return ProfileInResponse(profile=profile.copy(update={\"following\": False}))",
+        "metadata": {
+            "has_async": true,
+            "lines": 28,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_TAGS_get_all_tags_1",
+        "source": "app\\api\\routes\\tags.py",
+        "method": "GET",
+        "route": "",
+        "function_name": "get_all_tags",
+        "code": "@router.get(\"\", response_model=TagsInList, name=\"tags:get-all\")\nasync def get_all_tags(\n    tags_repo: TagsRepository = Depends(get_repository(TagsRepository)),\n) -> TagsInList:\n    tags = await tags_repo.get_all_tags()\n    return TagsInList(tags=tags)",
+        "metadata": {
+            "has_async": true,
+            "lines": 6,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_USERS_retrieve_current_user_1",
+        "source": "app\\api\\routes\\users.py",
+        "method": "GET",
+        "route": "",
+        "function_name": "retrieve_current_user",
+        "code": "@router.get(\"\", response_model=UserInResponse, name=\"users:get-current-user\")\nasync def retrieve_current_user(\n    user: User = Depends(get_current_user_authorizer()),\n    settings: AppSettings = Depends(get_app_settings),\n) -> UserInResponse:\n    token = jwt.create_access_token_for_user(\n        user,\n        str(settings.secret_key.get_secret_value()),\n    )\n    return UserInResponse(\n        user=UserWithToken(\n            username=user.username,\n            email=user.email,\n            bio=user.bio,\n            image=user.image,\n            token=token,\n        ),\n    )",
+        "metadata": {
+            "has_async": true,
+            "lines": 18,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_USERS_update_current_user_2",
+        "source": "app\\api\\routes\\users.py",
+        "method": "PUT",
+        "route": "",
+        "function_name": "update_current_user",
+        "code": "@router.put(\"\", response_model=UserInResponse, name=\"users:update-current-user\")\nasync def update_current_user(\n    user_update: UserInUpdate = Body(..., embed=True, alias=\"user\"),\n    current_user: User = Depends(get_current_user_authorizer()),\n    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),\n    settings: AppSettings = Depends(get_app_settings),\n) -> UserInResponse:\n    if user_update.username and user_update.username != current_user.username:\n        if await check_username_is_taken(users_repo, user_update.username):\n            raise HTTPException(\n                status_code=HTTP_400_BAD_REQUEST,\n                detail=strings.USERNAME_TAKEN,\n            )\n\n    if user_update.email and user_update.email != current_user.email:\n        if await check_email_is_taken(users_repo, user_update.email):\n            raise HTTPException(\n                status_code=HTTP_400_BAD_REQUEST,\n                detail=strings.EMAIL_TAKEN,\n            )\n\n    user = await users_repo.update_user(user=current_user, **user_update.dict())\n\n    token = jwt.create_access_token_for_user(\n        user,\n        str(settings.secret_key.get_secret_value()),\n    )\n    return UserInResponse(\n        user=UserWithToken(\n            username=user.username,\n            email=user.email,\n            bio=user.bio,\n            image=user.image,\n            token=token,\n        ),\n    )",
+        "metadata": {
+            "has_async": true,
+            "lines": 36,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_get_articles_for_user_feed_1",
+        "source": "app\\api\\routes\\articles\\articles_common.py",
+        "method": "GET",
+        "route": "/feed",
+        "function_name": "get_articles_for_user_feed",
+        "code": "@router.get(\n    \"/feed\",\n    response_model=ListOfArticlesInResponse,\n    name=\"articles:get-user-feed-articles\",\n)\nasync def get_articles_for_user_feed(\n    limit: int = Query(DEFAULT_ARTICLES_LIMIT, ge=1),\n    offset: int = Query(DEFAULT_ARTICLES_OFFSET, ge=0),\n    user: User = Depends(get_current_user_authorizer()),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ListOfArticlesInResponse:\n    articles = await articles_repo.get_articles_for_user_feed(\n        user=user,\n        limit=limit,\n        offset=offset,\n    )\n    articles_for_response = [\n        ArticleForResponse(**article.dict()) for article in articles\n    ]\n    return ListOfArticlesInResponse(\n        articles=articles_for_response,\n        articles_count=len(articles),\n    )",
+        "metadata": {
+            "has_async": true,
+            "lines": 23,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_mark_article_as_favorite_2",
+        "source": "app\\api\\routes\\articles\\articles_common.py",
+        "method": "POST",
+        "route": "/{slug}/favorite",
+        "function_name": "mark_article_as_favorite",
+        "code": "@router.post(\n    \"/{slug}/favorite\",\n    response_model=ArticleInResponse,\n    name=\"articles:mark-article-favorite\",\n)\nasync def mark_article_as_favorite(\n    article: Article = Depends(get_article_by_slug_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ArticleInResponse:\n    if not article.favorited:\n        await articles_repo.add_article_into_favorites(article=article, user=user)\n\n        return ArticleInResponse(\n            article=ArticleForResponse.from_orm(\n                article.copy(\n                    update={\n                        \"favorited\": True,\n                        \"favorites_count\": article.favorites_count + 1,\n                    },\n                ),\n            ),\n        )\n\n    raise HTTPException(\n        status_code=status.HTTP_400_BAD_REQUEST,\n        detail=strings.ARTICLE_IS_ALREADY_FAVORITED,\n    )",
+        "metadata": {
+            "has_async": true,
+            "lines": 28,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_remove_article_from_favorites_3",
+        "source": "app\\api\\routes\\articles\\articles_common.py",
+        "method": "DELETE",
+        "route": "/{slug}/favorite",
+        "function_name": "remove_article_from_favorites",
+        "code": "@router.delete(\n    \"/{slug}/favorite\",\n    response_model=ArticleInResponse,\n    name=\"articles:unmark-article-favorite\",\n)\nasync def remove_article_from_favorites(\n    article: Article = Depends(get_article_by_slug_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ArticleInResponse:\n    if article.favorited:\n        await articles_repo.remove_article_from_favorites(article=article, user=user)\n\n        return ArticleInResponse(\n            article=ArticleForResponse.from_orm(\n                article.copy(\n                    update={\n                        \"favorited\": False,\n                        \"favorites_count\": article.favorites_count - 1,\n                    },\n                ),\n            ),\n        )\n\n    raise HTTPException(\n        status_code=status.HTTP_400_BAD_REQUEST,\n        detail=strings.ARTICLE_IS_NOT_FAVORITED,\n    )",
+        "metadata": {
+            "has_async": true,
+            "lines": 28,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_list_articles_1",
+        "source": "app\\api\\routes\\articles\\articles_resource.py",
+        "method": "GET",
+        "route": "",
+        "function_name": "list_articles",
+        "code": "@router.get(\"\", response_model=ListOfArticlesInResponse, name=\"articles:list-articles\")\nasync def list_articles(\n    articles_filters: ArticlesFilters = Depends(get_articles_filters),\n    user: Optional[User] = Depends(get_current_user_authorizer(required=False)),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ListOfArticlesInResponse:\n    articles = await articles_repo.filter_articles(\n        tag=articles_filters.tag,\n        author=articles_filters.author,\n        favorited=articles_filters.favorited,\n        limit=articles_filters.limit,\n        offset=articles_filters.offset,\n        requested_user=user,\n    )\n    articles_for_response = [\n        ArticleForResponse.from_orm(article) for article in articles\n    ]\n    return ListOfArticlesInResponse(\n        articles=articles_for_response,\n        articles_count=len(articles),\n    )",
+        "metadata": {
+            "has_async": true,
+            "lines": 21,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_create_new_article_2",
+        "source": "app\\api\\routes\\articles\\articles_resource.py",
+        "method": "POST",
+        "route": "",
+        "function_name": "create_new_article",
+        "code": "@router.post(\n    \"\",\n    status_code=status.HTTP_201_CREATED,\n    response_model=ArticleInResponse,\n    name=\"articles:create-article\",\n)\nasync def create_new_article(\n    article_create: ArticleInCreate = Body(..., embed=True, alias=\"article\"),\n    user: User = Depends(get_current_user_authorizer()),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ArticleInResponse:\n    slug = get_slug_for_article(article_create.title)\n    if await check_article_exists(articles_repo, slug):\n        raise HTTPException(\n            status_code=status.HTTP_400_BAD_REQUEST,\n            detail=strings.ARTICLE_ALREADY_EXISTS,\n        )\n\n    article = await articles_repo.create_article(\n        slug=slug,\n        title=article_create.title,\n        description=article_create.description,\n        body=article_create.body,\n        author=user,\n        tags=article_create.tags,\n    )\n    return ArticleInResponse(article=ArticleForResponse.from_orm(article))",
+        "metadata": {
+            "has_async": true,
+            "lines": 27,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_retrieve_article_by_slug_3",
+        "source": "app\\api\\routes\\articles\\articles_resource.py",
+        "method": "GET",
+        "route": "/{slug}",
+        "function_name": "retrieve_article_by_slug",
+        "code": "@router.get(\"/{slug}\", response_model=ArticleInResponse, name=\"articles:get-article\")\nasync def retrieve_article_by_slug(\n    article: Article = Depends(get_article_by_slug_from_path),\n) -> ArticleInResponse:\n    return ArticleInResponse(article=ArticleForResponse.from_orm(article))",
+        "metadata": {
+            "has_async": true,
+            "lines": 5,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_update_article_by_slug_4",
+        "source": "app\\api\\routes\\articles\\articles_resource.py",
+        "method": "PUT",
+        "route": "/{slug}",
+        "function_name": "update_article_by_slug",
+        "code": "@router.put(\n    \"/{slug}\",\n    response_model=ArticleInResponse,\n    name=\"articles:update-article\",\n    dependencies=[Depends(check_article_modification_permissions)],\n)\nasync def update_article_by_slug(\n    article_update: ArticleInUpdate = Body(..., embed=True, alias=\"article\"),\n    current_article: Article = Depends(get_article_by_slug_from_path),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ArticleInResponse:\n    slug = get_slug_for_article(article_update.title) if article_update.title else None\n    article = await articles_repo.update_article(\n        article=current_article,\n        slug=slug,\n        **article_update.dict(),\n    )\n    return ArticleInResponse(article=ArticleForResponse.from_orm(article))",
+        "metadata": {
+            "has_async": true,
+            "lines": 18,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_delete_article_by_slug_5",
+        "source": "app\\api\\routes\\articles\\articles_resource.py",
+        "method": "DELETE",
+        "route": "/{slug}",
+        "function_name": "delete_article_by_slug",
+        "code": "@router.delete(\n    \"/{slug}\",\n    status_code=status.HTTP_204_NO_CONTENT,\n    name=\"articles:delete-article\",\n    dependencies=[Depends(check_article_modification_permissions)],\n    response_class=Response,\n)\nasync def delete_article_by_slug(\n    article: Article = Depends(get_article_by_slug_from_path),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> None:\n    await articles_repo.delete_article(article=article)",
+        "metadata": {
+            "has_async": true,
+            "lines": 12,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_items_1",
+        "source": "backend\\app\\api\\routes\\items.py",
+        "method": "GET",
+        "route": "/",
+        "function_name": "read_items",
+        "code": "@router.get(\"/\", response_model=ItemsPublic)\ndef read_items(\n    session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 100\n) -> Any:\n    \"\"\"\n    Retrieve items.\n    \"\"\"\n\n    if current_user.is_superuser:\n        count_statement = select(func.count()).select_from(Item)\n        count = session.exec(count_statement).one()\n        statement = select(Item).offset(skip).limit(limit)\n        items = session.exec(statement).all()\n    else:\n        count_statement = (\n            select(func.count())\n            .select_from(Item)\n            .where(Item.owner_id == current_user.id)\n        )\n        count = session.exec(count_statement).one()\n        statement = (\n            select(Item)\n            .where(Item.owner_id == current_user.id)\n            .offset(skip)\n            .limit(limit)\n        )\n        items = session.exec(statement).all()\n\n    return ItemsPublic(data=items, count=count)",
+        "metadata": {
+            "has_async": false,
+            "lines": 29,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_item_2",
+        "source": "backend\\app\\api\\routes\\items.py",
+        "method": "GET",
+        "route": "/{id}",
+        "function_name": "read_item",
+        "code": "@router.get(\"/{id}\", response_model=ItemPublic)\ndef read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:\n    \"\"\"\n    Get item by ID.\n    \"\"\"\n    item = session.get(Item, id)\n    if not item:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    if not current_user.is_superuser and (item.owner_id != current_user.id):\n        raise HTTPException(status_code=400, detail=\"Not enough permissions\")\n    return item",
+        "metadata": {
+            "has_async": false,
+            "lines": 11,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_create_item_3",
+        "source": "backend\\app\\api\\routes\\items.py",
+        "method": "POST",
+        "route": "/",
+        "function_name": "create_item",
+        "code": "@router.post(\"/\", response_model=ItemPublic)\ndef create_item(\n    *, session: SessionDep, current_user: CurrentUser, item_in: ItemCreate\n) -> Any:\n    \"\"\"\n    Create new item.\n    \"\"\"\n    item = Item.model_validate(item_in, update={\"owner_id\": current_user.id})\n    session.add(item)\n    session.commit()\n    session.refresh(item)\n    return item",
+        "metadata": {
+            "has_async": false,
+            "lines": 12,
+            "expected_violations": [
+                "endpoint_structure",
+                "http_semantics"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code",
+                "post_201"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_update_item_4",
+        "source": "backend\\app\\api\\routes\\items.py",
+        "method": "PUT",
+        "route": "/{id}",
+        "function_name": "update_item",
+        "code": "@router.put(\"/{id}\", response_model=ItemPublic)\ndef update_item(\n    *,\n    session: SessionDep,\n    current_user: CurrentUser,\n    id: uuid.UUID,\n    item_in: ItemUpdate,\n) -> Any:\n    \"\"\"\n    Update an item.\n    \"\"\"\n    item = session.get(Item, id)\n    if not item:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    if not current_user.is_superuser and (item.owner_id != current_user.id):\n        raise HTTPException(status_code=400, detail=\"Not enough permissions\")\n    update_dict = item_in.model_dump(exclude_unset=True)\n    item.sqlmodel_update(update_dict)\n    session.add(item)\n    session.commit()\n    session.refresh(item)\n    return item",
+        "metadata": {
+            "has_async": false,
+            "lines": 22,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_delete_item_5",
+        "source": "backend\\app\\api\\routes\\items.py",
+        "method": "DELETE",
+        "route": "/{id}",
+        "function_name": "delete_item",
+        "code": "@router.delete(\"/{id}\")\ndef delete_item(\n    session: SessionDep, current_user: CurrentUser, id: uuid.UUID\n) -> Message:\n    \"\"\"\n    Delete an item.\n    \"\"\"\n    item = session.get(Item, id)\n    if not item:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    if not current_user.is_superuser and (item.owner_id != current_user.id):\n        raise HTTPException(status_code=400, detail=\"Not enough permissions\")\n    session.delete(item)\n    session.commit()\n    return Message(message=\"Item deleted successfully\")",
+        "metadata": {
+            "has_async": false,
+            "lines": 15,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_login_access_token_1",
+        "source": "backend\\app\\api\\routes\\login.py",
+        "method": "POST",
+        "route": "/login/access-token",
+        "function_name": "login_access_token",
+        "code": "@router.post(\"/login/access-token\")\ndef login_access_token(\n    session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]\n) -> Token:\n    \"\"\"\n    OAuth2 compatible token login, get an access token for future requests\n    \"\"\"\n    user = crud.authenticate(\n        session=session, email=form_data.username, password=form_data.password\n    )\n    if not user:\n        raise HTTPException(status_code=400, detail=\"Incorrect email or password\")\n    elif not user.is_active:\n        raise HTTPException(status_code=400, detail=\"Inactive user\")\n    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)\n    return Token(\n        access_token=security.create_access_token(\n            user.id, expires_delta=access_token_expires\n        )\n    )",
+        "metadata": {
+            "has_async": false,
+            "lines": 20,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_test_token_2",
+        "source": "backend\\app\\api\\routes\\login.py",
+        "method": "POST",
+        "route": "/login/test-token",
+        "function_name": "test_token",
+        "code": "@router.post(\"/login/test-token\", response_model=UserPublic)\ndef test_token(current_user: CurrentUser) -> Any:\n    \"\"\"\n    Test access token\n    \"\"\"\n    return current_user",
+        "metadata": {
+            "has_async": false,
+            "lines": 6,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_3",
+        "source": "backend\\app\\api\\routes\\login.py",
+        "method": "POST",
+        "route": "/password-recovery/{email}",
+        "function_name": "recover_password",
+        "code": "@router.post(\"/password-recovery/{email}\")\ndef recover_password(email: str, session: SessionDep) -> Message:\n    \"\"\"\n    Password Recovery\n    \"\"\"\n    user = crud.get_user_by_email(session=session, email=email)\n\n    if not user:\n        raise HTTPException(\n            status_code=404,\n            detail=\"The user with this email does not exist in the system.\",\n        )\n    password_reset_token = generate_password_reset_token(email=email)\n    email_data = generate_reset_password_email(\n        email_to=user.email, email=email, token=password_reset_token\n    )\n    send_email(\n        email_to=user.email,\n        subject=email_data.subject,\n        html_content=email_data.html_content,\n    )\n    return Message(message=\"Password recovery email sent\")",
+        "metadata": {
+            "has_async": false,
+            "lines": 22,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_reset_password_4",
+        "source": "backend\\app\\api\\routes\\login.py",
+        "method": "POST",
+        "route": "/reset-password/",
+        "function_name": "reset_password",
+        "code": "@router.post(\"/reset-password/\")\ndef reset_password(session: SessionDep, body: NewPassword) -> Message:\n    \"\"\"\n    Reset password\n    \"\"\"\n    email = verify_password_reset_token(token=body.token)\n    if not email:\n        raise HTTPException(status_code=400, detail=\"Invalid token\")\n    user = crud.get_user_by_email(session=session, email=email)\n    if not user:\n        raise HTTPException(\n            status_code=404,\n            detail=\"The user with this email does not exist in the system.\",\n        )\n    elif not user.is_active:\n        raise HTTPException(status_code=400, detail=\"Inactive user\")\n    hashed_password = get_password_hash(password=body.new_password)\n    user.hashed_password = hashed_password\n    session.add(user)\n    session.commit()\n    return Message(message=\"Password updated successfully\")",
+        "metadata": {
+            "has_async": false,
+            "lines": 21,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_html_content_5",
+        "source": "backend\\app\\api\\routes\\login.py",
+        "method": "POST",
+        "route": "/password-recovery-html-content/{email}",
+        "function_name": "recover_password_html_content",
+        "code": "@router.post(\n    \"/password-recovery-html-content/{email}\",\n    dependencies=[Depends(get_current_active_superuser)],\n    response_class=HTMLResponse,\n)\ndef recover_password_html_content(email: str, session: SessionDep) -> Any:\n    \"\"\"\n    HTML Content for Password Recovery\n    \"\"\"\n    user = crud.get_user_by_email(session=session, email=email)\n\n    if not user:\n        raise HTTPException(\n            status_code=404,\n            detail=\"The user with this username does not exist in the system.\",\n        )\n    password_reset_token = generate_password_reset_token(email=email)\n    email_data = generate_reset_password_email(\n        email_to=user.email, email=email, token=password_reset_token\n    )\n\n    return HTMLResponse(\n        content=email_data.html_content, headers={\"subject:\": email_data.subject}\n    )",
+        "metadata": {
+            "has_async": false,
+            "lines": 24,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_PRIVATE_create_user_1",
+        "source": "backend\\app\\api\\routes\\private.py",
+        "method": "POST",
+        "route": "/users/",
+        "function_name": "create_user",
+        "code": "@router.post(\"/users/\", response_model=UserPublic)\ndef create_user(user_in: PrivateUserCreate, session: SessionDep) -> Any:\n    \"\"\"\n    Create a new user.\n    \"\"\"\n\n    user = User(\n        email=user_in.email,\n        full_name=user_in.full_name,\n        hashed_password=get_password_hash(user_in.password),\n    )\n\n    session.add(user)\n    session.commit()\n\n    return user",
+        "metadata": {
+            "has_async": false,
+            "lines": 16,
+            "expected_violations": [
+                "endpoint_structure",
+                "http_semantics"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code",
+                "post_201"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_read_users_1",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "GET",
+        "route": "/",
+        "function_name": "read_users",
+        "code": "@router.get(\n    \"/\",\n    dependencies=[Depends(get_current_active_superuser)],\n    response_model=UsersPublic,\n)\ndef read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:\n    \"\"\"\n    Retrieve users.\n    \"\"\"\n\n    count_statement = select(func.count()).select_from(User)\n    count = session.exec(count_statement).one()\n\n    statement = select(User).offset(skip).limit(limit)\n    users = session.exec(statement).all()\n\n    return UsersPublic(data=users, count=count)",
+        "metadata": {
+            "has_async": false,
+            "lines": 17,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_create_user_2",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "POST",
+        "route": "/",
+        "function_name": "create_user",
+        "code": "@router.post(\n    \"/\", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic\n)\ndef create_user(*, session: SessionDep, user_in: UserCreate) -> Any:\n    \"\"\"\n    Create new user.\n    \"\"\"\n    user = crud.get_user_by_email(session=session, email=user_in.email)\n    if user:\n        raise HTTPException(\n            status_code=400,\n            detail=\"The user with this email already exists in the system.\",\n        )\n\n    user = crud.create_user(session=session, user_create=user_in)\n    if settings.emails_enabled and user_in.email:\n        email_data = generate_new_account_email(\n            email_to=user_in.email, username=user_in.email, password=user_in.password\n        )\n        send_email(\n            email_to=user_in.email,\n            subject=email_data.subject,\n            html_content=email_data.html_content,\n        )\n    return user",
+        "metadata": {
+            "has_async": false,
+            "lines": 25,
+            "expected_violations": [
+                "endpoint_structure",
+                "http_semantics"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code",
+                "post_201"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_me_3",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "PATCH",
+        "route": "/me",
+        "function_name": "update_user_me",
+        "code": "@router.patch(\"/me\", response_model=UserPublic)\ndef update_user_me(\n    *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser\n) -> Any:\n    \"\"\"\n    Update own user.\n    \"\"\"\n\n    if user_in.email:\n        existing_user = crud.get_user_by_email(session=session, email=user_in.email)\n        if existing_user and existing_user.id != current_user.id:\n            raise HTTPException(\n                status_code=409, detail=\"User with this email already exists\"\n            )\n    user_data = user_in.model_dump(exclude_unset=True)\n    current_user.sqlmodel_update(user_data)\n    session.add(current_user)\n    session.commit()\n    session.refresh(current_user)\n    return current_user",
+        "metadata": {
+            "has_async": false,
+            "lines": 20,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_update_password_me_4",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "PATCH",
+        "route": "/me/password",
+        "function_name": "update_password_me",
+        "code": "@router.patch(\"/me/password\", response_model=Message)\ndef update_password_me(\n    *, session: SessionDep, body: UpdatePassword, current_user: CurrentUser\n) -> Any:\n    \"\"\"\n    Update own password.\n    \"\"\"\n    if not verify_password(body.current_password, current_user.hashed_password):\n        raise HTTPException(status_code=400, detail=\"Incorrect password\")\n    if body.current_password == body.new_password:\n        raise HTTPException(\n            status_code=400, detail=\"New password cannot be the same as the current one\"\n        )\n    hashed_password = get_password_hash(body.new_password)\n    current_user.hashed_password = hashed_password\n    session.add(current_user)\n    session.commit()\n    return Message(message=\"Password updated successfully\")",
+        "metadata": {
+            "has_async": false,
+            "lines": 18,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_me_5",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "GET",
+        "route": "/me",
+        "function_name": "read_user_me",
+        "code": "@router.get(\"/me\", response_model=UserPublic)\ndef read_user_me(current_user: CurrentUser) -> Any:\n    \"\"\"\n    Get current user.\n    \"\"\"\n    return current_user",
+        "metadata": {
+            "has_async": false,
+            "lines": 6,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_me_6",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "DELETE",
+        "route": "/me",
+        "function_name": "delete_user_me",
+        "code": "@router.delete(\"/me\", response_model=Message)\ndef delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:\n    \"\"\"\n    Delete own user.\n    \"\"\"\n    if current_user.is_superuser:\n        raise HTTPException(\n            status_code=403, detail=\"Super users are not allowed to delete themselves\"\n        )\n    session.delete(current_user)\n    session.commit()\n    return Message(message=\"User deleted successfully\")",
+        "metadata": {
+            "has_async": false,
+            "lines": 12,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_register_user_7",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "POST",
+        "route": "/signup",
+        "function_name": "register_user",
+        "code": "@router.post(\"/signup\", response_model=UserPublic)\ndef register_user(session: SessionDep, user_in: UserRegister) -> Any:\n    \"\"\"\n    Create new user without the need to be logged in.\n    \"\"\"\n    user = crud.get_user_by_email(session=session, email=user_in.email)\n    if user:\n        raise HTTPException(\n            status_code=400,\n            detail=\"The user with this email already exists in the system\",\n        )\n    user_create = UserCreate.model_validate(user_in)\n    user = crud.create_user(session=session, user_create=user_create)\n    return user",
+        "metadata": {
+            "has_async": false,
+            "lines": 14,
+            "expected_violations": [
+                "endpoint_structure",
+                "http_semantics"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code",
+                "post_201"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_by_id_8",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "GET",
+        "route": "/{user_id}",
+        "function_name": "read_user_by_id",
+        "code": "@router.get(\"/{user_id}\", response_model=UserPublic)\ndef read_user_by_id(\n    user_id: uuid.UUID, session: SessionDep, current_user: CurrentUser\n) -> Any:\n    \"\"\"\n    Get a specific user by id.\n    \"\"\"\n    user = session.get(User, user_id)\n    if user == current_user:\n        return user\n    if not current_user.is_superuser:\n        raise HTTPException(\n            status_code=403,\n            detail=\"The user doesn't have enough privileges\",\n        )\n    return user",
+        "metadata": {
+            "has_async": false,
+            "lines": 16,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_9",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "PATCH",
+        "route": "/{user_id}",
+        "function_name": "update_user",
+        "code": "@router.patch(\n    \"/{user_id}\",\n    dependencies=[Depends(get_current_active_superuser)],\n    response_model=UserPublic,\n)\ndef update_user(\n    *,\n    session: SessionDep,\n    user_id: uuid.UUID,\n    user_in: UserUpdate,\n) -> Any:\n    \"\"\"\n    Update a user.\n    \"\"\"\n\n    db_user = session.get(User, user_id)\n    if not db_user:\n        raise HTTPException(\n            status_code=404,\n            detail=\"The user with this id does not exist in the system\",\n        )\n    if user_in.email:\n        existing_user = crud.get_user_by_email(session=session, email=user_in.email)\n        if existing_user and existing_user.id != user_id:\n            raise HTTPException(\n                status_code=409, detail=\"User with this email already exists\"\n            )\n\n    db_user = crud.update_user(session=session, db_user=db_user, user_in=user_in)\n    return db_user",
+        "metadata": {
+            "has_async": false,
+            "lines": 30,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_10",
+        "source": "backend\\app\\api\\routes\\users.py",
+        "method": "DELETE",
+        "route": "/{user_id}",
+        "function_name": "delete_user",
+        "code": "@router.delete(\"/{user_id}\", dependencies=[Depends(get_current_active_superuser)])\ndef delete_user(\n    session: SessionDep, current_user: CurrentUser, user_id: uuid.UUID\n) -> Message:\n    \"\"\"\n    Delete a user.\n    \"\"\"\n    user = session.get(User, user_id)\n    if not user:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    if user == current_user:\n        raise HTTPException(\n            status_code=403, detail=\"Super users are not allowed to delete themselves\"\n        )\n    statement = delete(Item).where(col(Item.owner_id) == user_id)\n    session.exec(statement)  # type: ignore\n    session.delete(user)\n    session.commit()\n    return Message(message=\"User deleted successfully\")",
+        "metadata": {
+            "has_async": false,
+            "lines": 19,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "status_code"
+            ]
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_UTILS_test_email_1",
+        "source": "backend\\app\\api\\routes\\utils.py",
+        "method": "POST",
+        "route": "/test-email/",
+        "function_name": "test_email",
+        "code": "@router.post(\n    \"/test-email/\",\n    dependencies=[Depends(get_current_active_superuser)],\n    status_code=201,\n)\ndef test_email(email_to: EmailStr) -> Message:\n    \"\"\"\n    Test emails.\n    \"\"\"\n    email_data = generate_test_email(email_to=email_to)\n    send_email(\n        email_to=email_to,\n        subject=email_data.subject,\n        html_content=email_data.html_content,\n    )\n    return Message(message=\"Test email sent\")",
+        "metadata": {
+            "has_async": false,
+            "lines": 16,
+            "expected_violations": [],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": []
+        }
+    },
+    {
+        "id": "FULL-STACK-FASTAPI-TEMPLATE_UTILS_health_check_2",
+        "source": "backend\\app\\api\\routes\\utils.py",
+        "method": "GET",
+        "route": "/health-check/",
+        "function_name": "health_check",
+        "code": "@router.get(\"/health-check/\")\nasync def health_check() -> bool:\n    return True",
+        "metadata": {
+            "has_async": true,
+            "lines": 3,
+            "expected_violations": [
+                "endpoint_structure"
+            ],
+            "expected_score_min": 60,
+            "expected_score_max": 60,
+            "expected_keywords": [
+                "docstring",
+                "status_code"
+            ]
+        }
+    }
+]

@@ -42,6 +42,8 @@ def gerar_dataset_sintetico():
             "description": "Endpoint GET completo com paginação e documentação",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["APIRouter", "response_model", "status_code", "Query", "docstring", "type_hints"],
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
@@ -89,6 +91,8 @@ async def get_users(
             "description": "Endpoint POST com validação Pydantic completa",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["APIRouter", "status", "HTTPException", "Pydantic", "ProductCreate", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -147,6 +151,8 @@ async def create_product(
             "description": "Endpoint PUT com validação de existência",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["APIRouter", "Path", "OrderUpdate", "HTTPException", "status", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status, Path
 from sqlalchemy.orm import Session
@@ -208,6 +214,8 @@ async def update_order(
             "description": "Endpoint DELETE com soft delete",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["APIRouter", "docstring", "status_code", "convenção", "snake_case", "type annotation", "codes"],
             "code": """
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status, Path
@@ -260,6 +268,8 @@ async def delete_category(
             "description": "Endpoint com Background Tasks e status 202",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["BackgroundTasks", "status.HTTP_202_ACCEPTED", "Body", "Pydantic", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, BackgroundTasks, HTTPException, status, Body
 from pydantic import BaseModel, EmailStr, Field
@@ -325,6 +335,8 @@ async def send_notification(
             "description": "Endpoint de Upload de Arquivo com Validação",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["UploadFile", "File", "content_type", "validation", "size limit", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, UploadFile, File, HTTPException, status
 from pydantic import BaseModel
@@ -376,6 +388,8 @@ async def upload_file(
             "description": "Endpoint de Busca Complexa com Dependência de Filtro",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["Depends", "filter", "query builder", "Optional", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, Depends, Query, HTTPException, status
 from typing import Optional, List
@@ -420,6 +434,8 @@ async def search_items(
             "description": "Endpoint com autenticação OAuth2 e Scopes",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["OAuth2PasswordBearer", "SecurityScopes", "Security", "scopes", "authentication", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, Depends, Security, status
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
@@ -469,6 +485,8 @@ async def delete_user_admin(
             "description": "Health Check Endpoint Robusto",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["health check", "SELECT 1", "database check", "status.HTTP_200_OK", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status, Depends
 from sqlalchemy.sql import text
@@ -500,6 +518,8 @@ async def health_check(db: Session = Depends(get_db)) -> HealthResponse:
             "description": "Endpoint com StreamingResponse",
             "expected_score_min": 90,
             "expected_score_max": 100,
+            "expected_violations": [],
+            "expected_keywords": ["StreamingResponse", "yield", "generator", "stream", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status
 from fastapi.responses import StreamingResponse
@@ -537,9 +557,11 @@ async def export_data_csv() -> StreamingResponse:
     good_examples = [
         {
             "id": "GOOD_001",
-            "description": "Endpoint sem tags explícitas (mas tem outras boas práticas)",
+            "description": "Endpoint sem type annotation",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["type_hints"],
+            "expected_keywords": ["HTTPException", "status", "List", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -554,7 +576,7 @@ router = APIRouter(prefix="/api/v1")
 )
 async def get_items(
     db: Session = Depends(get_db)
-) -> List[ItemResponse]:
+):
     '''Recupera lista de items'''
     try:
         items = db.query(Item).all()
@@ -568,9 +590,11 @@ async def get_items(
         },
         {
             "id": "GOOD_002",
-            "description": "Endpoint com docstring simples (não estruturada)",
+            "description": "Endpoint sem docstring",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["endpoint_structure"],
+            "expected_keywords": ["TaskCreate", "TaskResponse", "HTTP_201_CREATED", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, HTTPException, status
 
@@ -583,7 +607,6 @@ router = APIRouter(prefix="/api/v1", tags=["tasks"])
     tags=["tasks"]
 )
 async def create_task(task: TaskCreate, db: Session = Depends(get_db)) -> TaskResponse:
-    '''Cria uma nova tarefa no sistema'''
     try:
         new_task = Task(**task.dict())
         db.add(new_task)
@@ -599,6 +622,8 @@ async def create_task(task: TaskCreate, db: Session = Depends(get_db)) -> TaskRe
             "description": "Endpoint sem Query() explícito para parâmetros",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["endpoint_structure"],
+            "expected_keywords": ["docstring", "pagination", "List"],
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -617,12 +642,6 @@ async def get_reports(
     limit: int = Query(100, ge=1, le=100),
     db: Session = Depends(get_db)
 ) -> List[ReportResponse]:
-    '''
-    Lista relatórios com paginação.
-    
-    Returns:
-        Lista de relatórios
-    '''
     try:
         reports = db.query(Report).offset(skip).limit(limit).all()
         return reports
@@ -635,15 +654,17 @@ async def get_reports(
         },
         {
             "id": "GOOD_004",
-            "description": "Faltam tags e description no Query",
+            "description": "status code errado",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["http_semantics"],
+            "expected_keywords": ["missing description", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, Query
 
 router = APIRouter(tags=["search"])
 
-@router.get("/search", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["search"])
+@router.get("/search", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, response_model=Dict[str, str], tags=["search"])
 async def search(q: Optional[str] = Query(None)) -> Dict[str, str]:
     '''Busca simples'''
     return {"query": q or ""}
@@ -654,14 +675,15 @@ async def search(q: Optional[str] = Query(None)) -> Dict[str, str]:
             "description": "Response model genérico Dict",
             "expected_score_min": 80,
             "expected_score_max": 89,
-            "expected_keywords": ["response_model", "Dict", "schema", "Pydantic"],
+            "expected_violations": ["input_validation_and_openapi"],
+            "expected_keywords": ["response_model", "Dict", "schema", "Pydantic", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict
 
 router = APIRouter(tags=["misc"])
 
-@router.get("/config", response_model=Dict[str, str], status_code=status.HTTP_200_OK, tags=["misc"])
+@router.get("/config", status_code=status.HTTP_200_OK, tags=["misc"])
 async def get_config() -> Dict[str, str]:
     '''Retorna configurações'''
     return {"version": "1.0", "env": "prod"}
@@ -669,30 +691,33 @@ async def get_config() -> Dict[str, str]:
         },
         {
             "id": "GOOD_006",
-            "description": "Falta docstring estruturada",
+            "description": "Endpoint retorna status_code 200 em caso de erro",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["error_handling"],
+            "expected_keywords": ["status_code", "authentication", "token"],
             "code": """
 from fastapi import APIRouter, status, Depends
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/v1", tags=["auth"])
 
-@router.post("/login", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["auth"])
+@router.post("/login", response_model=Dict[str, str], tags=["auth"])
 async def login(creds: LoginCtx) -> Dict[str, str]:
     '''Faz login e retorna um token.'''
     try:
         return {"token": "abc"}
     except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro no login")
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Erro no login")
 """,
         },
         {
             "id": "GOOD_007",
-            "description": "Uso de print em vez de logger",
+            "description": "Endpoint sem docstring",
             "expected_score_min": 80,
             "expected_score_max": 89,
-            "expected_keywords": ["print", "logger", "logging"],
+            "expected_violations": ["endpoint_structure"],
+            "expected_keywords": ["status_code", "docstring"],
             "code": """
 from fastapi import APIRouter, status
 
@@ -700,16 +725,17 @@ router = APIRouter(tags=["test"])
 
 @router.get("/debug", status_code=status.HTTP_200_OK)
 async def debug_endpoint() -> Dict[str, str]:
-    '''Endpoint para debug'''
     print("Debug endpoint called")
     return {"status": "ok"}
 """,
         },
         {
             "id": "GOOD_008",
-            "description": "Mistura de snake_case e camelCase nas variáveis",
+            "description": "CamelCase em variáveis",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["naming_conventions"],
+            "expected_keywords": ["variable case", "snake_case", "camelCase","convenção", "convention", "naming"],
             "code": """
 from fastapi import APIRouter
 
@@ -718,8 +744,8 @@ router = APIRouter(tags=["users"])
 @router.get("/users/count", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["users"])
 async def get_user_count() -> Dict[str, int]:
     '''Retorna total de usuários'''
-    user_count = 100
-    return {"count": user_count}
+    UserCount = 100
+    return {"count": UserCount}
 """,
         },
         {
@@ -727,6 +753,8 @@ async def get_user_count() -> Dict[str, int]:
             "description": "Falta status code explícito 201 no POST",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["endpoint_structure"],
+            "expected_keywords": ["HTTP_201_CREATED", "status_code"],
             "code": """
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -736,7 +764,7 @@ router = APIRouter(tags=["items"])
 class Item(BaseModel):
     name: str
 
-@router.post("/items", status_code=status.HTTP_201_CREATED)
+@router.post("/items")
 async def create_item(item: Item):
     '''Cria item'''
     return item
@@ -744,15 +772,17 @@ async def create_item(item: Item):
         },
         {
             "id": "GOOD_010",
-            "description": "Endpoint síncrono para operação I/O bound simples",
+            "description": "Endpoint sem response_model",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["input_validation_and_openapi"],
+            "expected_keywords": ["response_model", "Dict", "schema", "Pydantic", "status_code"],
             "code": """
 from fastapi import APIRouter
 
 router = APIRouter(tags=["utils"])
 
-@router.get("/echo", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["utils"])
+@router.get("/echo", status_code=status.HTTP_200_OK, tags=["utils"])
 def echo_message(msg: str = Query(...)) -> Dict[str, str]:
     '''Retorna a mensagem enviada'''
     return {"message": msg}
@@ -760,16 +790,18 @@ def echo_message(msg: str = Query(...)) -> Dict[str, str]:
         },
         {
             "id": "GOOD_011",
-            "description": "Validação de entrada manual simples, poderia ser Pydantic",
+            "description": "Nao usa type hints no retorno",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["type_hints"],
+            "expected_keywords": ["manual validation", "HTTPException", "if check","type hints", "type annotation"],
             "code": """
 from fastapi import APIRouter, HTTPException
 
 router = APIRouter(tags=["calc"])
 
 @router.get("/divide", status_code=status.HTTP_200_OK, response_model=Dict[str, float], tags=["calc"])
-async def divide(a: int, b: int) -> Dict[str, float]:
+async def divide(a: int, b: int):
     '''Faz divisão'''
     if b == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Zero division")
@@ -781,6 +813,8 @@ async def divide(a: int, b: int) -> Dict[str, float]:
             "description": "Path parameter sem type hint int explícito na rota",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["type_hints"],
+            "expected_keywords": ["path parameter", "no explicit type in decorator", "type hints", "type annotation"],
             "code": """
 from fastapi import APIRouter
 
@@ -797,6 +831,8 @@ async def get_user(user_id: int):
             "description": "Retorna lista direta sem wrapping object (ok, mas menos evoluível)",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["naming_conventions"],
+            "expected_keywords": ["direct list return", "List[str]", "naming conventions", "snake_case", "camelCase"],
             "code": """
 from fastapi import APIRouter
 from typing import List
@@ -804,7 +840,7 @@ from typing import List
 router = APIRouter(tags=["tags"])
 
 @router.get("/tags", response_model=List[str], status_code=status.HTTP_200_OK, tags=["tags"])
-async def get_tags() -> List[str]:
+async def get() -> List[str]:
     '''Lista todas as tags'''
     return ["tag1", "tag2"]
 """,
@@ -814,12 +850,14 @@ async def get_tags() -> List[str]:
             "description": "Falta response_model, mas implementação é limpa",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["input_validation_and_openapi"],
+            "expected_keywords": ["response_model", "status_code"],
             "code": """
 from fastapi import APIRouter, status
 
 router = APIRouter(tags=["status"])
 
-@router.get("/ping", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["status"])
+@router.get("/ping", status_code=status.HTTP_200_OK, tags=["status"])
 async def ping() -> Dict[str, str]:
     '''Health check simples'''
     return {"ping": "pong"}
@@ -830,6 +868,8 @@ async def ping() -> Dict[str, str]:
             "description": "Usa Form em vez de Pydantic JSON Body para dados estruturados",
             "expected_score_min": 80,
             "expected_score_max": 89,
+            "expected_violations": ["input_validation_and_openapi"],
+            "expected_keywords": ["Form", "form-data", "not JSON", "input validation", "openapi", "pydantic", "Body", "request body"],
             "code": """
 from fastapi import APIRouter, Form
 
@@ -853,6 +893,8 @@ async def login_form(username: str = Form(...), password: str = Form(...)) -> Di
             "description": "Endpoint sem response_model",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["input_validation_and_openapi", "type_hints"],
+            "expected_keywords": ["List[dict]", "missing schema", "status_code","type hints", "type annotation"],
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -860,8 +902,8 @@ from typing import List
 
 router = APIRouter(prefix="/api/v1", tags=["customers"])
 
-@router.get("/customers", status_code=status.HTTP_200_OK, response_model=List[dict])
-async def get_customers(db: Session = Depends(get_db)) -> List[dict]:
+@router.get("/customers", status_code=status.HTTP_200_OK)
+async def get_customers(db: Session = Depends(get_db)):
     '''Retorna lista de clientes'''
     try:
         customers = db.query(Customer).all()
@@ -876,6 +918,8 @@ async def get_customers(db: Session = Depends(get_db)) -> List[dict]:
             "description": "Endpoint com nome inadequado e sem type hints completos",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["type_hints", "endpoint_structure"],
+            "expected_keywords": ["FastAPI", "missing return hint", "naming", "type hints", "type annotation"],
             "code": """
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -897,6 +941,8 @@ def get_user_data(user_id: int, db: Session = Depends(get_db)):
             "description": "Endpoint sem tratamento adequado de erros",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["error_handling", "type_hints"],
+            "expected_keywords": ["Exception", "generic error", "status_code", "type hints", "type annotation"],
             "code": """
 from fastapi import APIRouter, Depends, HTTPException, status, Path
 from sqlalchemy.orm import Session
@@ -912,25 +958,27 @@ router = APIRouter(tags=["invoices"])
 async def get_invoice(
     invoice_id: int = Path(..., gt=0),
     db: Session = Depends(get_db)
-) -> InvoiceResponse:
+):
     '''Busca fatura por ID'''
     try:
         invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
         if not invoice:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found")
+            raise HTTPException(status_code=status.HTTP_200_OK, detail="Invoice not found")
         return invoice
     except HTTPException:
         raise
     except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro ao buscar fatura")
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Erro ao buscar fatura")
 
 """,
         },
         {
             "id": "MED_004",
-            "description": "Tratamento de erro genérico (Exception)",
+            "description": "Endpoint com status code 200 em caso de erro e sem docstring",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["error_handling", "endpoint_structure"],
+            "expected_keywords": ["Exception", "generic try/except", "status_code", "HTTPException", "docstring"],
             "code": """
 from fastapi import APIRouter, HTTPException, status
 from typing import Dict
@@ -939,11 +987,10 @@ router = APIRouter(tags=["risky"])
 
 @router.get("/risky", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["risky"])
 async def risky_op() -> Dict[str, str]:
-    '''Executa operação arriscada'''
     try:
         return {"status": "ok"}
     except Exception:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Error")
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Error")
 
 """,
         },
@@ -952,6 +999,8 @@ async def risky_op() -> Dict[str, str]:
             "description": "Sem type hints nos parâmetros",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["type_hints"],
+            "expected_keywords": ["missing hints", "int", "typing", "status_code", "type hints", "type annotation"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict
@@ -959,7 +1008,7 @@ from typing import Dict
 router = APIRouter(tags=["calc"])
 
 @router.get("/calc", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["calc"])
-async def calculate(x: int, y: int) -> Dict[str, int]:
+async def calculate(x, y):
     '''Calcula soma'''
     return {"sum": x + y}
 
@@ -967,10 +1016,11 @@ async def calculate(x: int, y: int) -> Dict[str, int]:
         },
         {
             "id": "MED_006",
-            "description": "Blocking IO em função async",
+            "description": "Endpoint nao usa tipos adequados, e nao tem status code definido",
             "expected_score_min": 60,
             "expected_score_max": 79,
-            "expected_keywords": ["blocking", "bloqueante", "async", "def", "threadpool", "run_in_executor"],
+            "expected_violations": ["type_hints", "endpoint_structure"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict
@@ -978,11 +1028,11 @@ import asyncio
 
 router = APIRouter(tags=["sleep"])
 
-@router.get("/sleep", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["sleep"])
-async def sleep_route() -> Dict[str, str]:
+@router.get("/sleep", response_model=List[str], tags=["sleep"])
+async def sleep_route() -> List[str]:
     '''Simula espera sem bloquear o loop'''
     await asyncio.sleep(1)
-    return {"status": "awake"}
+    return ["awake"]
 
 """,
         },
@@ -991,6 +1041,8 @@ async def sleep_route() -> Dict[str, str]:
             "description": "Retorna dicionário cru sem schema",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["type_hints", "input_validation_and_openapi"],
+            "expected_keywords": ["Dict[str, Any]", "no schema", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict, Any
@@ -1006,17 +1058,19 @@ async def get_data() -> Dict[str, Any]:
         },
         {
             "id": "MED_008",
-            "description": "Não usa APIRouter, usa app direto (misturado)",
+            "description": "Não tem status code definido e nao usa return type",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["endpoint_structure", "type_hints"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import FastAPI, status
 from typing import Dict
 
 app = FastAPI()
 
-@app.get("/direct", status_code=status.HTTP_200_OK, response_model=Dict[str, str])
-def direct_route() -> Dict[str, str]:
+@app.get("/direct", response_model=Dict[str, str])
+def direct_route():
     '''Rota direta'''
     return {"status": "ok"}
 
@@ -1027,6 +1081,8 @@ def direct_route() -> Dict[str, str]:
             "description": "Uso incorreto de status codes (200 para erro)",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["error_handling"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming", "error"],
             "code": """
 from fastapi import APIRouter, HTTPException, status
 from typing import Dict
@@ -1047,6 +1103,8 @@ async def check(id: int) -> Dict[str, int]:
             "description": "Lógica de negócio complexa dentro da view/rota",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["type_hints", "naming_conventions"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict
@@ -1054,8 +1112,7 @@ from typing import Dict
 router = APIRouter(tags=["process"])
 
 @router.post("/process", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["process"])
-async def process_data(data: Dict[str, int]) -> Dict[str, int]:
-    '''Processa dados numéricos'''
+async def ProcessData(data: Dict[str, int]):
     res = 0
     for _, v in data.items():
         res += v * 2
@@ -1068,13 +1125,15 @@ async def process_data(data: Dict[str, int]) -> Dict[str, int]:
             "description": "Nome de rota inconsistente (CamelCase no path)",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["naming_conventions"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict
 
 router = APIRouter(tags=["users"])
 
-@router.get("/user-info", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["users"])
+@router.get("/User-Info", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["users"])
 async def get_user_info() -> Dict[str, str]:
     '''Retorna info do usuário'''
     return {"user": "info"}
@@ -1086,14 +1145,16 @@ async def get_user_info() -> Dict[str, str]:
             "description": "Query param sem validação (SQL Injection vulnerability potencial se mal usado)",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["input_validation_and_openapi", "type_hints", "naming_conventions"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status, Query
 from typing import Dict
 
 router = APIRouter(tags=["filter"])
 
-@router.get("/filter", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["filter"])
-async def filter_items(where: str = Query(..., min_length=1, description="Filtro (não usar SQL raw)")) -> Dict[str, str]:
+@router.get("/filter", status_code=status.HTTP_200_OK, tags=["filter"])
+async def filter_items(where: str = Query(..., min_length=1, description="Filtro (não usar SQL raw)")):
     '''Filtra itens (exemplo)'''
     return {"query": f"SELECT * FROM items WHERE {where}"}
 
@@ -1104,7 +1165,8 @@ async def filter_items(where: str = Query(..., min_length=1, description="Filtro
             "description": "Falta injeção de dependência para DB (hardcoded)",
             "expected_score_min": 60,
             "expected_score_max": 79,
-            "expected_keywords": ["hardcoded", "dependency injection", "depends", "db session"],
+            "expected_violations": ["input_validation_and_openapi", "type_hints"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
@@ -1112,8 +1174,8 @@ from typing import Dict
 
 router = APIRouter(tags=["db"])
 
-@router.get("/db-test", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["db"])
-async def db_test(db: Session = Depends(get_db)) -> Dict[str, str]:
+@router.get("/db-test", status_code=status.HTTP_200_OK, tags=["db"])
+async def db_test(db: Session = Depends(get_db)):
     '''Teste simples de acesso ao DB'''
     return {"status": "ok"}
 
@@ -1124,6 +1186,8 @@ async def db_test(db: Session = Depends(get_db)) -> Dict[str, str]:
             "description": "Usa variáveis globais",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["endpoint_structure", "type_hints"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict
@@ -1132,8 +1196,7 @@ router = APIRouter(tags=["count"])
 COUNTER = 0
 
 @router.get("/count", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["count"])
-async def get_count() -> Dict[str, int]:
-    '''Incrementa contador global'''
+async def get_count():
     global COUNTER
     COUNTER += 1
     return {"count": COUNTER}
@@ -1145,6 +1208,8 @@ async def get_count() -> Dict[str, int]:
             "description": "Falta de docstring total",
             "expected_score_min": 60,
             "expected_score_max": 79,
+            "expected_violations": ["endpoint_structure", "type_hints"],
+            "expected_keywords": ["status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import APIRouter, status
 from typing import Dict, Any
@@ -1170,6 +1235,8 @@ async def submit(data: Dict[str, Any]) -> Dict[str, bool]:
             "description": "Endpoint mínimo sem boas práticas",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi"],
+            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling"],
             "code": """
 from fastapi import FastAPI
 
@@ -1185,7 +1252,8 @@ def get():
             "description": "Endpoint sem validação de entrada e sem tratamento de erros",
             "expected_score_min": 0,
             "expected_score_max": 59,
-            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling"],
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi"],
+            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 from fastapi import FastAPI
 
@@ -1206,6 +1274,8 @@ def create(data):
             "description": "Endpoint com múltiplas violações críticas",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_violations": ["naming_conventions", "endpoint_structure", "type_hints", "input_validation_and_openapi", "error_handling"],
+            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 @app.put("/update/{ID}")
 def UpdateItem(ID, NewData):
@@ -1220,6 +1290,8 @@ def UpdateItem(ID, NewData):
             "description": "Retorno de HTML em rota API JSON (sem response class)",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi", "error_handling"],
+            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 @app.get("/home")
 def home():
@@ -1231,7 +1303,8 @@ def home():
             "description": "Uso de eval() perigoso",
             "expected_score_min": 0,
             "expected_score_max": 59,
-            "expected_keywords": ["eval", "exec", "security", "code injection", "rce"],
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi", "error_handling"],
+            "expected_keywords": ["eval", "exec", "security", "code injection", "rce", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 @app.post("/calc")
 def calc(expr: str):
@@ -1243,6 +1316,8 @@ def calc(expr: str):
             "description": "Rota sem verbo HTTP defindo (ex: usa add_api_route incorretamente ou lógica obscura)",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi", "error_handling"],
+            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 def my_route(req):
     return {"a":1}
@@ -1255,6 +1330,8 @@ app.add_api_route("/weird", my_route)
             "description": "Captura de exceção vazia (pass)",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi", "error_handling"],
+            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 @app.get("/silent")
 def silent_error():
@@ -1270,7 +1347,8 @@ def silent_error():
             "description": "Dados sensíveis no retorno (senha)",
             "expected_score_min": 0,
             "expected_score_max": 59,
-            "expected_keywords": ["password", "senha", "hash", "leak", "security", "response_model"],
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi", "error_handling"],
+            "expected_keywords": ["password", "senha", "hash", "leak", "security", "response_model", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 @app.get("/user/{id}")
 def get_user_bad(id):
@@ -1283,7 +1361,8 @@ def get_user_bad(id):
             "description": "Loop infinito sem async/await (DoS)",
             "expected_score_min": 0,
             "expected_score_max": 59,
-            "expected_keywords": ["loop", "infinite", "dos", "block", "cpu"],
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi", "error_handling"],
+            "expected_keywords": ["loop", "infinite", "dos", "block", "cpu", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 @app.get("/hang")
 def hang():
@@ -1296,6 +1375,8 @@ def hang():
             "description": "Modificação de argumentos padrão mutáveis",
             "expected_score_min": 0,
             "expected_score_max": 59,
+            "expected_violations": ["endpoint_structure", "type_hints", "input_validation_and_openapi", "error_handling"],
+            "expected_keywords": ["validation", "pydantic", "schema", "type hint", "error handling", "status_code", "docstring", "type hints", "type annotation", "naming"],
             "code": """
 @app.get("/bad-defaults")
 def bad_defaults(lista=[]):

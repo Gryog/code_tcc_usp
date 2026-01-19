@@ -6,7 +6,7 @@ from validator.validator import FastAPICodeValidator
 from client.geminiclient import GeminiClient
 from client.mistralclient import MistralClient
 from client.openaiclient import OpenAIClient
-from config.rules import RULES_STANDARD
+from config.rules import RULES_STANDARD, RULES_RELAXED  
 from reports.charts_generator import generate_charts_report, generate_comparison_report
 from reports.statistic_report_generator import analyze, generate_report
 from extraction.repo_collector import RepoCollector
@@ -79,6 +79,13 @@ def run_repo_benchmark():
 
         # Extrair endpoints usando a nova lógica (parecido com RealWorldCollector)
         endpoints = collector.extract_endpoints()
+
+        if "new_endpoints.json" in os.listdir():
+            open("new_endpoints.json", "a").write(json.dumps(endpoints))
+        else:
+            with open("new_endpoints.json", "w") as f:
+                json.dump(endpoints, f, indent=4)
+
         if not endpoints:
             print(f"⚠️ Nenhum endpoint encontrado em {collector.repo_name}.")
             collector.cleanup()
@@ -114,7 +121,7 @@ def run_repo_benchmark():
 
             # Validador
             validator = FastAPICodeValidator(
-                llm_client=client_instance, rules=RULES_STANDARD
+                llm_client=client_instance, rules=RULES_RELAXED
             )
 
             # Executa validação em batch nos endpoints extraídos

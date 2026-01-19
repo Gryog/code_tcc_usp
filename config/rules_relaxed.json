@@ -1,0 +1,59 @@
+{
+    "validation_profile": "relaxed",
+    "rules": {
+        "endpoint_structure": {
+            "enabled": true,
+            "severity": "error",
+            "description": "Valida estrutura básica do endpoint",
+            "checks": [
+                "Possui docstring explicativa",
+                "Especifica status_code explicitamente"
+            ]
+        },
+        "http_semantics": {
+            "enabled": true,
+            "severity": "error",
+            "description": "Valida semântica HTTP (método, status codes, corpo da resposta, idempotência básica)",
+            "checks": [
+                "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+                "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+            ]
+        },
+        "naming_conventions": {
+            "enabled": true,
+            "severity": "warning",
+            "description": "Valida convenções de nomenclatura",
+            "checks": [
+                "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+                "Parâmetros seguem convenção Python",
+                "Nomes de função muito genéricos"
+            ]
+        },
+        "type_hints": {
+            "enabled": true,
+            "severity": "error",
+            "description": "Valida uso de type hints",
+            "checks": [
+                "Todos parâmetros possuem type hints",
+                "Função possui return type annotation",
+                "Usa tipos adequados (List, Dict, Optional, etc)"
+            ]
+        },
+        "error_handling": {
+            "enabled": true,
+            "severity": "error",
+            "description": "Valida tratamento de erros",
+            "checks": [
+                "Define status codes corretos para erros"
+            ]
+        },
+        "input_validation_and_openapi": {
+            "enabled": true,
+            "severity": "warning",
+            "description": "Valida caso exista body de entrada ou response_model que o mesmo utilize Pydantic ou tipos nativos do Python",
+            "checks": [
+                "Body requests usam Pydantic models (N/A se não há body)"
+            ]
+        }
+    }
+}

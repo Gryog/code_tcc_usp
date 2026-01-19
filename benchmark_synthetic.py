@@ -8,7 +8,7 @@ from client.geminiclient import GeminiClient
 from client.mistralclient import MistralClient
 from client.openaiclient import OpenAIClient
 from tests.testes_sinteticos import gerar_dataset_sintetico
-from config.rules import RULES_STANDARD
+from config.rules import RULES_STANDARD, RULES_RELAXED
 from reports.charts_generator import generate_charts_report, generate_comparison_report
 from reports.statistic_report_generator import analyze, generate_report
 from validator.heuristics import ValidationHeuristics
@@ -99,7 +99,7 @@ def run_benchmark():
         start_time = time.time()
         
         # Instancia Validador com o cliente atual
-        validator = FastAPICodeValidator(llm_client=client_instance, rules=RULES_STANDARD)
+        validator = FastAPICodeValidator(llm_client=client_instance, rules=RULES_RELAXED)
         
         # Executa Batch
         try:
