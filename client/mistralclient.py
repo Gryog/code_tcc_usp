@@ -9,7 +9,7 @@ class MistralClient(LLMClient):
         self.client = Mistral(api_key=api_key)
         self.model_name = model_name
 
-    def generate_json(self, prompt: str) -> Dict[str, Any]:
+    def generate_json(self, prompt: str) -> tuple[Dict[str, Any], Dict[str, Any]]:
         try:
             chat_response = self.client.chat.complete(
                 model=self.model_name,
@@ -28,7 +28,15 @@ class MistralClient(LLMClient):
             )
 
             response_content = chat_response.choices[0].message.content
+            usage_metadata = {}
+            if chat_response.usage:
+                usage_metadata = {
+                    "prompt_tokens": chat_response.usage.prompt_tokens,
+                    "completion_tokens": chat_response.usage.completion_tokens,
+                    "total_tokens": chat_response.usage.total_tokens,
+                }
+            
             # Mistral's JSON mode ensures valid JSON, but we still parse it
-            return json.loads(response_content)
+            return json.loads(response_content), usage_metadata
         except Exception as e:
             raise RuntimeError(f"Falha na geração do Mistral: {str(e)}")

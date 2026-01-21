@@ -27,7 +27,7 @@ def run_repo_benchmark(run_id=None, skip_reporting=False):
     repos = [
         "https://github.com/rednafi/fastapi-nano",
         "https://github.com/nsidnev/fastapi-realworld-example-app",
-        "https://github.com/tiangolo/full-stack-fastapi-template" # Muito grande/complexo para este teste rápido, descomentar se necessário
+        "https://github.com/tiangolo/full-stack-fastapi-template"
     ]
 
     # 2. Configurar Clientes LLM
@@ -161,6 +161,22 @@ def run_repo_benchmark(run_id=None, skip_reporting=False):
                         res["expected_status"] = derive_expected_status(res.get("violations", []))
                         res["expected_status_source"] = "derived_from_violations"
 
+                # Calcular uso total de tokens
+                total_tokens = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+                for res in report.get("results", []):
+                    usage = res.get("_metadata", {}).get("token_usage", {})
+                    # Adaptar chaves diferentes (Gemini vs Mistral/OpenAI) 
+                    # Gemini: prompt_token_count, candidates_token_count, total_token_count
+                    # Mistral/OpenAI: prompt_tokens, completion_tokens, total_tokens
+                    
+                    p_tokens = usage.get("prompt_tokens") or usage.get("prompt_token_count") or 0
+                    c_tokens = usage.get("completion_tokens") or usage.get("candidates_token_count") or 0
+                    t_tokens = usage.get("total_tokens") or usage.get("total_token_count") or 0
+                    
+                    total_tokens["prompt_tokens"] += p_tokens
+                    total_tokens["completion_tokens"] += c_tokens
+                    total_tokens["total_tokens"] += t_tokens
+
                 # Metadados do Benchmark
                 report["benchmark_metadata"] = {
                     "llm_name": llm_name,
@@ -170,6 +186,7 @@ def run_repo_benchmark(run_id=None, skip_reporting=False):
                     "total_endpoints": len(endpoints),
                     "skipped_files_count": len(collector.skipped_files),
                     "skipped_files": collector.skipped_files,
+                    "token_usage": total_tokens
                 }
 
                 # Salvar resultado

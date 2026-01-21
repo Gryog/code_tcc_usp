@@ -9,7 +9,7 @@ class OpenAIClient(LLMClient):
         self.client = OpenAI(api_key=api_key)
         self.model_name = model_name
 
-    def generate_json(self, prompt: str) -> Dict[str, Any]:
+    def generate_json(self, prompt: str) -> tuple[Dict[str, Any], Dict[str, Any]]:
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
@@ -27,6 +27,14 @@ class OpenAIClient(LLMClient):
             if not content:
                 raise ValueError("OpenAI returned empty content")
 
-            return json.loads(content)
+            usage_metadata = {}
+            if response.usage:
+                usage_metadata = {
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                    "total_tokens": response.usage.total_tokens,
+                }
+
+            return json.loads(content), usage_metadata
         except Exception as e:
             raise RuntimeError(f"Falha na geração da OpenAI: {str(e)}")

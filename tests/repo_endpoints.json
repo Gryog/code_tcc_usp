@@ -42,8 +42,8 @@
                 "action_verb"
             ]
         }
-    }
-        {
+    },
+    {
         "id": "FASTAPI-NANO_VIEWS_view_a_2",
         "source": "svc\\routes\\views.py",
         "method": "GET",

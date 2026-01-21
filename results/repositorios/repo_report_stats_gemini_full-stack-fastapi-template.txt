@@ -1,0 +1,67 @@
+======================================================================
+📊 RELATÓRIO ESTATÍSTICO DE VALIDAÇÃO
+======================================================================
+
+📈 ESTATÍSTICAS GERAIS:
+  Total de exemplos: 23
+  Score médio: 78.04/100
+  Score mediano: 83/100
+  Desvio padrão: 19.53
+  Range: 25 - 92
+
+📂 POR CATEGORIA:
+  UNKNOWN:
+    Quantidade: 23
+    Score médio: 78.04/100
+    Range: 25 - 92
+
+⏱️  PERFORMANCE:
+  Tempo médio: 16.88s
+  Tempo mediano: 17.19s
+  Range: 9.73s - 31.88s
+
+⚠️  VIOLAÇÕES:
+  Total: 40
+  Média por exemplo: 1.74
+  Por status:
+    pass: 16
+    warning: 4
+    fail: 3
+
+🎯 ACURÁCIA:
+  Exemplos com expectativa: 0
+  Predições corretas: 0
+  Predições incorretas: 0
+  Acurácia percentual: 0%
+  Taxa de erro: 100%
+
+🧠 RECALL (Detecção de palavras-chave):
+  Exemplos com keywords: 23
+  Detectados: 7
+  Recall Rate: 30.43%
+
+✅ CLASSIFICAÇÃO POR STATUS (pass/warning/fail):
+  Total avaliados: 23
+  Accuracy: 13.04%
+  Macro Avg: Precision 100.0% | Recall 13.04% | F1 23.08%
+  Weighted Avg: Precision 100.0% | Recall 13.04% | F1 23.08%
+  PASS: Precision 0.0% | Recall 0% | F1 0% | Suporte 0
+  WARNING: Precision 0.0% | Recall 0% | F1 0% | Suporte 0
+  FAIL: Precision 100.0% | Recall 13.04% | F1 23.08% | Suporte 23
+  Matriz de Confusão (esperado -> predito):
+    PASS: pass:0, warning:0, fail:0
+    WARNING: pass:0, warning:0, fail:0
+    FAIL: pass:16, warning:4, fail:3
+
+🔎 PRECISÃO/RECALL/F1 (Keywords):
+  Total exemplos: 23
+  Cobertura: 100.0% | Keywords únicas: 30 | Média keywords/exemplo: 8.87
+  TP: 8 | FP: 28 | FN: 196
+  Precision: 22.22% | Recall: 3.92% | F1: 6.67%
+
+📊 DISTRIBUIÇÃO DE SCORES:
+  0-20: 0
+  20-40: 2
+  40-60: 1
+  60-80: 4
+  80-100: 16

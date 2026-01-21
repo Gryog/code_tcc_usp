@@ -1,0 +1,79 @@
+======================================================================
+📊 RELATÓRIO ESTATÍSTICO DE VALIDAÇÃO
+======================================================================
+
+📈 ESTATÍSTICAS GERAIS:
+  Total de exemplos: 50
+  Score médio: 80.84/100
+  Score mediano: 91.0/100
+  Desvio padrão: 21.85
+  Range: 20 - 100
+
+📂 POR CATEGORIA:
+  EXCELLENT:
+    Quantidade: 10
+    Score médio: 100/100
+    Range: 100 - 100
+  GOOD:
+    Quantidade: 15
+    Score médio: 88.27/100
+    Range: 50 - 100
+  MEDIUM:
+    Quantidade: 15
+    Score médio: 83.27/100
+    Range: 67 - 100
+  POOR:
+    Quantidade: 10
+    Score médio: 46.9/100
+    Range: 20 - 67
+
+⏱️  PERFORMANCE:
+  Tempo médio: 14.65s
+  Tempo mediano: 13.79s
+  Range: 6.4s - 37.77s
+
+⚠️  VIOLAÇÕES:
+  Total: 103
+  Média por exemplo: 2.06
+  Por status:
+    pass: 31
+    fail: 8
+    warning: 11
+
+🎯 ACURÁCIA:
+  Exemplos com expectativa: 50
+  Predições corretas: 25
+  Predições incorretas: 25
+  Acurácia percentual: 50.0%
+  Taxa de erro: 50.0%
+
+🧠 RECALL (Detecção de palavras-chave):
+  Exemplos com keywords: 50
+  Detectados: 26
+  Recall Rate: 52.0%
+
+✅ CLASSIFICAÇÃO POR STATUS (pass/warning/fail):
+  Total avaliados: 50
+  Accuracy: 70.0%
+  Macro Avg: Precision 71.01% | Recall 66.0% | F1 67.5%
+  Weighted Avg: Precision 69.35% | Recall 70.0% | F1 68.69%
+  PASS: Precision 70.97% | Recall 88.0% | F1 78.57% | Suporte 25
+  WARNING: Precision 54.55% | Recall 40.0% | F1 46.15% | Suporte 15
+  FAIL: Precision 87.5% | Recall 70.0% | F1 77.78% | Suporte 10
+  Matriz de Confusão (esperado -> predito):
+    PASS: pass:22, warning:2, fail:1
+    WARNING: pass:9, warning:6, fail:0
+    FAIL: pass:0, warning:3, fail:7
+
+🔎 PRECISÃO/RECALL/F1 (Keywords):
+  Total exemplos: 50
+  Cobertura: 100.0% | Keywords únicas: 96 | Média keywords/exemplo: 6.8
+  TP: 53 | FP: 213 | FN: 287
+  Precision: 19.92% | Recall: 15.59% | F1: 17.49%
+
+📊 DISTRIBUIÇÃO DE SCORES:
+  0-20: 0
+  20-40: 4
+  40-60: 4
+  60-80: 11
+  80-100: 31

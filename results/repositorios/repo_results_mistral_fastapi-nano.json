@@ -1,0 +1,373 @@
+{
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "errors": 0
+  },
+  "results": [
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code de sucesso, que deveria ser 201 para criação de recursos",
+          "suggestion": "Adicione status_code=201 como parâmetro no decorator @router.post",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "O nome da função 'login_for_access_token' é descritivo mas não segue o padrão snake_case",
+          "suggestion": "Renomeie a função para 'login_for_access_token' ou 'obtain_access_token' para seguir snake_case",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "O return type annotation está usando dict[str, str] que não é um tipo nativo do Python",
+          "suggestion": "Use um Pydantic model para o retorno ou tipos nativos como Dict[str, str] do módulo typing",
+          "line_reference": "Linha 3"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 2.46,
+        "timestamp": "2026-01-20 22:42:24",
+        "token_usage": {
+          "prompt_tokens": 1528,
+          "completion_tokens": 516,
+          "total_tokens": 2044
+        }
+      },
+      "response_time": 2.46,
+      "file_path": "FASTAPI-NANO_AUTH_login_for_access_token_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 25
+      },
+      "source_file": "svc\\core\\auth.py",
+      "code_snippet": "@router.post(\"/token\", response_model=Token)\nasync def login_for_access_token(\n    form_data: OAuth2PasswordRequestForm = Depends(),\n) -> dict[str, str]:\n    user = authenticate_user(\n        fake_users_db,\n        form_data.username,\n        form_data.password,\n    )\n\n    if not user:\n        raise HTTPException(\n            status_code=HTTPStatus.UNAUTHORIZED,\n            detail=\"Incorrect username or password\",\n            headers={\"WWW-Authenticate\": \"Bearer\"},\n        )\n\n    access_token_expires = timedelta(\n        seconds=config.API_ACCESS_TOKEN_EXPIRE_MINUTES,\n    )\n    access_token = create_access_token(\n        data={\"sub\": user.username},  # type: ignore\n        expires_delta=access_token_expires,\n    )\n    return {\"access_token\": access_token, \"token_type\": \"bearer\"}",
+      "expected_keywords": [
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.18,
+        "timestamp": "2026-01-20 22:42:28",
+        "token_usage": {
+          "prompt_tokens": 1405,
+          "completion_tokens": 342,
+          "total_tokens": 1747
+        }
+      },
+      "response_time": 3.18,
+      "file_path": "FASTAPI-NANO_VIEWS_index_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 6
+      },
+      "source_file": "svc\\routes\\views.py",
+      "code_snippet": "@router.get(\"/\")\nasync def index() -> dict[str, str]:\n    return {\n        \"info\": \"This is the index page of fastapi-nano. \"\n        \"You probably want to go to 'http://<hostname:port>/docs'.\",\n    }",
+      "expected_keywords": [
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "output schema",
+        "pydantic model",
+        "response_model",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 2.57,
+        "timestamp": "2026-01-20 22:42:32",
+        "token_usage": {
+          "prompt_tokens": 1415,
+          "completion_tokens": 338,
+          "total_tokens": 1753
+        }
+      },
+      "response_time": 2.57,
+      "file_path": "FASTAPI-NANO_VIEWS_view_a_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 8
+      },
+      "source_file": "svc\\routes\\views.py",
+      "code_snippet": "@router.get(\"/api_a/{num}\", tags=[\"api_a\"])\nasync def view_a(\n    num: int,\n    auth: Depends = Depends(get_current_user),\n) -> dict[str, int]:\n    result = main_func_a(num)\n    logger.info(f\"API A: {result}\")\n    return result",
+      "expected_keywords": [
+        "HTTPException",
+        "Path()",
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "explicit status",
+        "function naming",
+        "http errors",
+        "http status",
+        "output schema",
+        "parameter constraints",
+        "path validation",
+        "pydantic model",
+        "response_model",
+        "status codes",
+        "status_code"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.09,
+        "timestamp": "2026-01-20 22:42:36",
+        "token_usage": {
+          "prompt_tokens": 1415,
+          "completion_tokens": 338,
+          "total_tokens": 1753
+        }
+      },
+      "response_time": 3.09,
+      "file_path": "FASTAPI-NANO_VIEWS_view_b_3",
+      "metadata": {
+        "has_async": true,
+        "lines": 8
+      },
+      "source_file": "svc\\routes\\views.py",
+      "code_snippet": "@router.get(\"/api_b/{num}\", tags=[\"api_b\"])\nasync def view_b(\n    num: int,\n    auth: Depends = Depends(get_current_user),\n) -> dict[str, int]:\n    result = main_func_b(num)\n    logger.info(f\"API B: {result}\")\n    return result",
+      "expected_keywords": [
+        "HTTPException",
+        "Path()",
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "explicit status",
+        "function naming",
+        "http errors",
+        "http status",
+        "output schema",
+        "parameter constraints",
+        "path validation",
+        "pydantic model",
+        "response_model",
+        "status codes",
+        "status_code"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    }
+  ],
+  "timestamp": "2026-01-20 22:42:37",
+  "benchmark_metadata": {
+    "llm_name": "Mistral Small",
+    "repo_name": "fastapi-nano",
+    "repo_url": "https://github.com/rednafi/fastapi-nano",
+    "total_time": 15.3,
+    "total_endpoints": 4,
+    "skipped_files_count": 0,
+    "skipped_files": [],
+    "token_usage": {
+      "prompt_tokens": 5763,
+      "completion_tokens": 1534,
+      "total_tokens": 7297
+    }
+  }
+}

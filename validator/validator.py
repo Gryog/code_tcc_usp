@@ -35,8 +35,8 @@ class FastAPICodeValidator:
         start_time = time.time()
 
         try:
-            # 1. Chama o LLM (que retorna um Dict cru)
-            raw_result = self.llm_client.generate_json(prompt_text)
+            # 1. Chama o LLM (que retorna um Dict cru E metadados de uso)
+            raw_result, usage_metadata = self.llm_client.generate_json(prompt_text)
 
             # 2. Valida a estrutura com Pydantic (Garante integridade)
             validated_data = schema.ValidationResult(**raw_result)
@@ -47,6 +47,7 @@ class FastAPICodeValidator:
             result_dict["_metadata"] = {
                 "response_time": response_time,
                 "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "token_usage": usage_metadata
             }
             result_dict["response_time"] = response_time
             return result_dict

@@ -1,0 +1,1799 @@
+{
+  "summary": {
+    "passed": 19,
+    "failed": 1,
+    "errors": 0
+  },
+  "results": [
+    {
+      "overall_status": "fail",
+      "overall_score": 50,
+      "summary": "Código possui problemas estruturais críticos",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "Endpoint não possui docstring explicativa",
+          "suggestion": "Adicione uma docstring explicando o propósito do endpoint",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "Endpoint não especifica status_code explicitamente",
+          "suggestion": "Adicione um status_code explícito, como return JSONResponse(status_code=200, content={})",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "Função possui return type annotation como None, o que pode não ser adequado",
+          "suggestion": "Altere o return type annotation para um tipo mais adequado, como List ou Dict, dependendo do retorno esperado",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.66,
+        "timestamp": "2026-01-20 22:47:52",
+        "token_usage": {
+          "prompt_tokens": 1380,
+          "completion_tokens": 520,
+          "total_tokens": 1900
+        }
+      },
+      "response_time": 4.66,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_TEST_422_ERROR_route_for_test_1",
+      "metadata": {
+        "has_async": false,
+        "lines": 3
+      },
+      "source_file": "tests\\test_api\\test_errors\\test_422_error.py",
+      "code_snippet": "@app.get(\"/wrong_path/{param}\")\n    def route_for_test(param: int) -> None:  # pragma: no cover\n        pass",
+      "expected_keywords": [
+        "Path()",
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "output schema",
+        "parameter constraints",
+        "path validation",
+        "pydantic model",
+        "response_model",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras de validação com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "O endpoint não possui uma docstring explicativa",
+          "suggestion": "Adicione uma docstring explicando o propósito do endpoint e os parâmetros",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code para o caso de sucesso",
+          "suggestion": "Adicione o status_code explícito para o caso de sucesso, por exemplo, status_code=200",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função muito genérico",
+          "description": "O nome da função 'login' é muito genérico e não segue a convenção de nomenclatura sugerida",
+          "suggestion": "Renomeie a função para algo mais específico, como 'authenticate_user'",
+          "line_reference": "Linha 3"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 5.15,
+        "timestamp": "2026-01-20 22:47:58",
+        "token_usage": {
+          "prompt_tokens": 1581,
+          "completion_tokens": 586,
+          "total_tokens": 2167
+        }
+      },
+      "response_time": 5.15,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_login_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 32
+      },
+      "source_file": "app\\api\\routes\\authentication.py",
+      "code_snippet": "@router.post(\"/login\", response_model=UserInResponse, name=\"auth:login\")\nasync def login(\n    user_login: UserInLogin = Body(..., embed=True, alias=\"user\"),\n    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),\n    settings: AppSettings = Depends(get_app_settings),\n) -> UserInResponse:\n    wrong_login_error = HTTPException(\n        status_code=HTTP_400_BAD_REQUEST,\n        detail=strings.INCORRECT_LOGIN_INPUT,\n    )\n\n    try:\n        user = await users_repo.get_user_by_email(email=user_login.email)\n    except EntityDoesNotExist as existence_error:\n        raise wrong_login_error from existence_error\n\n    if not user.check_password(user_login.password):\n        raise wrong_login_error\n\n    token = jwt.create_access_token_for_user(\n        user,\n        str(settings.secret_key.get_secret_value()),\n    )\n    return UserInResponse(\n        user=UserWithToken(\n            username=user.username,\n            email=user.email,\n            bio=user.bio,\n            image=user.image,\n            token=token,\n        ),\n    )",
+      "expected_keywords": [
+        "HTTPException",
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 90,
+      "summary": "Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "Endpoint não possui docstring explicativa",
+          "suggestion": "Adicione uma docstring explicando o propósito do endpoint e os parâmetros",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função muito genérico",
+          "description": "Nome da função 'register' é genérico e não especifica o recurso",
+          "suggestion": "Renomeie para 'register_user' para maior clareza",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.82,
+        "timestamp": "2026-01-20 22:48:04",
+        "token_usage": {
+          "prompt_tokens": 1613,
+          "completion_tokens": 507,
+          "total_tokens": 2120
+        }
+      },
+      "response_time": 4.82,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_register_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 38
+      },
+      "source_file": "app\\api\\routes\\authentication.py",
+      "code_snippet": "@router.post(\n    \"\",\n    status_code=HTTP_201_CREATED,\n    response_model=UserInResponse,\n    name=\"auth:register\",\n)\nasync def register(\n    user_create: UserInCreate = Body(..., embed=True, alias=\"user\"),\n    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),\n    settings: AppSettings = Depends(get_app_settings),\n) -> UserInResponse:\n    if await check_username_is_taken(users_repo, user_create.username):\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.USERNAME_TAKEN,\n        )\n\n    if await check_email_is_taken(users_repo, user_create.email):\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.EMAIL_TAKEN,\n        )\n\n    user = await users_repo.create_user(**user_create.dict())\n\n    token = jwt.create_access_token_for_user(\n        user,\n        str(settings.secret_key.get_secret_value()),\n    )\n    return UserInResponse(\n        user=UserWithToken(\n            username=user.username,\n            email=user.email,\n            bio=user.bio,\n            image=user.image,\n            token=token,\n        ),\n    )",
+      "expected_keywords": [
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 2.68,
+        "timestamp": "2026-01-20 22:48:08",
+        "token_usage": {
+          "prompt_tokens": 1476,
+          "completion_tokens": 338,
+          "total_tokens": 1814
+        }
+      },
+      "response_time": 2.68,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_list_comments_for_article_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 12
+      },
+      "source_file": "app\\api\\routes\\comments.py",
+      "code_snippet": "@router.get(\n    \"\",\n    response_model=ListOfCommentsInResponse,\n    name=\"comments:get-comments-for-article\",\n)\nasync def list_comments_for_article(\n    article: Article = Depends(get_article_by_slug_from_path),\n    user: Optional[User] = Depends(get_current_user_authorizer(required=False)),\n    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),\n) -> ListOfCommentsInResponse:\n    comments = await comments_repo.get_comments_for_article(article=article, user=user)\n    return ListOfCommentsInResponse(comments=comments)",
+      "expected_keywords": [
+        "HTTPException",
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código atende a todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.2,
+        "timestamp": "2026-01-20 22:48:12",
+        "token_usage": {
+          "prompt_tokens": 1506,
+          "completion_tokens": 338,
+          "total_tokens": 1844
+        }
+      },
+      "response_time": 3.2,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_create_comment_for_article_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 18
+      },
+      "source_file": "app\\api\\routes\\comments.py",
+      "code_snippet": "@router.post(\n    \"\",\n    status_code=status.HTTP_201_CREATED,\n    response_model=CommentInResponse,\n    name=\"comments:create-comment-for-article\",\n)\nasync def create_comment_for_article(\n    comment_create: CommentInCreate = Body(..., embed=True, alias=\"comment\"),\n    article: Article = Depends(get_article_by_slug_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),\n) -> CommentInResponse:\n    comment = await comments_repo.create_comment_for_article(\n        body=comment_create.body,\n        article=article,\n        user=user,\n    )\n    return CommentInResponse(comment=comment)",
+      "expected_keywords": [
+        "HTTPException",
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código atende a todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.59,
+        "timestamp": "2026-01-20 22:48:17",
+        "token_usage": {
+          "prompt_tokens": 1457,
+          "completion_tokens": 338,
+          "total_tokens": 1795
+        }
+      },
+      "response_time": 3.59,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_delete_comment_from_article_3",
+      "metadata": {
+        "has_async": true,
+        "lines": 12
+      },
+      "source_file": "app\\api\\routes\\comments.py",
+      "code_snippet": "@router.delete(\n    \"/{comment_id}\",\n    status_code=status.HTTP_204_NO_CONTENT,\n    name=\"comments:delete-comment-from-article\",\n    dependencies=[Depends(check_comment_modification_permissions)],\n    response_class=Response,\n)\nasync def delete_comment_from_article(\n    comment: Comment = Depends(get_comment_by_id_from_path),\n    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),\n) -> None:\n    await comments_repo.delete_comment(comment=comment)",
+      "expected_keywords": [
+        "HTTPException",
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.57,
+        "timestamp": "2026-01-20 22:48:21",
+        "token_usage": {
+          "prompt_tokens": 1412,
+          "completion_tokens": 338,
+          "total_tokens": 1750
+        }
+      },
+      "response_time": 3.57,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_retrieve_profile_by_username_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 9
+      },
+      "source_file": "app\\api\\routes\\profiles.py",
+      "code_snippet": "@router.get(\n    \"/{username}\",\n    response_model=ProfileInResponse,\n    name=\"profiles:get-profile\",\n)\nasync def retrieve_profile_by_username(\n    profile: Profile = Depends(get_profile_by_username_from_path),\n) -> ProfileInResponse:\n    return ProfileInResponse(profile=profile)",
+      "expected_keywords": [
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "Endpoint não possui docstring explicativa",
+          "suggestion": "Adicione uma docstring explicando o propósito do endpoint e os parâmetros",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "Endpoint não especifica status_code explicitamente para sucesso",
+          "suggestion": "Adicione status_code=200 ou outro apropriado para o caso de sucesso",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "Nome da função 'follow_for_user' não segue convenção snake_case",
+          "suggestion": "Renomeie para 'follow_user' para seguir a convenção snake_case",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.96,
+        "timestamp": "2026-01-20 22:48:27",
+        "token_usage": {
+          "prompt_tokens": 1559,
+          "completion_tokens": 575,
+          "total_tokens": 2134
+        }
+      },
+      "response_time": 4.96,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_follow_for_user_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 28
+      },
+      "source_file": "app\\api\\routes\\profiles.py",
+      "code_snippet": "@router.post(\n    \"/{username}/follow\",\n    response_model=ProfileInResponse,\n    name=\"profiles:follow-user\",\n)\nasync def follow_for_user(\n    profile: Profile = Depends(get_profile_by_username_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    profiles_repo: ProfilesRepository = Depends(get_repository(ProfilesRepository)),\n) -> ProfileInResponse:\n    if user.username == profile.username:\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.UNABLE_TO_FOLLOW_YOURSELF,\n        )\n\n    if profile.following:\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.USER_IS_ALREADY_FOLLOWED,\n        )\n\n    await profiles_repo.add_user_into_followers(\n        target_user=profile,\n        requested_user=user,\n    )\n\n    return ProfileInResponse(profile=profile.copy(update={\"following\": True}))",
+      "expected_keywords": [
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "exception handling",
+        "explicit status",
+        "file handling",
+        "function naming",
+        "http status",
+        "io errors",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "Endpoint não possui docstring explicativa",
+          "suggestion": "Adicione uma docstring explicando o propósito do endpoint",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "Endpoint não especifica status_code explicitamente",
+          "suggestion": "Adicione status_code=200 ou outro apropriado",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "Nome da função 'unsubscribe_from_user' é muito longo e poderia ser mais conciso",
+          "suggestion": "Considere renomear para 'unfollow_user' ou similar",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 5.06,
+        "timestamp": "2026-01-20 22:48:33",
+        "token_usage": {
+          "prompt_tokens": 1564,
+          "completion_tokens": 552,
+          "total_tokens": 2116
+        }
+      },
+      "response_time": 5.06,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_unsubscribe_from_user_3",
+      "metadata": {
+        "has_async": true,
+        "lines": 28
+      },
+      "source_file": "app\\api\\routes\\profiles.py",
+      "code_snippet": "@router.delete(\n    \"/{username}/follow\",\n    response_model=ProfileInResponse,\n    name=\"profiles:unsubscribe-from-user\",\n)\nasync def unsubscribe_from_user(\n    profile: Profile = Depends(get_profile_by_username_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    profiles_repo: ProfilesRepository = Depends(get_repository(ProfilesRepository)),\n) -> ProfileInResponse:\n    if user.username == profile.username:\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.UNABLE_TO_UNSUBSCRIBE_FROM_YOURSELF,\n        )\n\n    if not profile.following:\n        raise HTTPException(\n            status_code=HTTP_400_BAD_REQUEST,\n            detail=strings.USER_IS_NOT_FOLLOWED,\n        )\n\n    await profiles_repo.remove_user_from_followers(\n        target_user=profile,\n        requested_user=user,\n    )\n\n    return ProfileInResponse(profile=profile.copy(update={\"following\": False}))",
+      "expected_keywords": [
+        "204 no content",
+        "action verb",
+        "delete response",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "empty body",
+        "endpoint organization",
+        "exception handling",
+        "explicit status",
+        "file handling",
+        "function naming",
+        "http status",
+        "io errors",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código atende todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.02,
+        "timestamp": "2026-01-20 22:48:37",
+        "token_usage": {
+          "prompt_tokens": 1416,
+          "completion_tokens": 337,
+          "total_tokens": 1753
+        }
+      },
+      "response_time": 3.02,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_TAGS_get_all_tags_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 6
+      },
+      "source_file": "app\\api\\routes\\tags.py",
+      "code_snippet": "@router.get(\"\", response_model=TagsInList, name=\"tags:get-all\")\nasync def get_all_tags(\n    tags_repo: TagsRepository = Depends(get_repository(TagsRepository)),\n) -> TagsInList:\n    tags = await tags_repo.get_all_tags()\n    return TagsInList(tags=tags)",
+      "expected_keywords": [
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 2.78,
+        "timestamp": "2026-01-20 22:48:41",
+        "token_usage": {
+          "prompt_tokens": 1472,
+          "completion_tokens": 338,
+          "total_tokens": 1810
+        }
+      },
+      "response_time": 2.78,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_USERS_retrieve_current_user_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 18
+      },
+      "source_file": "app\\api\\routes\\users.py",
+      "code_snippet": "@router.get(\"\", response_model=UserInResponse, name=\"users:get-current-user\")\nasync def retrieve_current_user(\n    user: User = Depends(get_current_user_authorizer()),\n    settings: AppSettings = Depends(get_app_settings),\n) -> UserInResponse:\n    token = jwt.create_access_token_for_user(\n        user,\n        str(settings.secret_key.get_secret_value()),\n    )\n    return UserInResponse(\n        user=UserWithToken(\n            username=user.username,\n            email=user.email,\n            bio=user.bio,\n            image=user.image,\n            token=token,\n        ),\n    )",
+      "expected_keywords": [
+        "HTTPException",
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "Endpoint não possui docstring explicativa",
+          "suggestion": "Adicione uma docstring explicando o propósito do endpoint e os parâmetros",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "Endpoint não especifica status_code explicitamente",
+          "suggestion": "Adicione status_code=200 ou outro apropriado para o método PUT",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "Nome da função 'update_current_user' é descritivo mas poderia ser mais conciso",
+          "suggestion": "Considere renomear para 'update_user' ou 'patch_user' para seguir convenção REST",
+          "line_reference": "Linha 3"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 5.12,
+        "timestamp": "2026-01-20 22:48:47",
+        "token_usage": {
+          "prompt_tokens": 1647,
+          "completion_tokens": 578,
+          "total_tokens": 2225
+        }
+      },
+      "response_time": 5.12,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_USERS_update_current_user_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 36
+      },
+      "source_file": "app\\api\\routes\\users.py",
+      "code_snippet": "@router.put(\"\", response_model=UserInResponse, name=\"users:update-current-user\")\nasync def update_current_user(\n    user_update: UserInUpdate = Body(..., embed=True, alias=\"user\"),\n    current_user: User = Depends(get_current_user_authorizer()),\n    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),\n    settings: AppSettings = Depends(get_app_settings),\n) -> UserInResponse:\n    if user_update.username and user_update.username != current_user.username:\n        if await check_username_is_taken(users_repo, user_update.username):\n            raise HTTPException(\n                status_code=HTTP_400_BAD_REQUEST,\n                detail=strings.USERNAME_TAKEN,\n            )\n\n    if user_update.email and user_update.email != current_user.email:\n        if await check_email_is_taken(users_repo, user_update.email):\n            raise HTTPException(\n                status_code=HTTP_400_BAD_REQUEST,\n                detail=strings.EMAIL_TAKEN,\n            )\n\n    user = await users_repo.update_user(user=current_user, **user_update.dict())\n\n    token = jwt.create_access_token_for_user(\n        user,\n        str(settings.secret_key.get_secret_value()),\n    )\n    return UserInResponse(\n        user=UserWithToken(\n            username=user.username,\n            email=user.email,\n            bio=user.bio,\n            image=user.image,\n            token=token,\n        ),\n    )",
+      "expected_keywords": [
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.08,
+        "timestamp": "2026-01-20 22:48:51",
+        "token_usage": {
+          "prompt_tokens": 1541,
+          "completion_tokens": 342,
+          "total_tokens": 1883
+        }
+      },
+      "response_time": 3.08,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_get_articles_for_user_feed_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 23
+      },
+      "source_file": "app\\api\\routes\\articles\\articles_common.py",
+      "code_snippet": "@router.get(\n    \"/feed\",\n    response_model=ListOfArticlesInResponse,\n    name=\"articles:get-user-feed-articles\",\n)\nasync def get_articles_for_user_feed(\n    limit: int = Query(DEFAULT_ARTICLES_LIMIT, ge=1),\n    offset: int = Query(DEFAULT_ARTICLES_OFFSET, ge=0),\n    user: User = Depends(get_current_user_authorizer()),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ListOfArticlesInResponse:\n    articles = await articles_repo.get_articles_for_user_feed(\n        user=user,\n        limit=limit,\n        offset=offset,\n    )\n    articles_for_response = [\n        ArticleForResponse(**article.dict()) for article in articles\n    ]\n    return ListOfArticlesInResponse(\n        articles=articles_for_response,\n        articles_count=len(articles),\n    )",
+      "expected_keywords": [
+        "HTTPException",
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "O endpoint não possui uma docstring explicativa que descreva sua função e comportamento.",
+          "suggestion": "Adicione uma docstring explicativa no início da função para descrever seu propósito e comportamento.",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code para a resposta bem-sucedida.",
+          "suggestion": "Adicione o status_code apropriado (por exemplo, 200 ou 201) para a resposta bem-sucedida.",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "O nome da função 'mark_article_as_favorite' não segue a convenção snake_case.",
+          "suggestion": "Renomeie a função para 'mark_article_as_favorite' para seguir a convenção snake_case.",
+          "line_reference": "Linha 5"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 7.99,
+        "timestamp": "2026-01-20 22:49:00",
+        "token_usage": {
+          "prompt_tokens": 1560,
+          "completion_tokens": 615,
+          "total_tokens": 2175
+        }
+      },
+      "response_time": 7.99,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_mark_article_as_favorite_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 28
+      },
+      "source_file": "app\\api\\routes\\articles\\articles_common.py",
+      "code_snippet": "@router.post(\n    \"/{slug}/favorite\",\n    response_model=ArticleInResponse,\n    name=\"articles:mark-article-favorite\",\n)\nasync def mark_article_as_favorite(\n    article: Article = Depends(get_article_by_slug_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ArticleInResponse:\n    if not article.favorited:\n        await articles_repo.add_article_into_favorites(article=article, user=user)\n\n        return ArticleInResponse(\n            article=ArticleForResponse.from_orm(\n                article.copy(\n                    update={\n                        \"favorited\": True,\n                        \"favorites_count\": article.favorites_count + 1,\n                    },\n                ),\n            ),\n        )\n\n    raise HTTPException(\n        status_code=status.HTTP_400_BAD_REQUEST,\n        detail=strings.ARTICLE_IS_ALREADY_FAVORITED,\n    )",
+      "expected_keywords": [
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 2.29,
+        "timestamp": "2026-01-20 22:49:04",
+        "token_usage": {
+          "prompt_tokens": 1557,
+          "completion_tokens": 338,
+          "total_tokens": 1895
+        }
+      },
+      "response_time": 2.29,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_remove_article_from_favorites_3",
+      "metadata": {
+        "has_async": true,
+        "lines": 28
+      },
+      "source_file": "app\\api\\routes\\articles\\articles_common.py",
+      "code_snippet": "@router.delete(\n    \"/{slug}/favorite\",\n    response_model=ArticleInResponse,\n    name=\"articles:unmark-article-favorite\",\n)\nasync def remove_article_from_favorites(\n    article: Article = Depends(get_article_by_slug_from_path),\n    user: User = Depends(get_current_user_authorizer()),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ArticleInResponse:\n    if article.favorited:\n        await articles_repo.remove_article_from_favorites(article=article, user=user)\n\n        return ArticleInResponse(\n            article=ArticleForResponse.from_orm(\n                article.copy(\n                    update={\n                        \"favorited\": False,\n                        \"favorites_count\": article.favorites_count - 1,\n                    },\n                ),\n            ),\n        )\n\n    raise HTTPException(\n        status_code=status.HTTP_400_BAD_REQUEST,\n        detail=strings.ARTICLE_IS_NOT_FAVORITED,\n    )",
+      "expected_keywords": [
+        "204 no content",
+        "action verb",
+        "delete response",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "empty body",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 2.96,
+        "timestamp": "2026-01-20 22:49:08",
+        "token_usage": {
+          "prompt_tokens": 1539,
+          "completion_tokens": 342,
+          "total_tokens": 1881
+        }
+      },
+      "response_time": 2.96,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_list_articles_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 21
+      },
+      "source_file": "app\\api\\routes\\articles\\articles_resource.py",
+      "code_snippet": "@router.get(\"\", response_model=ListOfArticlesInResponse, name=\"articles:list-articles\")\nasync def list_articles(\n    articles_filters: ArticlesFilters = Depends(get_articles_filters),\n    user: Optional[User] = Depends(get_current_user_authorizer(required=False)),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ListOfArticlesInResponse:\n    articles = await articles_repo.filter_articles(\n        tag=articles_filters.tag,\n        author=articles_filters.author,\n        favorited=articles_filters.favorited,\n        limit=articles_filters.limit,\n        offset=articles_filters.offset,\n        requested_user=user,\n    )\n    articles_for_response = [\n        ArticleForResponse.from_orm(article) for article in articles\n    ]\n    return ListOfArticlesInResponse(\n        articles=articles_for_response,\n        articles_count=len(articles),\n    )",
+      "expected_keywords": [
+        "HTTPException",
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.21,
+        "timestamp": "2026-01-20 22:49:12",
+        "token_usage": {
+          "prompt_tokens": 1575,
+          "completion_tokens": 338,
+          "total_tokens": 1913
+        }
+      },
+      "response_time": 3.21,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_create_new_article_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 27
+      },
+      "source_file": "app\\api\\routes\\articles\\articles_resource.py",
+      "code_snippet": "@router.post(\n    \"\",\n    status_code=status.HTTP_201_CREATED,\n    response_model=ArticleInResponse,\n    name=\"articles:create-article\",\n)\nasync def create_new_article(\n    article_create: ArticleInCreate = Body(..., embed=True, alias=\"article\"),\n    user: User = Depends(get_current_user_authorizer()),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ArticleInResponse:\n    slug = get_slug_for_article(article_create.title)\n    if await check_article_exists(articles_repo, slug):\n        raise HTTPException(\n            status_code=status.HTTP_400_BAD_REQUEST,\n            detail=strings.ARTICLE_ALREADY_EXISTS,\n        )\n\n    article = await articles_repo.create_article(\n        slug=slug,\n        title=article_create.title,\n        description=article_create.description,\n        body=article_create.body,\n        author=user,\n        tags=article_create.tags,\n    )\n    return ArticleInResponse(article=ArticleForResponse.from_orm(article))",
+      "expected_keywords": [
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.28,
+        "timestamp": "2026-01-20 22:49:16",
+        "token_usage": {
+          "prompt_tokens": 1416,
+          "completion_tokens": 342,
+          "total_tokens": 1758
+        }
+      },
+      "response_time": 3.28,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_retrieve_article_by_slug_3",
+      "metadata": {
+        "has_async": true,
+        "lines": 5
+      },
+      "source_file": "app\\api\\routes\\articles\\articles_resource.py",
+      "code_snippet": "@router.get(\"/{slug}\", response_model=ArticleInResponse, name=\"articles:get-article\")\nasync def retrieve_article_by_slug(\n    article: Article = Depends(get_article_by_slug_from_path),\n) -> ArticleInResponse:\n    return ArticleInResponse(article=ArticleForResponse.from_orm(article))",
+      "expected_keywords": [
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.31,
+        "timestamp": "2026-01-20 22:49:20",
+        "token_usage": {
+          "prompt_tokens": 1524,
+          "completion_tokens": 342,
+          "total_tokens": 1866
+        }
+      },
+      "response_time": 3.31,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_update_article_by_slug_4",
+      "metadata": {
+        "has_async": true,
+        "lines": 18
+      },
+      "source_file": "app\\api\\routes\\articles\\articles_resource.py",
+      "code_snippet": "@router.put(\n    \"/{slug}\",\n    response_model=ArticleInResponse,\n    name=\"articles:update-article\",\n    dependencies=[Depends(check_article_modification_permissions)],\n)\nasync def update_article_by_slug(\n    article_update: ArticleInUpdate = Body(..., embed=True, alias=\"article\"),\n    current_article: Article = Depends(get_article_by_slug_from_path),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> ArticleInResponse:\n    slug = get_slug_for_article(article_update.title) if article_update.title else None\n    article = await articles_repo.update_article(\n        article=current_article,\n        slug=slug,\n        **article_update.dict(),\n    )\n    return ArticleInResponse(article=ArticleForResponse.from_orm(article))",
+      "expected_keywords": [
+        "HTTPException",
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.35,
+        "timestamp": "2026-01-20 22:49:25",
+        "token_usage": {
+          "prompt_tokens": 1457,
+          "completion_tokens": 342,
+          "total_tokens": 1799
+        }
+      },
+      "response_time": 3.35,
+      "file_path": "FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_delete_article_by_slug_5",
+      "metadata": {
+        "has_async": true,
+        "lines": 12
+      },
+      "source_file": "app\\api\\routes\\articles\\articles_resource.py",
+      "code_snippet": "@router.delete(\n    \"/{slug}\",\n    status_code=status.HTTP_204_NO_CONTENT,\n    name=\"articles:delete-article\",\n    dependencies=[Depends(check_article_modification_permissions)],\n    response_class=Response,\n)\nasync def delete_article_by_slug(\n    article: Article = Depends(get_article_by_slug_from_path),\n    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),\n) -> None:\n    await articles_repo.delete_article(article=article)",
+      "expected_keywords": [
+        "HTTPException",
+        "description",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "http errors",
+        "http status",
+        "openapi tags",
+        "status codes",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    }
+  ],
+  "timestamp": "2026-01-20 22:49:26",
+  "benchmark_metadata": {
+    "llm_name": "Mistral Small",
+    "repo_name": "fastapi-realworld-example-app",
+    "repo_url": "https://github.com/nsidnev/fastapi-realworld-example-app",
+    "total_time": 98.11,
+    "total_endpoints": 20,
+    "skipped_files_count": 0,
+    "skipped_files": [],
+    "token_usage": {
+      "prompt_tokens": 30252,
+      "completion_tokens": 8346,
+      "total_tokens": 38598
+    }
+  }
+}

@@ -1,0 +1,4347 @@
+{
+  "summary": {
+    "passed": 42,
+    "failed": 8,
+    "errors": 0
+  },
+  "results": [
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 9.98,
+        "timestamp": "2026-01-20 22:19:43",
+        "token_usage": {
+          "prompt_token_count": 1735,
+          "candidates_token_count": 444,
+          "total_token_count": 3596
+        }
+      },
+      "response_time": 9.98,
+      "file_path": "[EXCELLENT] EXC_001",
+      "expected_keywords": [
+        "APIRouter",
+        "response_model",
+        "status_code",
+        "Query",
+        "docstring",
+        "type_hints"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, HTTPException, status, Query\nfrom sqlalchemy.orm import Session\nfrom typing import List\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"users\"])\n\n@router.get(\n    \"/users\",\n    response_model=List[UserResponse],\n    status_code=status.HTTP_200_OK,\n    tags=[\"users\"]\n)\nasync def get_users(\n    skip: int = Query(0, ge=0, description=\"Número de registros a pular\"),\n    limit: int = Query(100, ge=1, le=100, description=\"Limite de registros\"),\n    db: Session = Depends(get_db)\n) -> List[UserResponse]:\n    '''\n    Recupera lista paginada de usuários.\n    \n    Args:\n        skip: Registros a pular para paginação\n        limit: Número máximo de registros a retornar\n        db: Sessão do banco de dados\n    \n    Returns:\n        Lista de usuários encontrados\n    \n    Raises:\n        HTTPException: Erro 500 se houver falha no banco\n    '''\n    try:\n        users = db.query(User).offset(skip).limit(limit).all()\n        return users\n    except Exception as e:\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=f\"Erro ao buscar usuários: {str(e)}\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código FastAPI está bem estruturado e segue as boas práticas definidas nas regras ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 9.59,
+        "timestamp": "2026-01-20 22:19:54",
+        "token_usage": {
+          "prompt_token_count": 1781,
+          "candidates_token_count": 446,
+          "total_token_count": 3756
+        }
+      },
+      "response_time": 9.59,
+      "file_path": "[EXCELLENT] EXC_002",
+      "expected_keywords": [
+        "APIRouter",
+        "status",
+        "HTTPException",
+        "Pydantic",
+        "ProductCreate",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, HTTPException, status\nfrom sqlalchemy.orm import Session\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"products\"])\n\n@router.post(\n    \"/products\",\n    response_model=ProductResponse,\n    status_code=status.HTTP_201_CREATED,\n    tags=[\"products\"]\n)\nasync def create_product(\n    product: ProductCreate,\n    db: Session = Depends(get_db)\n) -> ProductResponse:\n    '''\n    Cria um novo produto no sistema.\n    \n    Args:\n        product: Dados do produto a ser criado\n        db: Sessão do banco de dados\n    \n    Returns:\n        Produto criado com ID gerado\n    \n    Raises:\n        HTTPException: Erro 409 se produto já existe\n        HTTPException: Erro 500 se houver falha no banco\n    '''\n    try:\n        existing = db.query(Product).filter(Product.name == product.name).first()\n        if existing:\n            raise HTTPException(\n                status_code=status.HTTP_409_CONFLICT,\n                detail=\"Produto com este nome já existe\"\n            )\n        \n        new_product = Product(**product.dict())\n        db.add(new_product)\n        db.commit()\n        db.refresh(new_product)\n        return new_product\n    except HTTPException:\n        raise\n    except Exception as e:\n        db.rollback()\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=f\"Erro ao criar produto: {str(e)}\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 11.3,
+        "timestamp": "2026-01-20 22:20:06",
+        "token_usage": {
+          "prompt_token_count": 1834,
+          "candidates_token_count": 444,
+          "total_token_count": 4151
+        }
+      },
+      "response_time": 11.3,
+      "file_path": "[EXCELLENT] EXC_003",
+      "expected_keywords": [
+        "APIRouter",
+        "Path",
+        "OrderUpdate",
+        "HTTPException",
+        "status",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, HTTPException, status, Path\nfrom sqlalchemy.orm import Session\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"orders\"])\n\n@router.put(\n    \"/orders/{order_id}\",\n    response_model=OrderResponse,\n    status_code=status.HTTP_200_OK,\n    tags=[\"orders\"]\n)\nasync def update_order(\n    order_id: int = Path(..., gt=0, description=\"ID do pedido\"),\n    order_update: OrderUpdate = ...,\n    db: Session = Depends(get_db)\n) -> OrderResponse:\n    '''\n    Atualiza dados de um pedido existente.\n    \n    Args:\n        order_id: ID do pedido a atualizar\n        order_update: Dados atualizados do pedido\n        db: Sessão do banco de dados\n    \n    Returns:\n        Pedido atualizado\n    \n    Raises:\n        HTTPException: Erro 404 se pedido não encontrado\n        HTTPException: Erro 500 em caso de erro no banco\n    '''\n    try:\n        order = db.query(Order).filter(Order.id == order_id).first()\n        if not order:\n            raise HTTPException(\n                status_code=status.HTTP_404_NOT_FOUND,\n                detail=f\"Pedido {order_id} não encontrado\"\n            )\n        \n        for key, value in order_update.dict(exclude_unset=True).items():\n            setattr(order, key, value)\n        \n        db.commit()\n        db.refresh(order)\n        return order\n    except HTTPException:\n        raise\n    except Exception as e:\n        db.rollback()\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=f\"Erro ao atualizar pedido: {str(e)}\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 13.24,
+        "timestamp": "2026-01-20 22:20:20",
+        "token_usage": {
+          "prompt_token_count": 1764,
+          "candidates_token_count": 444,
+          "total_token_count": 4731
+        }
+      },
+      "response_time": 13.24,
+      "file_path": "[EXCELLENT] EXC_004",
+      "expected_keywords": [
+        "APIRouter",
+        "docstring",
+        "status_code",
+        "convenção",
+        "snake_case",
+        "type annotation",
+        "codes"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom datetime import datetime\nfrom fastapi import APIRouter, Depends, HTTPException, status, Path\nfrom sqlalchemy.orm import Session\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"categories\"])\n\n@router.delete(\n    response_model=DeleteResponse,\n    status_code=status.HTTP_200_OK,\n    tags=[\"categories\"]\n)\nasync def delete_category(\n    category_id: int = Path(..., gt=0, description=\"ID da categoria\"),\n    db: Session = Depends(get_db)\n) -> DeleteResponse:\n    '''\n    Remove uma categoria (soft delete).\n    \n    Args:\n        category_id: ID da categoria a remover\n        db: Sessão do banco de dados\n    \n    Raises:\n        HTTPException: Erro 404 se categoria não encontrada\n        HTTPException: Erro 500 em caso de erro no banco\n    '''\n    try:\n        category = db.query(Category).filter(Category.id == category_id).first()\n        if not category:\n            raise HTTPException(\n                status_code=status.HTTP_404_NOT_FOUND,\n                detail=f\"Categoria {category_id} não encontrada\"\n            )\n        \n        category.deleted_at = datetime.utcnow()\n        db.commit()\n    except HTTPException:\n        raise\n    except Exception as e:\n        db.rollback()\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=f\"Erro ao deletar categoria: {str(e)}\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código FastAPI está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 6.8,
+        "timestamp": "2026-01-20 22:20:28",
+        "token_usage": {
+          "prompt_token_count": 1844,
+          "candidates_token_count": 445,
+          "total_token_count": 3360
+        }
+      },
+      "response_time": 6.8,
+      "file_path": "[EXCELLENT] EXC_005",
+      "expected_keywords": [
+        "BackgroundTasks",
+        "status.HTTP_202_ACCEPTED",
+        "Body",
+        "Pydantic",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, BackgroundTasks, HTTPException, status, Body\nfrom pydantic import BaseModel, EmailStr, Field\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"notifications\"])\n\n\nclass EmailSchema(BaseModel):\n    email: EmailStr\n    subject: str = Field(..., min_length=1, description=\"Assunto do email\")\n    content: str = Field(..., min_length=1, description=\"Conteúdo do email\")\n\n\nclass NotificationQueuedResponse(BaseModel):\n    message: str\n\n\ndef send_email_background(email: str, subject: str, content: str) -> None:\n    # Simula envio de email\n    pass\n\n\n@router.post(\n    \"/send-email\",\n    response_model=NotificationQueuedResponse,\n    status_code=status.HTTP_202_ACCEPTED,\n    tags=[\"notifications\"]\n)\nasync def send_notification(\n    email_data: EmailSchema = Body(..., description=\"Dados do email para envio em background\"),\n    background_tasks: BackgroundTasks = ...\n) -> NotificationQueuedResponse:\n    '''\n    Envia notificação por email em background.\n\n    Args:\n        email_data: Dados do email\n        background_tasks: Gerenciador de tarefas em background\n\n    Returns:\n        Mensagem de confirmação de enfileiramento\n\n    Raises:\n        HTTPException: Erro 500 caso falhe ao enfileirar a tarefa\n    '''\n    try:\n        background_tasks.add_task(\n            send_email_background,\n            email_data.email,\n            email_data.subject,\n            email_data.content\n        )\n        return NotificationQueuedResponse(message=\"Email queued for sending\")\n    except Exception as e:\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=f\"Erro ao enfileirar envio de email: {str(e)}\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código FastAPI está bem estruturado e segue as boas práticas definidas nas regras de validação.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 18.75,
+        "timestamp": "2026-01-20 22:20:48",
+        "token_usage": {
+          "prompt_token_count": 1742,
+          "candidates_token_count": 447,
+          "total_token_count": 5936
+        }
+      },
+      "response_time": 18.75,
+      "file_path": "[EXCELLENT] EXC_006",
+      "expected_keywords": [
+        "UploadFile",
+        "File",
+        "content_type",
+        "validation",
+        "size limit",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, UploadFile, File, HTTPException, status\nfrom pydantic import BaseModel\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"files\"])\n\n@router.post(\n    \"/upload\",\n    response_model=FileUploadResponse,\n    status_code=status.HTTP_201_CREATED,\n    tags=[\"files\"]\n)\nasync def upload_file(\n    file: UploadFile = File(..., description=\"Arquivo de imagem (max 5MB)\")\n) -> FileUploadResponse:\n    '''\n    Faz upload de um arquivo de imagem.\n    '''\n    try:\n        if not file.content_type.startswith(\"image/\"):\n            raise HTTPException(\n                status_code=status.HTTP_400_BAD_REQUEST,\n                detail=\"Apenas imagens são permitidas\"\n            )\n\n        contents = await file.read()\n\n        if len(contents) > 5 * 1024 * 1024:\n            raise HTTPException(\n                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,\n                detail=\"Arquivo muito grande (max 5MB)\"\n            )\n\n        return FileUploadResponse(\n            filename=file.filename,\n            content_type=file.content_type\n        )\n    except HTTPException:\n        raise\n    except Exception:\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=\"Erro ao processar arquivo\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 13.51,
+        "timestamp": "2026-01-20 22:21:02",
+        "token_usage": {
+          "prompt_token_count": 1701,
+          "candidates_token_count": 444,
+          "total_token_count": 4585
+        }
+      },
+      "response_time": 13.51,
+      "file_path": "[EXCELLENT] EXC_007",
+      "expected_keywords": [
+        "Depends",
+        "filter",
+        "query builder",
+        "Optional",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, Query, HTTPException, status\nfrom typing import Optional, List\nfrom pydantic import BaseModel, Field\nfrom sqlalchemy.orm import Session\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"items\"])\n\n@router.get(\n    \"/search\",\n    response_model=List[ItemResponse],\n    status_code=status.HTTP_200_OK,\n    tags=[\"items\"]\n)\nasync def search_items(\n    filters: ItemFilter = Depends(parse_filter),\n    db: Session = Depends(get_db)\n) -> List[ItemResponse]:\n    '''\n    Busca itens com filtros complexos.\n    '''\n    try:\n        query = db.query(Item)\n\n        if filters.q:\n            query = query.filter(Item.name.contains(filters.q))\n        if filters.min_price is not None:\n            query = query.filter(Item.price >= filters.min_price)\n        if filters.max_price is not None:\n            query = query.filter(Item.price <= filters.max_price)\n\n        return query.all()\n    except Exception:\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=\"Erro ao buscar itens\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 7.74,
+        "timestamp": "2026-01-20 22:21:11",
+        "token_usage": {
+          "prompt_token_count": 1769,
+          "candidates_token_count": 444,
+          "total_token_count": 3467
+        }
+      },
+      "response_time": 7.74,
+      "file_path": "[EXCELLENT] EXC_008",
+      "expected_keywords": [
+        "OAuth2PasswordBearer",
+        "SecurityScopes",
+        "Security",
+        "scopes",
+        "authentication",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, Security, status\nfrom fastapi.security import OAuth2PasswordBearer, SecurityScopes\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"admin\"])\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\", scopes={\"admin\": \"Acesso administrativo\"})\n\nasync def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)):\n    # Lógica de validação de token e escopo\n    pass\n\n@router.delete(\n    \"/users/{user_id}\",\n    status_code=status.HTTP_204_NO_CONTENT,\n    tags=[\"admin\"]\n)\nasync def delete_user_admin(\n    user_id: int = Path(..., gt=0, description=\"ID do usuário\"),\n    current_user: User = Security(get_current_user, scopes=[\"admin\"]),\n    db: Session = Depends(get_db)\n) -> None:\n    '''\n    Endpoint administrativo seguro para remoção de usuários.\n    '''\n    try:\n        user = db.query(User).filter(User.id == user_id).first()\n        if not user:\n            raise HTTPException(\n                status_code=status.HTTP_404_NOT_FOUND,\n                detail=\"Usuário não encontrado\"\n            )\n\n        db.delete(user)\n        db.commit()\n    except HTTPException:\n        raise\n    except Exception:\n        db.rollback()\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=\"Erro ao remover usuário\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 8.71,
+        "timestamp": "2026-01-20 22:21:21",
+        "token_usage": {
+          "prompt_token_count": 1578,
+          "candidates_token_count": 444,
+          "total_token_count": 3610
+        }
+      },
+      "response_time": 8.71,
+      "file_path": "[EXCELLENT] EXC_009",
+      "expected_keywords": [
+        "health check",
+        "SELECT 1",
+        "database check",
+        "status.HTTP_200_OK",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, status, Depends\nfrom sqlalchemy.sql import text\n\nrouter = APIRouter(tags=[\"health\"])\n\n@router.get(\n    \"/health\",\n    status_code=status.HTTP_200_OK,\n    tags=[\"health\"],\n    response_model=HealthResponse\n)\nasync def health_check(db: Session = Depends(get_db)) -> HealthResponse:\n    '''\n    Verifica a saúde da aplicação e conexão com banco.\n    '''\n    try:\n        db.execute(text(\"SELECT 1\"))\n        return HealthResponse(status=\"healthy\", database=\"connected\")\n    except Exception:\n        raise HTTPException(\n            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,\n            detail=\"Banco indisponível\"\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 13.51,
+        "timestamp": "2026-01-20 22:21:35",
+        "token_usage": {
+          "prompt_token_count": 1593,
+          "candidates_token_count": 444,
+          "total_token_count": 4134
+        }
+      },
+      "response_time": 13.51,
+      "file_path": "[EXCELLENT] EXC_010",
+      "expected_keywords": [
+        "StreamingResponse",
+        "yield",
+        "generator",
+        "stream",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "expected_category": "excellent",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom fastapi.responses import StreamingResponse\nimport io\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"export\"])\n\n@router.get(\n    \"/export/csv\",\n    status_code=status.HTTP_200_OK,\n    tags=[\"export\"]\n)\nasync def export_data_csv() -> StreamingResponse:\n    '''\n    Exporta dados em formato CSV via stream.\n    '''\n    stream = io.StringIO()\n    stream.write(\"id,name,value\\n\")\n    stream.write(\"1,Test,100\\n\")\n    stream.seek(0)\n    \n    return StreamingResponse(\n        iter([stream.getvalue()]),\n        media_type=\"text/csv\",\n        headers={\"Content-Disposition\": \"attachment; filename=data.csv\"}\n    )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 92,
+      "summary": "O código está em conformidade com a maioria das regras, mas falta uma anotação de tipo de retorno na função.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'get_items' não possui uma anotação de tipo de retorno explícita em sua assinatura. Embora 'response_model' no decorador ajude na documentação OpenAPI e serialização, a anotação de tipo na função é crucial para análise estática e clareza do código.",
+          "suggestion": "Adicione a anotação de tipo de retorno à função, por exemplo: `async def get_items(...) -> List[ItemResponse]:`",
+          "line_reference": "Linha 9"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 10.96,
+        "timestamp": "2026-01-20 22:21:47",
+        "token_usage": {
+          "prompt_token_count": 1569,
+          "candidates_token_count": 606,
+          "total_token_count": 3641
+        }
+      },
+      "response_time": 10.96,
+      "file_path": "[GOOD] GOOD_001",
+      "expected_keywords": [
+        "HTTPException",
+        "status",
+        "List",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, HTTPException, status\nfrom sqlalchemy.orm import Session\n\nrouter = APIRouter(prefix=\"/api/v1\")\n\n@router.get(\n    \"/items\",\n    response_model=List[ItemResponse],\n    status_code=status.HTTP_200_OK,\n    tags=[\"items\"]\n)\nasync def get_items(\n    db: Session = Depends(get_db)\n):\n    '''Recupera lista de items'''\n    try:\n        items = db.query(Item).all()\n        return items\n    except Exception as e:\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=str(e)\n        )\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 92,
+      "summary": "O código está em boa forma, com uma pequena melhoria sugerida para documentação.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função 'create_task' não possui uma docstring explicativa. Docstrings são cruciais para a documentação automática (ex: Swagger UI) e para a clareza do código.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva a finalidade do endpoint, seus parâmetros e o que ele retorna.",
+          "line_reference": "Linha 9"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 12.83,
+        "timestamp": "2026-01-20 22:22:01",
+        "token_usage": {
+          "prompt_token_count": 1579,
+          "candidates_token_count": 571,
+          "total_token_count": 4471
+        }
+      },
+      "response_time": 12.83,
+      "file_path": "[GOOD] GOOD_002",
+      "expected_keywords": [
+        "TaskCreate",
+        "TaskResponse",
+        "HTTP_201_CREATED",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, HTTPException, status\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"tasks\"])\n\n@router.post(\n    \"/tasks\",\n    response_model=TaskResponse,\n    status_code=status.HTTP_201_CREATED,\n    tags=[\"tasks\"]\n)\nasync def create_task(task: TaskCreate, db: Session = Depends(get_db)) -> TaskResponse:\n    try:\n        new_task = Task(**task.dict())\n        db.add(new_task)\n        db.commit()\n        db.refresh(new_task)\n        return new_task\n    except Exception as e:\n        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=\"Erro ao criar tarefa\")\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 92,
+      "summary": "O código está bem estruturado e segue a maioria das boas práticas, mas falta uma docstring.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint `get_reports` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.",
+          "suggestion": "Adicione uma docstring clara e concisa à função `get_reports` descrevendo seu propósito, parâmetros (skip, limit, db) e o tipo de retorno esperado.",
+          "line_reference": "Linha 10"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 15.55,
+        "timestamp": "2026-01-20 22:22:17",
+        "token_usage": {
+          "prompt_token_count": 1623,
+          "candidates_token_count": 594,
+          "total_token_count": 5095
+        }
+      },
+      "response_time": 15.55,
+      "file_path": "[GOOD] GOOD_003",
+      "expected_keywords": [
+        "docstring",
+        "pagination",
+        "List"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, HTTPException, status\nfrom sqlalchemy.orm import Session\nfrom typing import List\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"reports\"])\n\n@router.get(\n    \"/reports\",\n    response_model=List[ReportResponse],\n    status_code=status.HTTP_200_OK,\n    tags=[\"reports\"]\n)\nasync def get_reports(\n    skip: int = Query(0, ge=0),\n    limit: int = Query(100, ge=1, le=100),\n    db: Session = Depends(get_db)\n) -> List[ReportResponse]:\n    try:\n        reports = db.query(Report).offset(skip).limit(limit).all()\n        return reports\n    except Exception as e:\n        raise HTTPException(\n            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,\n            detail=f\"Erro: {str(e)}\"\n        )\n"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 50,
+      "summary": "O código apresenta problemas críticos de semântica HTTP e tratamento de erros, além de uma docstring genérica.",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A docstring 'Busca simples' é muito genérica e não oferece detalhes suficientes sobre a funcionalidade do endpoint, seus parâmetros ou o formato da resposta esperada.",
+          "suggestion": "Expanda a docstring para incluir uma descrição mais detalhada da funcionalidade, dos parâmetros (ex: 'q' para termo de busca opcional) e do formato da resposta.",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "error",
+          "rule_category": "http_semantics",
+          "check_failed": "Status code condiz com o método e o comportamento",
+          "description": "Um endpoint GET que retorna sucesso (um corpo de resposta) não deve usar o status code 500 Internal Server Error. O status 500 indica que algo deu errado no servidor, não que a requisição foi processada com sucesso.",
+          "suggestion": "Altere o `status_code` para `status.HTTP_200_OK` para indicar uma resposta bem-sucedida. Se houver condições de erro, retorne 500 ou outros códigos de erro (ex: 404 Not Found) condicionalmente, não como padrão.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O endpoint está configurado para sempre retornar `status.HTTP_500_INTERNAL_SERVER_ERROR`, mesmo em casos de sucesso. Isso indica uma falha na definição de status codes corretos para diferentes cenários (sucesso vs. erro específico).",
+          "suggestion": "Implemente tratamento de erros adequado, retornando `status.HTTP_500_INTERNAL_SERVER_ERROR` apenas quando um erro interno real ocorrer. Para sucesso, use `status.HTTP_200_OK`.",
+          "line_reference": "Linha 5"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 23.46,
+        "timestamp": "2026-01-20 22:22:42",
+        "token_usage": {
+          "prompt_token_count": 1494,
+          "candidates_token_count": 855,
+          "total_token_count": 6484
+        }
+      },
+      "response_time": 23.46,
+      "file_path": "[GOOD] GOOD_004",
+      "expected_keywords": [
+        "missing description",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Query\n\nrouter = APIRouter(tags=[\"search\"])\n\n@router.get(\"/search\", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, response_model=Dict[str, str], tags=[\"search\"])\nasync def search(q: Optional[str] = Query(None)) -> Dict[str, str]:\n    '''Busca simples'''\n    return {\"query\": q or \"\"}\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Todas as regras de validação foram atendidas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 7.77,
+        "timestamp": "2026-01-20 22:22:51",
+        "token_usage": {
+          "prompt_token_count": 1484,
+          "candidates_token_count": 438,
+          "total_token_count": 3258
+        }
+      },
+      "response_time": 7.77,
+      "file_path": "[GOOD] GOOD_005",
+      "expected_keywords": [
+        "response_model",
+        "Dict",
+        "schema",
+        "Pydantic",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"misc\"])\n\n@router.get(\"/config\", status_code=status.HTTP_200_OK, tags=[\"misc\"])\nasync def get_config() -> Dict[str, str]:\n    '''Retorna configurações'''\n    return {\"version\": \"1.0\", \"env\": \"prod\"}\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 75,
+      "summary": "Código possui problemas na semântica HTTP e tratamento de erros, além de não especificar explicitamente o status code de sucesso.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O decorador do endpoint `@router.post` não especifica explicitamente o status_code de sucesso. Embora o padrão seja 200 OK para POST, é uma boa prática ser explícito para clareza e para diferenciar de 201 Created se a intenção fosse criar um recurso.",
+          "suggestion": "Adicione `status_code=status.HTTP_200_OK` ao decorador `@router.post` para clareza.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "http_semantics",
+          "check_failed": "Status code condiz com o método e o comportamento",
+          "description": "Um erro no login está retornando `status.HTTP_200_OK` (200 OK) através de uma `HTTPException`. Retornar 200 OK para uma falha é semanticamente incorreto e pode levar a confusão no cliente.",
+          "suggestion": "Use um status code apropriado para erros de autenticação, como `status.HTTP_401_UNAUTHORIZED` para credenciais inválidas, ou `status.HTTP_500_INTERNAL_SERVER_ERROR` para erros internos inesperados.",
+          "line_reference": "Linha 10"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "A `HTTPException` levantada em caso de erro no login está utilizando `status.HTTP_200_OK`. Status codes de sucesso não devem ser usados para indicar condições de erro.",
+          "suggestion": "Para tratamento de erros, utilize status codes da série 4xx (erros do cliente) ou 5xx (erros do servidor). Por exemplo, `status.HTTP_401_UNAUTHORIZED` para falha de autenticação.",
+          "line_reference": "Linha 10"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 17.95,
+        "timestamp": "2026-01-20 22:23:10",
+        "token_usage": {
+          "prompt_token_count": 1522,
+          "candidates_token_count": 863,
+          "total_token_count": 5699
+        }
+      },
+      "response_time": 17.95,
+      "file_path": "[GOOD] GOOD_006",
+      "expected_keywords": [
+        "status_code",
+        "authentication",
+        "token"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, status, Depends\nfrom pydantic import BaseModel\n\nrouter = APIRouter(prefix=\"/v1\", tags=[\"auth\"])\n\n@router.post(\"/login\", response_model=Dict[str, str], tags=[\"auth\"])\nasync def login(creds: LoginCtx) -> Dict[str, str]:\n    '''Faz login e retorna um token.'''\n    try:\n        return {\"token\": \"abc\"}\n    except Exception:\n        raise HTTPException(status_code=status.HTTP_200_OK, detail=\"Erro no login\")\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 90,
+      "summary": "O código está bem estruturado, mas falta uma docstring para o endpoint.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função 'debug_endpoint' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.",
+          "suggestion": "Adicione uma docstring à função 'debug_endpoint' descrevendo sua finalidade, por exemplo: \"\"\"Endpoint de depuração para verificar o status da API.\"\"\"",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 6.4,
+        "timestamp": "2026-01-20 22:23:17",
+        "token_usage": {
+          "prompt_token_count": 1468,
+          "candidates_token_count": 590,
+          "total_token_count": 2946
+        }
+      },
+      "response_time": 6.4,
+      "file_path": "[GOOD] GOOD_007",
+      "expected_keywords": [
+        "status_code",
+        "docstring"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\n\nrouter = APIRouter(tags=[\"test\"])\n\n@router.get(\"/debug\", status_code=status.HTTP_200_OK)\nasync def debug_endpoint() -> Dict[str, str]:\n    print(\"Debug endpoint called\")\n    return {\"status\": \"ok\"}\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 6.57,
+        "timestamp": "2026-01-20 22:23:25",
+        "token_usage": {
+          "prompt_token_count": 1494,
+          "candidates_token_count": 444,
+          "total_token_count": 3103
+        }
+      },
+      "response_time": 6.57,
+      "file_path": "[GOOD] GOOD_008",
+      "expected_keywords": [
+        "variable case",
+        "snake_case",
+        "camelCase",
+        "convenção",
+        "convention",
+        "naming"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter\n\nrouter = APIRouter(tags=[\"users\"])\n\n@router.get(\"/users/count\", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=[\"users\"])\nasync def get_user_count() -> Dict[str, int]:\n    '''Retorna total de usuários'''\n    UserCount = 100\n    return {\"count\": UserCount}\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 75,
+      "summary": "O código possui algumas violações de boas práticas e semântica HTTP.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint POST não especifica explicitamente o status_code de sucesso. Para criação de recursos, o status 201 Created é o mais adequado e semântico.",
+          "suggestion": "Adicione `status_code=201` ao decorador `@router.post` para indicar a criação de um recurso. Ex: `@router.post('/items', status_code=201)`.",
+          "line_reference": "Linha 9"
+        },
+        {
+          "severity": "error",
+          "rule_category": "http_semantics",
+          "check_failed": "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+          "description": "Um endpoint POST que cria um recurso deve retornar o status code 201 (Created) por padrão, não 200 (OK), que é o padrão implícito do FastAPI quando não especificado.",
+          "suggestion": "Altere o `status_code` do decorador `@router.post` para 201. Ex: `@router.post('/items', status_code=201)`.",
+          "line_reference": "Linha 9"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `create_item` não possui anotação de tipo de retorno. Isso dificulta a leitura, manutenção e o uso de ferramentas de análise estática de código.",
+          "suggestion": "Adicione a anotação de tipo de retorno à assinatura da função. Se a função retorna o próprio item, use `-> Item`. Ex: `async def create_item(item: Item) -> Item:`",
+          "line_reference": "Linha 10"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 13.05,
+        "timestamp": "2026-01-20 22:23:39",
+        "token_usage": {
+          "prompt_token_count": 1462,
+          "candidates_token_count": 842,
+          "total_token_count": 4133
+        }
+      },
+      "response_time": 13.05,
+      "file_path": "[GOOD] GOOD_009",
+      "expected_keywords": [
+        "HTTP_201_CREATED",
+        "status_code"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter\nfrom pydantic import BaseModel\n\nrouter = APIRouter(tags=[\"items\"])\n\nclass Item(BaseModel):\n    name: str\n\n@router.post(\"/items\")\nasync def create_item(item: Item):\n    '''Cria item'''\n    return item\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 6.89,
+        "timestamp": "2026-01-20 22:23:47",
+        "token_usage": {
+          "prompt_token_count": 1477,
+          "candidates_token_count": 444,
+          "total_token_count": 2981
+        }
+      },
+      "response_time": 6.89,
+      "file_path": "[GOOD] GOOD_010",
+      "expected_keywords": [
+        "response_model",
+        "Dict",
+        "schema",
+        "Pydantic",
+        "status_code"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter\n\nrouter = APIRouter(tags=[\"utils\"])\n\n@router.get(\"/echo\", status_code=status.HTTP_200_OK, tags=[\"utils\"])\ndef echo_message(msg: str = Query(...)) -> Dict[str, str]:\n    '''Retorna a mensagem enviada'''\n    return {\"message\": msg}\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 92,
+      "summary": "O código está bem estruturado, mas falta uma anotação de tipo de retorno na função do endpoint.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `divide` não possui uma anotação de tipo de retorno explícita. Embora `response_model` seja usado, a anotação de tipo na assinatura da função é uma boa prática para clareza e ferramentas de análise estática.",
+          "suggestion": "Adicione `-> Dict[str, float]` à assinatura da função para indicar o tipo de retorno esperado, por exemplo: `async def divide(a: int, b: int) -> Dict[str, float]:`",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 18.16,
+        "timestamp": "2026-01-20 22:24:06",
+        "token_usage": {
+          "prompt_token_count": 1514,
+          "candidates_token_count": 608,
+          "total_token_count": 5828
+        }
+      },
+      "response_time": 18.16,
+      "file_path": "[GOOD] GOOD_011",
+      "expected_keywords": [
+        "manual validation",
+        "HTTPException",
+        "if check",
+        "type hints",
+        "type annotation"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, HTTPException\n\nrouter = APIRouter(tags=[\"calc\"])\n\n@router.get(\"/divide\", status_code=status.HTTP_200_OK, response_model=Dict[str, float], tags=[\"calc\"])\nasync def divide(a: int, b: int):\n    '''Faz divisão'''\n    if b == 0:\n        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=\"Zero division\")\n    return {\"result\": a / b}\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 83,
+      "summary": "O código é geralmente bom, mas pode melhorar a clareza com anotações de tipo de retorno e status codes explícitos.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o status_code de sucesso (200 OK). Embora 200 seja o padrão, a especificação explícita melhora a legibilidade, a documentação OpenAPI e a intenção do desenvolvedor.",
+          "suggestion": "Adicione `status_code=200` ao decorador: `@router.get(\"/users/{user_id}\", status_code=200)`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'get_user' não possui anotação de tipo de retorno. Isso dificulta a inferência de tipo, a validação do modelo de resposta pelo FastAPI e ferramentas de análise estática, além de reduzir a clareza do código.",
+          "suggestion": "Adicione uma anotação de tipo de retorno, preferencialmente um modelo Pydantic para a resposta, ou `-> dict` se for um dicionário simples. Ex: `async def get_user(user_id: int) -> dict:` ou `-> UserResponseSchema:`.",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 16.52,
+        "timestamp": "2026-01-20 22:24:23",
+        "token_usage": {
+          "prompt_token_count": 1461,
+          "candidates_token_count": 773,
+          "total_token_count": 5313
+        }
+      },
+      "response_time": 16.52,
+      "file_path": "[GOOD] GOOD_012",
+      "expected_keywords": [
+        "path parameter",
+        "no explicit type in decorator",
+        "type hints",
+        "type annotation"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter\n\nrouter = APIRouter(tags=[\"users\"])\n\n@router.get(\"/users/{user_id}\")\nasync def get_user(user_id: int):\n    '''Busca usuário'''\n    return {\"id\": user_id, \"name\": \"User\"}\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 83,
+      "summary": "O código apresenta uma violação de convenção de nomenclatura, mas está em conformidade com a maioria das regras.",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+          "description": "O nome da função 'get' é snake_case, mas é muito genérico e não especifica o recurso que está sendo obtido. Embora 'get' seja um verbo, ele não é específico o suficiente para o recurso 'tags'.",
+          "suggestion": "Renomeie a função para 'get_tags' ou 'list_tags' para maior clareza e aderência à convenção de verbos de ação específicos para o recurso.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função 'get' é muito genérico e não indica claramente qual recurso está sendo manipulado. Isso dificulta a leitura e manutenção do código, especialmente em um projeto maior.",
+          "suggestion": "Renomeie a função para 'get_tags' ou 'list_tags' para ser mais descritiva e contextualizada com o endpoint '/tags'.",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 14.08,
+        "timestamp": "2026-01-20 22:24:38",
+        "token_usage": {
+          "prompt_token_count": 1481,
+          "candidates_token_count": 683,
+          "total_token_count": 4854
+        }
+      },
+      "response_time": 14.08,
+      "file_path": "[GOOD] GOOD_013",
+      "expected_keywords": [
+        "direct list return",
+        "List[str]",
+        "naming conventions",
+        "snake_case",
+        "camelCase"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter\nfrom typing import List\n\nrouter = APIRouter(tags=[\"tags\"])\n\n@router.get(\"/tags\", response_model=List[str], status_code=status.HTTP_200_OK, tags=[\"tags\"])\nasync def get() -> List[str]:\n    '''Lista todas as tags'''\n    return [\"tag1\", \"tag2\"]\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 8.77,
+        "timestamp": "2026-01-20 22:24:48",
+        "token_usage": {
+          "prompt_token_count": 1469,
+          "candidates_token_count": 444,
+          "total_token_count": 3707
+        }
+      },
+      "response_time": 8.77,
+      "file_path": "[GOOD] GOOD_014",
+      "expected_keywords": [
+        "response_model",
+        "status_code"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\n\nrouter = APIRouter(tags=[\"status\"])\n\n@router.get(\"/ping\", status_code=status.HTTP_200_OK, tags=[\"status\"])\nasync def ping() -> Dict[str, str]:\n    '''Health check simples'''\n    return {\"ping\": \"pong\"}\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código FastAPI está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 16.42,
+        "timestamp": "2026-01-20 22:25:06",
+        "token_usage": {
+          "prompt_token_count": 1497,
+          "candidates_token_count": 421,
+          "total_token_count": 5299
+        }
+      },
+      "response_time": 16.42,
+      "file_path": "[GOOD] GOOD_015",
+      "expected_keywords": [
+        "Form",
+        "form-data",
+        "not JSON",
+        "input validation",
+        "openapi",
+        "pydantic",
+        "Body",
+        "request body"
+      ],
+      "expected_score_min": 80,
+      "expected_score_max": 89,
+      "expected_category": "good",
+      "expected_status": "pass",
+      "code_snippet": "\nfrom fastapi import APIRouter, Form\n\nrouter = APIRouter(tags=[\"login\"])\n\n@router.post(\"/login-form\", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=[\"login\"])\nasync def login_form(username: str = Form(...), password: str = Form(...)) -> Dict[str, str]:\n    '''Login via form data'''\n    return {\"user\": username}\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 91,
+      "summary": "Código possui uma pequena violação de boas práticas de type hinting.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'get_customers' não possui uma anotação de tipo de retorno explícita. Isso dificulta a compreensão do tipo de dado que a função retorna e a validação estática do código.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à assinatura da função, por exemplo, '-> List[Customer]' (assumindo 'Customer' é o modelo de dados retornado).",
+          "line_reference": "Linha 9"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 12.81,
+        "timestamp": "2026-01-20 22:25:19",
+        "token_usage": {
+          "prompt_token_count": 1541,
+          "candidates_token_count": 581,
+          "total_token_count": 4516
+        }
+      },
+      "response_time": 12.81,
+      "file_path": "[MEDIUM] MED_001",
+      "expected_keywords": [
+        "List[dict]",
+        "missing schema",
+        "status_code",
+        "type hints",
+        "type annotation"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, HTTPException, status\nfrom sqlalchemy.orm import Session\nfrom typing import List\n\nrouter = APIRouter(prefix=\"/api/v1\", tags=[\"customers\"])\n\n@router.get(\"/customers\", status_code=status.HTTP_200_OK)\nasync def get_customers(db: Session = Depends(get_db)):\n    '''Retorna lista de clientes'''\n    try:\n        customers = db.query(Customer).all()\n        return customers\n    except Exception:\n        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=\"Erro ao buscar clientes\")\n\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 92,
+      "summary": "Código bem estruturado, com uma pequena melhoria de tipagem necessária.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'get_user_data' não possui uma anotação de tipo de retorno. Isso dificulta a inferência de tipo e a validação estática do código, além de não aparecer no OpenAPI.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função, por exemplo, `-> User` (assumindo que `User` é o modelo de dados retornado) ou `-> Any` se o tipo for complexo ou desconhecido no momento.",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 10.32,
+        "timestamp": "2026-01-20 22:25:31",
+        "token_usage": {
+          "prompt_token_count": 1535,
+          "candidates_token_count": 599,
+          "total_token_count": 3728
+        }
+      },
+      "response_time": 10.32,
+      "file_path": "[MEDIUM] MED_002",
+      "expected_keywords": [
+        "FastAPI",
+        "missing return hint",
+        "naming",
+        "type hints",
+        "type annotation"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import FastAPI, Depends, HTTPException, status\nfrom sqlalchemy.orm import Session\n\napp = FastAPI()\n\n@app.get(\"/user/{user_id}\", status_code=status.HTTP_200_OK)\ndef get_user_data(user_id: int, db: Session = Depends(get_db)):\n    '''Busca dados do usuário'''\n    user = db.query(User).filter(User.id == user_id).first()\n    if not user:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=\"Not found\")\n    return user\n\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 75,
+      "summary": "Código possui problemas de semântica HTTP e tratamento de erros, além de faltar anotação de tipo de retorno.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "http_semantics",
+          "check_failed": "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+          "description": "O endpoint GET retorna status_code 200 OK quando a fatura não é encontrada. O correto seria 404 Not Found para indicar que o recurso não existe.",
+          "suggestion": "Altere `status.HTTP_200_OK` para `status.HTTP_404_NOT_FOUND` na exceção de 'Invoice not found'.",
+          "line_reference": "Linha 20"
+        },
+        {
+          "severity": "error",
+          "rule_category": "http_semantics",
+          "check_failed": "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+          "description": "O endpoint GET retorna status_code 200 OK para um erro genérico não especificado. O correto seria 500 Internal Server Error para indicar um problema no servidor.",
+          "suggestion": "Altere `status.HTTP_200_OK` para `status.HTTP_500_INTERNAL_SERVER_ERROR` na exceção genérica.",
+          "line_reference": "Linha 25"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `get_invoice` não possui anotação de tipo de retorno, o que dificulta a leitura e validação estática do código.",
+          "suggestion": "Adicione `-> InvoiceResponse` (ou o tipo correto) à assinatura da função: `async def get_invoice(...) -> InvoiceResponse:`",
+          "line_reference": "Linha 12"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O status code `HTTP_200_OK` é usado para indicar que uma fatura não foi encontrada. O correto para este cenário é `HTTP_404_NOT_FOUND`.",
+          "suggestion": "Altere `status.HTTP_200_OK` para `status.HTTP_404_NOT_FOUND` na exceção de 'Invoice not found'.",
+          "line_reference": "Linha 20"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O status code `HTTP_200_OK` é usado para um erro genérico de servidor. O correto para este cenário é `HTTP_500_INTERNAL_SERVER_ERROR`.",
+          "suggestion": "Altere `status.HTTP_200_OK` para `status.HTTP_500_INTERNAL_SERVER_ERROR` na exceção genérica.",
+          "line_reference": "Linha 25"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 21.71,
+        "timestamp": "2026-01-20 22:25:53",
+        "token_usage": {
+          "prompt_token_count": 1626,
+          "candidates_token_count": 1125,
+          "total_token_count": 7161
+        }
+      },
+      "response_time": 21.71,
+      "file_path": "[MEDIUM] MED_003",
+      "expected_keywords": [
+        "Exception",
+        "generic error",
+        "status_code",
+        "type hints",
+        "type annotation"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, HTTPException, status, Path\nfrom sqlalchemy.orm import Session\n\nrouter = APIRouter(tags=[\"invoices\"])\n\n@router.get(\n    \"/invoices/{invoice_id}\",\n    response_model=InvoiceResponse,\n    status_code=status.HTTP_200_OK,\n    tags=[\"invoices\"]\n)\nasync def get_invoice(\n    invoice_id: int = Path(..., gt=0),\n    db: Session = Depends(get_db)\n):\n    '''Busca fatura por ID'''\n    try:\n        invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()\n        if not invoice:\n            raise HTTPException(status_code=status.HTTP_200_OK, detail=\"Invoice not found\")\n        return invoice\n    except HTTPException:\n        raise\n    except Exception:\n        raise HTTPException(status_code=status.HTTP_200_OK, detail=\"Erro ao buscar fatura\")\n\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 67,
+      "summary": "O código apresenta problemas na semântica HTTP de erros e falta de documentação.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint 'risky_op' não possui uma docstring explicativa. Isso dificulta o entendimento da sua finalidade e comportamento.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva o que o endpoint faz, seus parâmetros (se houver) e o que ele retorna.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "http_semantics",
+          "check_failed": "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+          "description": "O endpoint retorna status HTTP 200 OK em caso de exceção. Um status 200 indica sucesso, o que é semanticamente incorreto para uma condição de erro.",
+          "suggestion": "Para erros, utilize status codes apropriados da série 4xx (erros do cliente) ou 5xx (erros do servidor), como 500 Internal Server Error para exceções genéricas não tratadas especificamente.",
+          "line_reference": "Linha 9"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função 'risky_op' é um pouco genérico e não descreve completamente a ação ou o recurso que está sendo operado. 'op' é uma abreviação que pode não ser clara para todos.",
+          "suggestion": "Renomeie a função para algo mais descritivo, como 'get_risky_status' ou 'perform_risky_operation', para indicar claramente sua finalidade.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "A exceção `HTTPException` está sendo levantada com `status_code=status.HTTP_200_OK` em caso de erro. Isso é incorreto, pois 200 OK indica sucesso, não falha.",
+          "suggestion": "Altere o status code da `HTTPException` para um que represente um erro, como `status.HTTP_500_INTERNAL_SERVER_ERROR` para erros inesperados, ou um 4xx se for um erro de cliente específico.",
+          "line_reference": "Linha 9"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 11.82,
+        "timestamp": "2026-01-20 22:26:06",
+        "token_usage": {
+          "prompt_token_count": 1516,
+          "candidates_token_count": 966,
+          "total_token_count": 4072
+        }
+      },
+      "response_time": 11.82,
+      "file_path": "[MEDIUM] MED_004",
+      "expected_keywords": [
+        "Exception",
+        "generic try/except",
+        "status_code",
+        "HTTPException",
+        "docstring"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, HTTPException, status\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"risky\"])\n\n@router.get(\"/risky\", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=[\"risky\"])\nasync def risky_op() -> Dict[str, str]:\n    try:\n        return {\"status\": \"ok\"}\n    except Exception:\n        raise HTTPException(status_code=status.HTTP_200_OK, detail=\"Error\")\n\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 67,
+      "summary": "Código possui problemas de tipagem e validação de entrada que podem levar a comportamentos inesperados e erros de servidor.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "Os parâmetros 'x' e 'y' na função 'calculate' não possuem type hints. Isso impede a validação automática de tipos pelo FastAPI e pode levar a comportamentos inesperados (ex: concatenação de strings ao invés de soma numérica).",
+          "suggestion": "Adicione type hints aos parâmetros, por exemplo, `x: int, y: int`.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'calculate' não possui uma anotação de tipo de retorno. Embora `response_model` ajude o OpenAPI, a anotação de tipo na função melhora a legibilidade e a análise estática do código.",
+          "suggestion": "Adicione a anotação de tipo de retorno, por exemplo, `async def calculate(x, y) -> Dict[str, int]:`.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "A ausência de type hints para os parâmetros 'x' e 'y' significa que o FastAPI não validará automaticamente a entrada. Se valores não numéricos forem fornecidos, a operação de soma resultará em um `TypeError` ou `ValueError`, que o FastAPI tratará como um erro 500 Internal Server Error, em vez de um 422 Unprocessable Entity, que seria o status correto para um erro de validação de entrada do cliente.",
+          "suggestion": "Adicione type hints aos parâmetros (`x: int, y: int`) para que o FastAPI possa realizar a validação de entrada e retornar o status 422 automaticamente em caso de falha.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation_and_openapi",
+          "check_failed": "Body requests usam Pydantic models (N/A se não há body)",
+          "description": "Os parâmetros de entrada 'x' e 'y' não utilizam type hints, o que impede a validação automática de tipos pelo FastAPI. Isso pode levar a comportamentos inesperados, como a concatenação de strings ao invés da soma de números, e não aproveita os recursos de validação e documentação do OpenAPI.",
+          "suggestion": "Adicione type hints aos parâmetros, por exemplo, `x: int, y: int` (ou `x: int = Query(...)` para maior clareza e documentação).",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 21.69,
+        "timestamp": "2026-01-20 22:26:29",
+        "token_usage": {
+          "prompt_token_count": 1482,
+          "candidates_token_count": 1013,
+          "total_token_count": 6355
+        }
+      },
+      "response_time": 21.69,
+      "file_path": "[MEDIUM] MED_005",
+      "expected_keywords": [
+        "missing hints",
+        "int",
+        "typing",
+        "status_code",
+        "type hints",
+        "type annotation"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"calc\"])\n\n@router.get(\"/calc\", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=[\"calc\"])\nasync def calculate(x, y):\n    '''Calcula soma'''\n    return {\"sum\": x + y}\n\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 92,
+      "summary": "O código está em conformidade com a maioria das regras, com uma pequena melhoria sugerida para clareza.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o status_code. Embora o padrão 200 OK seja frequentemente correto para GET, a especificação explícita melhora a clareza e a intenção do código, facilitando a leitura e manutenção.",
+          "suggestion": "Adicione `status_code=status.HTTP_200_OK` ao decorador `@router.get` para tornar o status code explícito.",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 13.35,
+        "timestamp": "2026-01-20 22:26:43",
+        "token_usage": {
+          "prompt_token_count": 1481,
+          "candidates_token_count": 596,
+          "total_token_count": 4650
+        }
+      },
+      "response_time": 13.35,
+      "file_path": "[MEDIUM] MED_006",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom typing import Dict\nimport asyncio\n\nrouter = APIRouter(tags=[\"sleep\"])\n\n@router.get(\"/sleep\", response_model=List[str], tags=[\"sleep\"])\nasync def sleep_route() -> List[str]:\n    '''Simula espera sem bloquear o loop'''\n    await asyncio.sleep(1)\n    return [\"awake\"]\n\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 6.75,
+        "timestamp": "2026-01-20 22:26:51",
+        "token_usage": {
+          "prompt_token_count": 1507,
+          "candidates_token_count": 444,
+          "total_token_count": 2989
+        }
+      },
+      "response_time": 6.75,
+      "file_path": "[MEDIUM] MED_007",
+      "expected_keywords": [
+        "Dict[str, Any]",
+        "no schema",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom typing import Dict, Any\n\nrouter = APIRouter(tags=[\"data\"])\n\n@router.get(\"/data\", status_code=status.HTTP_200_OK, response_model=Dict[str, Any], tags=[\"data\"])\nasync def get_data() -> Dict[str, Any]:\n    '''Retorna dados simples'''\n    return {\"a\": 1, \"b\": 2, \"c\": [1, 2, 3]}\n\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 75,
+      "summary": "Código possui algumas violações de boas práticas e convenções.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o status_code. Embora 200 seja o padrão para GETs bem-sucedidos, explicitá-lo melhora a clareza e a intenção do código, especialmente para futuras manutenções ou revisões.",
+          "suggestion": "Adicione `status_code=status.HTTP_200_OK` ao decorador `@app.get`.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+          "description": "O nome da função `direct_route` não começa com um verbo de ação claro (ex: get, retrieve, list), o que pode dificultar a compreensão rápida da sua finalidade ou da ação que ela executa.",
+          "suggestion": "Renomeie a função para algo como `get_direct_route` ou `retrieve_direct_status` para indicar a ação de forma mais explícita.",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `direct_route` não possui uma anotação de tipo de retorno explícita. Embora `response_model` ajude o FastAPI na documentação e serialização, a anotação de tipo de retorno é crucial para a verificação estática de tipo do Python e para a clareza do código.",
+          "suggestion": "Adicione `-> Dict[str, str]` à assinatura da função: `def direct_route() -> Dict[str, str]:`.",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 14.26,
+        "timestamp": "2026-01-20 22:27:06",
+        "token_usage": {
+          "prompt_token_count": 1451,
+          "candidates_token_count": 871,
+          "total_token_count": 4870
+        }
+      },
+      "response_time": 14.26,
+      "file_path": "[MEDIUM] MED_008",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import FastAPI, status\nfrom typing import Dict\n\napp = FastAPI()\n\n@app.get(\"/direct\", response_model=Dict[str, str])\ndef direct_route():\n    '''Rota direta'''\n    return {\"status\": \"ok\"}\n\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 91,
+      "summary": "O código está em boa conformidade com as regras, com uma pequena sugestão de melhoria na nomenclatura.",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função 'check' é genérico e não descreve completamente a ação ou o recurso que está sendo verificado. Isso pode dificultar a compreensão do propósito do endpoint, mesmo que o path ajude.",
+          "suggestion": "Considere renomear a função para algo mais específico, como `get_id_status` ou `validate_id`, para melhor clareza e alinhamento com a operação.",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 13.23,
+        "timestamp": "2026-01-20 22:27:20",
+        "token_usage": {
+          "prompt_token_count": 1525,
+          "candidates_token_count": 592,
+          "total_token_count": 4389
+        }
+      },
+      "response_time": 13.23,
+      "file_path": "[MEDIUM] MED_009",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming",
+        "error"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, HTTPException, status\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"check\"])\n\n@router.get(\"/check/{id}\", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=[\"check\"])\nasync def check(id: int) -> Dict[str, int]:\n    '''Valida ID'''\n    if id < 0:\n        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=\"Invalid ID\")\n    return {\"id\": id}\n\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 67,
+      "summary": "Código possui algumas violações de boas práticas e convenções.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint não possui uma docstring explicativa. Isso dificulta o entendimento da sua finalidade e uso.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva o que o endpoint faz, seus parâmetros e o que ele retorna.",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+          "description": "O nome da função 'ProcessData' está em PascalCase, o que não segue a convenção snake_case recomendada para funções em Python.",
+          "suggestion": "Renomeie a função para 'process_data' para seguir a convenção snake_case.",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'ProcessData' não possui uma anotação de tipo de retorno. Isso reduz a clareza do código e a capacidade de ferramentas de análise estática.",
+          "suggestion": "Adicione a anotação de tipo de retorno à função, por exemplo, `-> Dict[str, int]`.",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation_and_openapi",
+          "check_failed": "Body requests usam Pydantic models (N/A se não há body)",
+          "description": "O corpo da requisição (`data`) está usando um tipo nativo (`Dict[str, int]`) em vez de um modelo Pydantic. Embora funcional, Pydantic oferece validação de dados mais robusta e documentação OpenAPI mais rica.",
+          "suggestion": "Defina um modelo Pydantic para o corpo da requisição, por exemplo: `class ProcessDataRequest(BaseModel): data: Dict[str, int]` e use-o como `data: ProcessDataRequest`.",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 15.21,
+        "timestamp": "2026-01-20 22:27:37",
+        "token_usage": {
+          "prompt_token_count": 1502,
+          "candidates_token_count": 897,
+          "total_token_count": 4906
+        }
+      },
+      "response_time": 15.21,
+      "file_path": "[MEDIUM] MED_010",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"process\"])\n\n@router.post(\"/process\", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=[\"process\"])\nasync def ProcessData(data: Dict[str, int]):\n    res = 0\n    for _, v in data.items():\n        res += v * 2\n    return {\"result\": res}\n\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "O código está em conformidade com todas as regras de validação ativas.",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 7.98,
+        "timestamp": "2026-01-20 22:27:46",
+        "token_usage": {
+          "prompt_token_count": 1492,
+          "candidates_token_count": 444,
+          "total_token_count": 3186
+        }
+      },
+      "response_time": 7.98,
+      "file_path": "[MEDIUM] MED_011",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"users\"])\n\n@router.get(\"/User-Info\", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=[\"users\"])\nasync def get_user_info() -> Dict[str, str]:\n    '''Retorna info do usuário'''\n    return {\"user\": \"info\"}\n\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 75,
+      "summary": "Código possui problemas de documentação, tipagem e tratamento de erros.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A docstring 'Filtra itens (exemplo)' é muito genérica e não explica adequadamente a funcionalidade do endpoint, seus parâmetros ou o que ele retorna. O termo '(exemplo)' sugere que não é uma descrição final.",
+          "suggestion": "Melhore a docstring para descrever claramente o propósito do endpoint, o parâmetro 'where' e o formato da resposta esperada.",
+          "line_reference": "Linha 8"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'filter_items' não possui uma anotação de tipo de retorno, o que dificulta a compreensão do tipo de dado que será retornado pela API.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função, por exemplo, `-> Dict[str, str]` ou um modelo Pydantic se a estrutura for mais complexa.",
+          "line_reference": "Linha 8"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O endpoint não define explicitamente status codes para cenários de erro (ex: query inválida, erro interno ao processar o filtro). Atualmente, um erro na lógica interna resultaria em um 500 genérico, sem feedback específico ao cliente.",
+          "suggestion": "Implemente tratamento de erros usando `HTTPException` para retornar status codes específicos (ex: 400 Bad Request para filtros malformados, 404 Not Found se o filtro não encontrar nada e isso for um erro, etc.).",
+          "line_reference": "Linha 8"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 14.66,
+        "timestamp": "2026-01-20 22:28:01",
+        "token_usage": {
+          "prompt_token_count": 1509,
+          "candidates_token_count": 838,
+          "total_token_count": 4677
+        }
+      },
+      "response_time": 14.66,
+      "file_path": "[MEDIUM] MED_012",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, status, Query\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"filter\"])\n\n@router.get(\"/filter\", status_code=status.HTTP_200_OK, tags=[\"filter\"])\nasync def filter_items(where: str = Query(..., min_length=1, description=\"Filtro (não usar SQL raw)\")):\n    '''Filtra itens (exemplo)'''\n    return {\"query\": f\"SELECT * FROM items WHERE {where}\"}\n\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 83,
+      "summary": "Código possui algumas melhorias de nomenclatura e tipagem, mas está bem estruturado.",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função 'db_test' é genérico e não descreve completamente a ação ou o recurso. Poderia ser mais específico sobre o que está sendo testado ou o status retornado.",
+          "suggestion": "Renomeie a função para algo mais descritivo, como `check_db_health` ou `get_database_status`.",
+          "line_reference": "Linha 8"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `db_test` não possui uma anotação de tipo de retorno explícita. Isso dificulta a inferência de tipo e a validação estática do código.",
+          "suggestion": "Adicione `-> Dict[str, str]` à assinatura da função para indicar o tipo de retorno esperado.",
+          "line_reference": "Linha 8"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 15.55,
+        "timestamp": "2026-01-20 22:28:18",
+        "token_usage": {
+          "prompt_token_count": 1493,
+          "candidates_token_count": 690,
+          "total_token_count": 4747
+        }
+      },
+      "response_time": 15.55,
+      "file_path": "[MEDIUM] MED_013",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, Depends, status\nfrom sqlalchemy.orm import Session\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"db\"])\n\n@router.get(\"/db-test\", status_code=status.HTTP_200_OK, tags=[\"db\"])\nasync def db_test(db: Session = Depends(get_db)):\n    '''Teste simples de acesso ao DB'''\n    return {\"status\": \"ok\"}\n\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 82,
+      "summary": "O código está em boa forma, com algumas melhorias de documentação e tipagem sugeridas.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função 'get_count' não possui uma docstring explicativa. Docstrings são cruciais para documentar o propósito, parâmetros e retorno de funções, melhorando a legibilidade e manutenibilidade do código, além de serem usadas para gerar documentação automática (ex: Sphinx).",
+          "suggestion": "Adicione uma docstring à função 'get_count' descrevendo o que ela faz, seus parâmetros (se houver) e o que ela retorna.",
+          "line_reference": "Linha 8"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'get_count' não possui uma anotação de tipo de retorno explícita em sua assinatura. Embora 'response_model' no decorador ajude o OpenAPI, a anotação na assinatura da função é uma boa prática para validação estática de tipo e clareza do código.",
+          "suggestion": "Adicione a anotação de tipo de retorno à função 'get_count', por exemplo: `async def get_count() -> Dict[str, int]:`",
+          "line_reference": "Linha 8"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 9.18,
+        "timestamp": "2026-01-20 22:28:28",
+        "token_usage": {
+          "prompt_token_count": 1488,
+          "candidates_token_count": 754,
+          "total_token_count": 3635
+        }
+      },
+      "response_time": 9.18,
+      "file_path": "[MEDIUM] MED_014",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom typing import Dict\n\nrouter = APIRouter(tags=[\"count\"])\nCOUNTER = 0\n\n@router.get(\"/count\", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=[\"count\"])\nasync def get_count():\n    global COUNTER\n    COUNTER += 1\n    return {\"count\": COUNTER}\n\n"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 92,
+      "summary": "O código está em grande parte conforme as boas práticas, com uma pequena violação de convenção.",
+      "violations": [
+        {
+          "severity": "warning",
+          "rule_category": "input_validation_and_openapi",
+          "check_failed": "Body requests usam Pydantic models",
+          "description": "O parâmetro 'data' do body da requisição utiliza um tipo nativo (Dict[str, Any]) em vez de um modelo Pydantic. Embora funcional, um modelo Pydantic oferece validação de dados mais robusta, melhor documentação automática no OpenAPI e tipagem mais explícita, o que é recomendado para corpos de requisição.",
+          "suggestion": "Defina um modelo Pydantic para a entrada de dados, por exemplo: `class SubmitData(BaseModel): your_field: str = ...` e use `data: SubmitData` como parâmetro da função.",
+          "line_reference": "Linha 7"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 19.74,
+        "timestamp": "2026-01-20 22:28:49",
+        "token_usage": {
+          "prompt_token_count": 1497,
+          "candidates_token_count": 588,
+          "total_token_count": 6053
+        }
+      },
+      "response_time": 19.74,
+      "file_path": "[MEDIUM] MED_015",
+      "expected_keywords": [
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 60,
+      "expected_score_max": 79,
+      "expected_category": "medium",
+      "expected_status": "warning",
+      "code_snippet": "\nfrom fastapi import APIRouter, status\nfrom typing import Dict, Any\n\nrouter = APIRouter(tags=[\"submit\"])\n\n@router.post(\"/submit\", status_code=status.HTTP_200_OK, response_model=Dict[str, bool], tags=[\"submit\"])\nasync def submit(data: Dict[str, Any]) -> Dict[str, bool]:\n    '''Recebe dados e confirma recebimento'''\n    return {\"received\": True}\n\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 67,
+      "summary": "Código possui problemas de estrutura de endpoint, nomenclatura e tipagem.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint 'get' não possui uma docstring explicativa. Isso dificulta o entendimento da funcionalidade do endpoint e a geração de documentação automática.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva o propósito do endpoint, seus parâmetros e o que ele retorna.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o status_code de sucesso. Embora 200 seja o padrão para GET, a especificação explícita melhora a clareza e a documentação OpenAPI.",
+          "suggestion": "Adicione status_code=200 ao decorador @app.get para clareza, por exemplo: `@app.get('/data', status_code=200)`.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função 'get' é muito genérico e não indica claramente qual recurso está sendo retornado. Isso pode causar confusão em projetos maiores.",
+          "suggestion": "Renomeie a função para algo mais específico, como 'get_all_data' ou 'list_data'.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'get' não possui uma anotação de tipo de retorno. Isso dificulta a análise estática de código e o entendimento do tipo de dado esperado na resposta.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função, por exemplo: `def get() -> List[Data]:` (assumindo que `Data` é um modelo e retorna uma lista).",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 22.47,
+        "timestamp": "2026-01-20 22:29:12",
+        "token_usage": {
+          "prompt_token_count": 1428,
+          "candidates_token_count": 914,
+          "total_token_count": 6813
+        }
+      },
+      "response_time": 22.47,
+      "file_path": "[POOR] POOR_001",
+      "expected_keywords": [
+        "validation",
+        "pydantic",
+        "schema",
+        "type hint",
+        "error handling"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/data\")\ndef get():\n    return db.query(Data).all()\n"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 33,
+      "summary": "O código apresenta múltiplas violações de boas práticas e estrutura, especialmente em tipagem, semântica HTTP e validação de entrada.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint 'create' não possui uma docstring explicativa. Isso prejudica a documentação automática e a clareza do código, dificultando o entendimento da sua finalidade.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva a finalidade do endpoint, seus parâmetros e o que ele retorna.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint POST não especifica um status_code explícito. O FastAPI usará 200 OK por padrão, o que não é o mais adequado para uma operação de criação de recurso.",
+          "suggestion": "Defina 'status_code=201' no decorador @app.post para indicar a criação bem-sucedida de um recurso.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "error",
+          "rule_category": "http_semantics",
+          "check_failed": "Status code condiz com o método e o comportamento",
+          "description": "Para uma operação de criação (método POST), o status code esperado para sucesso é 201 Created, não o padrão 200 OK. O retorno de 200 OK sugere que a requisição foi processada com sucesso, mas não que um novo recurso foi criado.",
+          "suggestion": "Altere o status_code para 201 no decorador @app.post para refletir corretamente a criação do recurso.",
+          "line_reference": "Linha 5"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função 'create' é um pouco genérico. Embora o path seja '/create', um nome mais descritivo como 'create_item' ou 'create_resource' seria mais claro, especialmente em um contexto maior de múltiplos endpoints.",
+          "suggestion": "Considere renomear a função para algo mais específico, como 'create_item' ou 'create_resource', para melhorar a clareza e evitar ambiguidades.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "O parâmetro 'data' não possui type hint. Isso impede a validação automática de entrada pelo FastAPI, a geração de esquema OpenAPI e reduz a clareza do código, dificultando a identificação do tipo de dado esperado.",
+          "suggestion": "Adicione um type hint ao parâmetro 'data', preferencialmente usando um modelo Pydantic (ex: 'data: ItemCreate').",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'create' não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que o endpoint retorna, impactando a legibilidade e a capacidade de ferramentas de análise estática.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função (ex: '-> Dict[str, str]' ou '-> ItemResponse') para indicar o formato da resposta.",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O código não possui tratamento explícito de erros para falhas na manipulação de 'data' (ex: KeyError se 'name' ou 'value' estiverem ausentes) ou falhas no banco de dados. Isso resultará em um 500 Internal Server Error genérico, sem feedback útil ao cliente sobre a causa do problema.",
+          "suggestion": "Implemente blocos try-except para lidar com erros esperados (ex: validação de entrada, falhas de DB) e retorne HTTPException com status codes apropriados (ex: 400 Bad Request, 422 Unprocessable Entity, 500 Internal Server Error com detalhes).",
+          "line_reference": "Linha 7"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation_and_openapi",
+          "check_failed": "Body requests usam Pydantic models",
+          "description": "O parâmetro 'data' é usado como um dicionário Python simples, sem a definição de um modelo Pydantic. Isso impede a validação automática de entrada, a geração de esquema OpenAPI detalhado e a clareza da estrutura do corpo da requisição.",
+          "suggestion": "Defina um modelo Pydantic (ex: 'class ItemCreate(BaseModel): name: str; value: str') e use-o como type hint para o parâmetro 'data' (ex: 'data: ItemCreate').",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 23.41,
+        "timestamp": "2026-01-20 22:29:37",
+        "token_usage": {
+          "prompt_token_count": 1469,
+          "candidates_token_count": 1421,
+          "total_token_count": 7235
+        }
+      },
+      "response_time": 23.41,
+      "file_path": "[POOR] POOR_002",
+      "expected_keywords": [
+        "validation",
+        "pydantic",
+        "schema",
+        "type hint",
+        "error handling",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.post(\"/create\")\ndef create(data):\n    obj = MyModel()\n    obj.name = data['name']\n    obj.value = data['value']\n    db.add(obj)\n    db.commit()\n    return {\"status\": \"ok\"}\n"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 33,
+      "summary": "O código apresenta múltiplas violações de boas práticas e problemas estruturais, incluindo falta de tipagem, tratamento de erros e convenções de nomenclatura.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint 'UpdateItem' não possui uma docstring explicativa. Isso dificulta o entendimento da sua funcionalidade, parâmetros e o que ele retorna.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva o propósito do endpoint, seus parâmetros e o valor de retorno.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint PUT não especifica explicitamente o status_code de sucesso. Embora o FastAPI defina 200 OK por padrão para PUT com corpo de resposta, a explicitação melhora a clareza e a documentação da API.",
+          "suggestion": "Adicione `status_code=200` ao decorador `@app.put` para indicar explicitamente o status de sucesso.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+          "description": "O nome da função 'UpdateItem' está em PascalCase, o que viola a convenção de nomenclatura snake_case para funções em Python.",
+          "suggestion": "Renomeie a função para 'update_item' para seguir as convenções de nomenclatura do Python.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Parâmetros seguem convenção Python",
+          "description": "Os parâmetros 'ID' e 'NewData' estão em PascalCase, o que viola a convenção de nomenclatura snake_case para parâmetros em Python.",
+          "suggestion": "Renomeie os parâmetros para 'item_id' e 'new_data' para seguir as convenções de nomenclatura do Python.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "Os parâmetros 'ID' e 'NewData' não possuem type hints. Isso prejudica a legibilidade do código, a validação automática do FastAPI e o suporte de ferramentas de análise estática e IDEs.",
+          "suggestion": "Adicione type hints aos parâmetros, por exemplo, `item_id: int` e `new_data: PydanticModel`.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'UpdateItem' não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que a função retorna, impactando a clareza e a documentação da API.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função, por exemplo, `-> Item` ou `-> dict`.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O código não trata explicitamente o cenário onde o 'ITEM' não é encontrado. Se `db.query(Item).get(ID)` retornar `None`, o acesso a `ITEM.data` resultará em um erro 500 Internal Server Error, em vez de um 404 Not Found mais apropriado para o cliente da API.",
+          "suggestion": "Adicione tratamento de erro para itens não encontrados, levantando uma `HTTPException(status_code=404, detail='Item not found')`.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "input_validation_and_openapi",
+          "check_failed": "Body requests usam Pydantic models (N/A se não há body)",
+          "description": "O parâmetro 'NewData' é usado como corpo da requisição, mas não é um modelo Pydantic. Isso impede a validação automática de dados, a geração de esquema OpenAPI detalhado e a clareza da estrutura de entrada esperada.",
+          "suggestion": "Defina 'NewData' como uma instância de um modelo Pydantic, por exemplo, `new_data: ItemUpdateSchema`.",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nomes de função muito genéricos"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 17.51,
+        "timestamp": "2026-01-20 22:29:55",
+        "token_usage": {
+          "prompt_token_count": 1447,
+          "candidates_token_count": 1350,
+          "total_token_count": 5737
+        }
+      },
+      "response_time": 17.51,
+      "file_path": "[POOR] POOR_003",
+      "expected_keywords": [
+        "validation",
+        "pydantic",
+        "schema",
+        "type hint",
+        "error handling",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\n@app.put(\"/update/{ID}\")\ndef UpdateItem(ID, NewData):\n    ITEM = db.query(Item).get(ID)\n    ITEM.data = NewData\n    db.commit()\n    return ITEM\n"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 54,
+      "summary": "O código possui problemas estruturais e de boas práticas que precisam ser corrigidos.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função 'home' não possui uma docstring explicativa, o que dificulta o entendimento da sua funcionalidade e uso.",
+          "suggestion": "Adicione uma docstring clara e concisa para descrever o propósito do endpoint, seus parâmetros (se houver) e o que ele retorna.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O decorador '@app.get' não especifica o 'status_code' explicitamente. Embora o padrão 200 seja correto para GET, a explicitação melhora a clareza e a documentação da API.",
+          "suggestion": "Adicione 'status_code=200' ao decorador '@app.get' para indicar explicitamente o código de status de sucesso.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+          "description": "O nome da função 'home' não inclui um verbo de ação claro (ex: 'get', 'read'), o que pode tornar a intenção do endpoint menos óbvia.",
+          "suggestion": "Renomeie a função para incluir um verbo de ação, como 'get_home' ou 'read_home'.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função 'home' é muito genérico e não descreve de forma específica o recurso ou a ação que está sendo realizada.",
+          "suggestion": "Escolha um nome mais descritivo para a função, como 'get_home_page_content' ou 'retrieve_root_page'.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'home' não possui uma anotação de tipo de retorno, o que prejudica a legibilidade, a validação estática e o suporte a ferramentas de IDE.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à assinatura da função, por exemplo, '-> str' para indicar que ela retorna uma string.",
+          "line_reference": "Linha 3"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 21.67,
+        "timestamp": "2026-01-20 22:30:18",
+        "token_usage": {
+          "prompt_token_count": 1415,
+          "candidates_token_count": 1019,
+          "total_token_count": 6262
+        }
+      },
+      "response_time": 21.67,
+      "file_path": "[POOR] POOR_004",
+      "expected_keywords": [
+        "validation",
+        "pydantic",
+        "schema",
+        "type hint",
+        "error handling",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\n@app.get(\"/home\")\ndef home():\n    return \"<h1>Hello</h1>\"\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 60,
+      "summary": "O código possui problemas de estrutura de endpoint, tipagem e tratamento de erros.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função 'calc' não possui uma docstring explicativa. Isso dificulta o entendimento da funcionalidade do endpoint e a geração de documentação automática.",
+          "suggestion": "Adicione uma docstring clara e concisa logo abaixo da assinatura da função, descrevendo o que o endpoint faz, seus parâmetros e o que ele retorna.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint POST não especifica um status_code explícito. Embora 200 OK seja o padrão para POSTs que não criam recursos, é uma boa prática ser explícito para clareza e para indicar o resultado esperado da operação.",
+          "suggestion": "Adicione 'status_code=200' (ou outro código apropriado como 201 se um recurso fosse criado) ao decorador @app.post ou retorne um Response com o status code desejado.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'calc' não possui uma anotação de tipo de retorno. Isso dificulta a análise estática do código e o entendimento do tipo de dado que o endpoint irá retornar.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função, por exemplo, '-> Any' ou '-> float' se o resultado de eval for sempre numérico, ou '-> Union[int, float, str]' se for mais genérico.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O uso de `eval()` é extremamente perigoso e pode levar a vulnerabilidades de segurança (execução de código arbitrário). Além disso, ele pode levantar exceções como `SyntaxError` ou `NameError` que não são tratadas, resultando em um erro 500 genérico. Erros de entrada do usuário (como uma expressão inválida) deveriam retornar um status 400 Bad Request.",
+          "suggestion": "Evite `eval()` em produção. Se for estritamente necessário, implemente validação rigorosa e um tratamento de exceções robusto. Para erros de sintaxe ou nome, retorne `HTTPException(status_code=400, detail='Expressão inválida')`. Para outros erros, considere um tratamento mais específico ou um 500 com logging adequado.",
+          "line_reference": "Linha 3"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 17.65,
+        "timestamp": "2026-01-20 22:30:37",
+        "token_usage": {
+          "prompt_token_count": 1418,
+          "candidates_token_count": 1030,
+          "total_token_count": 5164
+        }
+      },
+      "response_time": 17.65,
+      "file_path": "[POOR] POOR_005",
+      "expected_keywords": [
+        "eval",
+        "exec",
+        "security",
+        "code injection",
+        "rce",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\n@app.post(\"/calc\")\ndef calc(expr: str):\n    return eval(expr)\n"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 55,
+      "summary": "Código possui múltiplos problemas estruturais, de tipagem e convenções de nomenclatura.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função `my_route` não possui uma docstring explicativa, o que dificulta o entendimento da sua finalidade e uso.",
+          "suggestion": "Adicione uma docstring clara à função `my_route` descrevendo o que ela faz, seus parâmetros e o que ela retorna.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica o `status_code` explicitamente na definição da rota. Isso pode levar a comportamentos padrão inesperados e dificulta a clareza da API.",
+          "suggestion": "Adicione `status_code=200` (ou outro código HTTP apropriado) ao `app.add_api_route` para deixar claro o status de sucesso esperado.",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função `my_route` é muito genérico e não descreve claramente a ação ou o recurso que ela manipula.",
+          "suggestion": "Renomeie a função para algo mais descritivo, como `get_weird_data` ou `retrieve_weird_item`, seguindo a convenção de verbo de ação.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "O parâmetro `req` da função `my_route` não possui um type hint. Isso reduz a clareza do código e a capacidade de ferramentas de análise estática.",
+          "suggestion": "Adicione um type hint ao parâmetro `req`, por exemplo, `req: Request` (se for o objeto Request do FastAPI) ou um tipo Pydantic se for um corpo de requisição.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `my_route` não possui uma anotação de tipo de retorno. Isso dificulta o entendimento do tipo de dado que a função retorna.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função `my_route`, por exemplo, `-> Dict[str, int]`.",
+          "line_reference": "Linha 1"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 37.77,
+        "timestamp": "2026-01-20 22:31:15",
+        "token_usage": {
+          "prompt_token_count": 1428,
+          "candidates_token_count": 1010,
+          "total_token_count": 9858
+        }
+      },
+      "response_time": 37.77,
+      "file_path": "[POOR] POOR_006",
+      "expected_keywords": [
+        "validation",
+        "pydantic",
+        "schema",
+        "type hint",
+        "error handling",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\ndef my_route(req):\n    return {\"a\":1}\n    \napp.add_api_route(\"/weird\", my_route)\n"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 25,
+      "summary": "O código apresenta problemas críticos de estrutura, tratamento de erros e convenções de nomenclatura.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint 'silent_error' não possui uma docstring explicativa. Isso dificulta o entendimento da sua finalidade e comportamento.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva o que o endpoint faz, seus parâmetros (se houver) e o que ele retorna.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET '/silent' não especifica explicitamente o status_code de sucesso. Embora o padrão seja 200 OK, é uma boa prática ser explícito para clareza e manutenção.",
+          "suggestion": "Adicione 'status_code=200' ao decorador @app.get() ou retorne um Response com o status_code desejado.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+          "description": "O nome da função 'silent_error' não segue a convenção de usar um verbo de ação que descreva a operação do endpoint (ex: get_resource, list_items). Ele descreve um comportamento interno, não a ação da API.",
+          "suggestion": "Renomeie a função para algo que indique a ação ou o recurso que está sendo acessado, como 'get_status' ou 'check_health', se essa for a intenção.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função 'silent_error' é genérico e não comunica claramente a finalidade do endpoint para um consumidor da API. Ele foca em um detalhe de implementação (o erro silencioso) em vez do propósito da API.",
+          "suggestion": "Escolha um nome mais descritivo que reflita o recurso ou a operação que o endpoint expõe, como 'get_service_status' ou 'retrieve_data_safely'.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função 'silent_error' não possui anotação de tipo para seu valor de retorno. Isso reduz a clareza do código e a capacidade de ferramentas de análise estática.",
+          "suggestion": "Adicione uma anotação de tipo ao retorno da função, por exemplo, 'def silent_error() -> str:'.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O endpoint captura silenciosamente uma exceção (1/0) e retorna um status 200 OK com a mensagem 'ok'. Isso esconde completamente um erro crítico de execução, levando a um comportamento imprevisível e dificultando a depuração. APIs devem comunicar falhas de forma explícita com status codes HTTP apropriados (ex: 500 Internal Server Error).",
+          "suggestion": "Evite 'except: pass'. Em caso de erro, levante uma HTTPException com um status code adequado (ex: raise HTTPException(status_code=500, detail='Internal Server Error')) ou trate o erro de forma que o cliente da API seja informado da falha.",
+          "line_reference": "Linha 3-6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 14.97,
+        "timestamp": "2026-01-20 22:31:31",
+        "token_usage": {
+          "prompt_token_count": 1431,
+          "candidates_token_count": 1146,
+          "total_token_count": 4797
+        }
+      },
+      "response_time": 14.97,
+      "file_path": "[POOR] POOR_007",
+      "expected_keywords": [
+        "validation",
+        "pydantic",
+        "schema",
+        "type hint",
+        "error handling",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\n@app.get(\"/silent\")\ndef silent_error():\n    try:\n        1/0\n    except:\n        pass\n    return \"ok\"\n"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 55,
+      "summary": "O código possui problemas significativos de estrutura, tipagem e tratamento de erros.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função `get_user_bad` não possui uma docstring explicativa, o que dificulta o entendimento da sua finalidade e comportamento.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva o que o endpoint faz, seus parâmetros e o que ele retorna.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o `status_code` na declaração do decorador. Embora 200 seja o padrão para GETs bem-sucedidos, a especificação explícita melhora a clareza e a documentação OpenAPI.",
+          "suggestion": "Adicione `status_code=200` ao decorador `@app.get` para clareza e documentação explícita.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "O parâmetro `id` da função `get_user_bad` não possui type hint. Isso reduz a legibilidade, a capacidade de detecção de erros estáticos e a geração de documentação OpenAPI.",
+          "suggestion": "Adicione um type hint ao parâmetro `id`, por exemplo, `id: int` ou `id: str` dependendo do tipo esperado.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `get_user_bad` não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que o endpoint irá retornar e impede a validação automática de resposta pelo FastAPI.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função, preferencialmente usando um modelo Pydantic para a resposta (ex: `-> UserResponse`).",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O endpoint não trata explicitamente o cenário onde o usuário não é encontrado (`db.get(id)` retorna None). Isso pode levar a um erro 500 (Internal Server Error) se `user` for `None` e tentar acessar `user.name`, em vez de um 404 (Not Found), que seria o status correto para um recurso inexistente.",
+          "suggestion": "Adicione tratamento para o caso de usuário não encontrado, retornando um `HTTPException` com `status_code=404`.",
+          "line_reference": "Linha 3"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 17.16,
+        "timestamp": "2026-01-20 22:31:49",
+        "token_usage": {
+          "prompt_token_count": 1444,
+          "candidates_token_count": 1024,
+          "total_token_count": 5526
+        }
+      },
+      "response_time": 17.16,
+      "file_path": "[POOR] POOR_008",
+      "expected_keywords": [
+        "password",
+        "senha",
+        "hash",
+        "leak",
+        "security",
+        "response_model",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\n@app.get(\"/user/{id}\")\ndef get_user_bad(id):\n    user = db.get(id)\n    return {\"user\": user.name, \"password\": user.password_hash}\n"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 20,
+      "summary": "Código possui problemas críticos de semântica HTTP e estruturais, incluindo um loop infinito que causa DoS.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função `hang` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.",
+          "suggestion": "Adicione uma docstring clara e concisa à função `hang` para descrever sua finalidade.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O decorador `@app.get` não especifica um `status_code` explicitamente. Embora o FastAPI defina um padrão (200 OK para GET), é uma boa prática declarar o status code esperado para clareza e para evitar ambiguidades, especialmente em endpoints com comportamentos não-padrão ou que podem ter múltiplos retornos.",
+          "suggestion": "Adicione `status_code=...` ao decorador `@app.get` para indicar o status HTTP esperado para uma resposta bem-sucedida.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "http_semantics",
+          "check_failed": "Status code condiz com o método e o comportamento",
+          "description": "A função `hang` entra em um loop infinito (`while True: pass`), o que significa que ela nunca retornará uma resposta HTTP. Isso causa um esgotamento de recursos no servidor e no cliente, resultando em um Denial of Service (DoS) para esta rota. O status code padrão 200 OK implica uma resposta bem-sucedida, o que é fundamentalmente incompatível com o comportamento de não-resposta.",
+          "suggestion": "Remova o loop infinito. Um endpoint GET deve retornar uma resposta de forma síncrona ou assíncrona. Se a intenção é simular um atraso, use `asyncio.sleep()` em uma função `async def`.",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `hang` não possui uma anotação de tipo de retorno. Anotações de tipo melhoram a legibilidade, permitem validação estática de código por ferramentas como MyPy e auxiliam ferramentas de desenvolvimento (IDEs) com autocompletar e verificação de erros.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função `hang` (ex: `def hang() -> Any:` ou `def hang() -> Response:`).",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 24.38,
+        "timestamp": "2026-01-20 22:32:15",
+        "token_usage": {
+          "prompt_token_count": 1415,
+          "candidates_token_count": 1027,
+          "total_token_count": 7017
+        }
+      },
+      "response_time": 24.38,
+      "file_path": "[POOR] POOR_009",
+      "expected_keywords": [
+        "loop",
+        "infinite",
+        "dos",
+        "block",
+        "cpu",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\n@app.get(\"/hang\")\ndef hang():\n    while True:\n        pass\n"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 67,
+      "summary": "Código possui problemas de documentação e tipagem.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint `bad_defaults` não possui uma docstring explicativa, o que dificulta a compreensão de sua finalidade e uso.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva o que o endpoint faz, seus parâmetros e o que ele retorna.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o `status_code` de sucesso (ex: 200 OK). Embora o FastAPI defina 200 como padrão para GET, a explicitação melhora a clareza e a documentação OpenAPI.",
+          "suggestion": "Adicione `status_code=200` ao decorador `@app.get()` para clareza e documentação explícita.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Todos parâmetros possuem type hints",
+          "description": "O parâmetro `lista` da função `bad_defaults` não possui type hint. Isso reduz a clareza do código e a capacidade de ferramentas de análise estática.",
+          "suggestion": "Adicione um type hint ao parâmetro `lista`, por exemplo, `lista: List[int]` ou `lista: list`.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "A função `bad_defaults` não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que a função irá retornar.",
+          "suggestion": "Adicione uma anotação de tipo de retorno à função, por exemplo, `-> List[int]` ou `-> list`.",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 18.69,
+        "timestamp": "2026-01-20 22:32:34",
+        "token_usage": {
+          "prompt_token_count": 1426,
+          "candidates_token_count": 900,
+          "total_token_count": 5840
+        }
+      },
+      "response_time": 18.69,
+      "file_path": "[POOR] POOR_010",
+      "expected_keywords": [
+        "validation",
+        "pydantic",
+        "schema",
+        "type hint",
+        "error handling",
+        "status_code",
+        "docstring",
+        "type hints",
+        "type annotation",
+        "naming"
+      ],
+      "expected_score_min": 0,
+      "expected_score_max": 59,
+      "expected_category": "poor",
+      "expected_status": "fail",
+      "code_snippet": "\n@app.get(\"/bad-defaults\")\ndef bad_defaults(lista=[]):\n    lista.append(1)\n    return lista\n"
+    }
+  ],
+  "timestamp": "2026-01-20 22:32:35",
+  "benchmark_metadata": {
+    "llm_name": "Gemini 2.5-flash",
+    "total_time": 782.47,
+    "dataset_version": "1.0",
+    "token_usage": {
+      "prompt_tokens": 76901,
+      "completion_tokens": 35461,
+      "total_tokens": 242321
+    }
+  }
+}

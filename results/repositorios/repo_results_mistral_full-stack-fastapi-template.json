@@ -1,0 +1,2039 @@
+{
+  "summary": {
+    "passed": 23,
+    "failed": 0,
+    "errors": 0
+  },
+  "results": [
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code de resposta",
+          "suggestion": "Adicione status_code=200 ou outro apropriado como parâmetro no decorator @router.get",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "O tipo de retorno da função é Any, que não é específico",
+          "suggestion": "Altere o tipo de retorno para o tipo específico que a função retorna, como ItemsPublic",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "O nome da função 'read_items' não segue a convenção snake_case com verbo de ação",
+          "suggestion": "Renomeie a função para 'get_items' ou 'list_items' para seguir a convenção snake_case com verbo de ação",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 7.03,
+        "timestamp": "2026-01-20 22:56:25",
+        "token_usage": {
+          "prompt_tokens": 1559,
+          "completion_tokens": 617,
+          "total_tokens": 2176
+        }
+      },
+      "response_time": 7.03,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_items_1",
+      "metadata": {
+        "has_async": false,
+        "lines": 29
+      },
+      "source_file": "backend\\app\\api\\routes\\items.py",
+      "code_snippet": "@router.get(\"/\", response_model=ItemsPublic)\ndef read_items(\n    session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 100\n) -> Any:\n    \"\"\"\n    Retrieve items.\n    \"\"\"\n\n    if current_user.is_superuser:\n        count_statement = select(func.count()).select_from(Item)\n        count = session.exec(count_statement).one()\n        statement = select(Item).offset(skip).limit(limit)\n        items = session.exec(statement).all()\n    else:\n        count_statement = (\n            select(func.count())\n            .select_from(Item)\n            .where(Item.owner_id == current_user.id)\n        )\n        count = session.exec(count_statement).one()\n        statement = (\n            select(Item)\n            .where(Item.owner_id == current_user.id)\n            .offset(skip)\n            .limit(limit)\n        )\n        items = session.exec(statement).all()\n\n    return ItemsPublic(data=items, count=count)",
+      "expected_keywords": [
+        "Query()",
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "parameter documentation",
+        "query validation",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code para o caso de sucesso",
+          "suggestion": "Adicione status_code=200 explicitamente no decorator @router.get",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Usa tipos adequados (List, Dict, Optional, etc)",
+          "description": "O tipo de retorno é Any, que não é específico",
+          "suggestion": "Altere o tipo de retorno para ItemPublic ou o tipo específico do item",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "O nome da função 'read_item' não segue a convenção snake_case",
+          "suggestion": "Renomeie a função para 'get_item' para seguir a convenção snake_case",
+          "line_reference": "Linha 1"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 5.48,
+        "timestamp": "2026-01-20 22:56:32",
+        "token_usage": {
+          "prompt_tokens": 1465,
+          "completion_tokens": 595,
+          "total_tokens": 2060
+        }
+      },
+      "response_time": 5.48,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_item_2",
+      "metadata": {
+        "has_async": false,
+        "lines": 11
+      },
+      "source_file": "backend\\app\\api\\routes\\items.py",
+      "code_snippet": "@router.get(\"/{id}\", response_model=ItemPublic)\ndef read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> Any:\n    \"\"\"\n    Get item by ID.\n    \"\"\"\n    item = session.get(Item, id)\n    if not item:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    if not current_user.is_superuser and (item.owner_id != current_user.id):\n        raise HTTPException(status_code=400, detail=\"Not enough permissions\")\n    return item",
+      "expected_keywords": [
+        "Path()",
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "function naming",
+        "openapi tags",
+        "parameter constraints",
+        "path validation",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código atende todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.29,
+        "timestamp": "2026-01-20 22:56:36",
+        "token_usage": {
+          "prompt_tokens": 1432,
+          "completion_tokens": 337,
+          "total_tokens": 1769
+        }
+      },
+      "response_time": 3.29,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_create_item_3",
+      "metadata": {
+        "has_async": false,
+        "lines": 12
+      },
+      "source_file": "backend\\app\\api\\routes\\items.py",
+      "code_snippet": "@router.post(\"/\", response_model=ItemPublic)\ndef create_item(\n    *, session: SessionDep, current_user: CurrentUser, item_in: ItemCreate\n) -> Any:\n    \"\"\"\n    Create new item.\n    \"\"\"\n    item = Item.model_validate(item_in, update={\"owner_id\": current_user.id})\n    session.add(item)\n    session.commit()\n    session.refresh(item)\n    return item",
+      "expected_keywords": [
+        "endpoint organization",
+        "explicit status",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras estruturais",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica status_code explicitamente para o caso de sucesso",
+          "suggestion": "Adicione status_code=200 ou outro apropriado para o caso de sucesso",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função muito genérico",
+          "description": "O nome da função 'update_item' é genérico e não indica claramente o recurso",
+          "suggestion": "Considere renomear para 'update_item_by_id' ou similar para maior clareza",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.28,
+        "timestamp": "2026-01-20 22:56:42",
+        "token_usage": {
+          "prompt_tokens": 1515,
+          "completion_tokens": 508,
+          "total_tokens": 2023
+        }
+      },
+      "response_time": 4.28,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_update_item_4",
+      "metadata": {
+        "has_async": false,
+        "lines": 22
+      },
+      "source_file": "backend\\app\\api\\routes\\items.py",
+      "code_snippet": "@router.put(\"/{id}\", response_model=ItemPublic)\ndef update_item(\n    *,\n    session: SessionDep,\n    current_user: CurrentUser,\n    id: uuid.UUID,\n    item_in: ItemUpdate,\n) -> Any:\n    \"\"\"\n    Update an item.\n    \"\"\"\n    item = session.get(Item, id)\n    if not item:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    if not current_user.is_superuser and (item.owner_id != current_user.id):\n        raise HTTPException(status_code=400, detail=\"Not enough permissions\")\n    update_dict = item_in.model_dump(exclude_unset=True)\n    item.sqlmodel_update(update_dict)\n    session.add(item)\n    session.commit()\n    session.refresh(item)\n    return item",
+      "expected_keywords": [
+        "Path()",
+        "endpoint organization",
+        "openapi tags",
+        "parameter constraints",
+        "path validation",
+        "put/patch response",
+        "resource representation",
+        "tags",
+        "update semantics"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code para o caso de sucesso",
+          "suggestion": "Adicione status_code=204 na decorator do endpoint, já que o método é DELETE e não retorna corpo",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função muito genérico",
+          "description": "Função chamada 'delete_item' é genérica e não especifica o recurso",
+          "suggestion": "Renomeie para delete_item_by_id ou delete_item_resource para maior clareza",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.72,
+        "timestamp": "2026-01-20 22:56:47",
+        "token_usage": {
+          "prompt_tokens": 1475,
+          "completion_tokens": 513,
+          "total_tokens": 1988
+        }
+      },
+      "response_time": 4.72,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_ITEMS_delete_item_5",
+      "metadata": {
+        "has_async": false,
+        "lines": 15
+      },
+      "source_file": "backend\\app\\api\\routes\\items.py",
+      "code_snippet": "@router.delete(\"/{id}\")\ndef delete_item(\n    session: SessionDep, current_user: CurrentUser, id: uuid.UUID\n) -> Message:\n    \"\"\"\n    Delete an item.\n    \"\"\"\n    item = session.get(Item, id)\n    if not item:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    if not current_user.is_superuser and (item.owner_id != current_user.id):\n        raise HTTPException(status_code=400, detail=\"Not enough permissions\")\n    session.delete(item)\n    session.commit()\n    return Message(message=\"Item deleted successfully\")",
+      "expected_keywords": [
+        "204 no content",
+        "Path()",
+        "delete response",
+        "empty body",
+        "endpoint organization",
+        "openapi tags",
+        "output schema",
+        "parameter constraints",
+        "path validation",
+        "pydantic model",
+        "response_model",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.3,
+        "timestamp": "2026-01-20 22:56:53",
+        "token_usage": {
+          "prompt_tokens": 1533,
+          "completion_tokens": 342,
+          "total_tokens": 1875
+        }
+      },
+      "response_time": 4.3,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_login_access_token_1",
+      "metadata": {
+        "has_async": false,
+        "lines": 20
+      },
+      "source_file": "backend\\app\\api\\routes\\login.py",
+      "code_snippet": "@router.post(\"/login/access-token\")\ndef login_access_token(\n    session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]\n) -> Token:\n    \"\"\"\n    OAuth2 compatible token login, get an access token for future requests\n    \"\"\"\n    user = crud.authenticate(\n        session=session, email=form_data.username, password=form_data.password\n    )\n    if not user:\n        raise HTTPException(status_code=400, detail=\"Incorrect email or password\")\n    elif not user.is_active:\n        raise HTTPException(status_code=400, detail=\"Inactive user\")\n    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)\n    return Token(\n        access_token=security.create_access_token(\n            user.id, expires_delta=access_token_expires\n        )\n    )",
+      "expected_keywords": [
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "function naming",
+        "openapi tags",
+        "output schema",
+        "pydantic model",
+        "response_model",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.37,
+        "timestamp": "2026-01-20 22:56:57",
+        "token_usage": {
+          "prompt_tokens": 1389,
+          "completion_tokens": 362,
+          "total_tokens": 1751
+        }
+      },
+      "response_time": 3.37,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_test_token_2",
+      "metadata": {
+        "has_async": false,
+        "lines": 6
+      },
+      "source_file": "backend\\app\\api\\routes\\login.py",
+      "code_snippet": "@router.post(\"/login/test-token\", response_model=UserPublic)\ndef test_token(current_user: CurrentUser) -> Any:\n    \"\"\"\n    Test access token\n    \"\"\"\n    return current_user",
+      "expected_keywords": [
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code para o caso de sucesso",
+          "suggestion": "Adicione status_code=200 ou outro apropriado no decorator @router.post",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função muito genérico",
+          "description": "Função chamada 'recover_password' poderia ser mais específica",
+          "suggestion": "Renomeie para 'initiate_password_recovery' ou similar para maior clareza",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.11,
+        "timestamp": "2026-01-20 22:57:01",
+        "token_usage": {
+          "prompt_tokens": 1512,
+          "completion_tokens": 519,
+          "total_tokens": 2031
+        }
+      },
+      "response_time": 3.11,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_3",
+      "metadata": {
+        "has_async": false,
+        "lines": 22
+      },
+      "source_file": "backend\\app\\api\\routes\\login.py",
+      "code_snippet": "@router.post(\"/password-recovery/{email}\")\ndef recover_password(email: str, session: SessionDep) -> Message:\n    \"\"\"\n    Password Recovery\n    \"\"\"\n    user = crud.get_user_by_email(session=session, email=email)\n\n    if not user:\n        raise HTTPException(\n            status_code=404,\n            detail=\"The user with this email does not exist in the system.\",\n        )\n    password_reset_token = generate_password_reset_token(email=email)\n    email_data = generate_reset_password_email(\n        email_to=user.email, email=email, token=password_reset_token\n    )\n    send_email(\n        email_to=user.email,\n        subject=email_data.subject,\n        html_content=email_data.html_content,\n    )\n    return Message(message=\"Password recovery email sent\")",
+      "expected_keywords": [
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "function naming",
+        "openapi tags",
+        "output schema",
+        "pydantic model",
+        "response_model",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica status_code explicitamente para o caso de sucesso",
+          "suggestion": "Adicione status_code=200 ou outro apropriado no decorator @router.post",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função muito genérico",
+          "description": "O nome da função 'reset_password' é claro, mas poderia ser mais específico",
+          "suggestion": "Considere renomear para 'reset_user_password' ou similar para maior clareza",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.78,
+        "timestamp": "2026-01-20 22:57:07",
+        "token_usage": {
+          "prompt_tokens": 1530,
+          "completion_tokens": 512,
+          "total_tokens": 2042
+        }
+      },
+      "response_time": 4.78,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_reset_password_4",
+      "metadata": {
+        "has_async": false,
+        "lines": 21
+      },
+      "source_file": "backend\\app\\api\\routes\\login.py",
+      "code_snippet": "@router.post(\"/reset-password/\")\ndef reset_password(session: SessionDep, body: NewPassword) -> Message:\n    \"\"\"\n    Reset password\n    \"\"\"\n    email = verify_password_reset_token(token=body.token)\n    if not email:\n        raise HTTPException(status_code=400, detail=\"Invalid token\")\n    user = crud.get_user_by_email(session=session, email=email)\n    if not user:\n        raise HTTPException(\n            status_code=404,\n            detail=\"The user with this email does not exist in the system.\",\n        )\n    elif not user.is_active:\n        raise HTTPException(status_code=400, detail=\"Inactive user\")\n    hashed_password = get_password_hash(password=body.new_password)\n    user.hashed_password = hashed_password\n    session.add(user)\n    session.commit()\n    return Message(message=\"Password updated successfully\")",
+      "expected_keywords": [
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "function naming",
+        "openapi tags",
+        "output schema",
+        "pydantic model",
+        "response_model",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code para o caso de sucesso",
+          "suggestion": "Adicione status_code=200 ou outro apropriado para o caso de sucesso",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "O nome da função 'recover_password_html_content' é muito longo e não segue o padrão verbo + substantivo",
+          "suggestion": "Renomeie para algo como 'get_password_recovery_html' ou 'send_password_recovery_html'",
+          "line_reference": "Linha 4"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "O tipo de retorno da função é 'Any', que não é específico",
+          "suggestion": "Altere para o tipo específico de retorno, como 'HTMLResponse'",
+          "line_reference": "Linha 4"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 5.91,
+        "timestamp": "2026-01-20 22:57:14",
+        "token_usage": {
+          "prompt_tokens": 1527,
+          "completion_tokens": 610,
+          "total_tokens": 2137
+        }
+      },
+      "response_time": 5.91,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_html_content_5",
+      "metadata": {
+        "has_async": false,
+        "lines": 24
+      },
+      "source_file": "backend\\app\\api\\routes\\login.py",
+      "code_snippet": "@router.post(\n    \"/password-recovery-html-content/{email}\",\n    dependencies=[Depends(get_current_active_superuser)],\n    response_class=HTMLResponse,\n)\ndef recover_password_html_content(email: str, session: SessionDep) -> Any:\n    \"\"\"\n    HTML Content for Password Recovery\n    \"\"\"\n    user = crud.get_user_by_email(session=session, email=email)\n\n    if not user:\n        raise HTTPException(\n            status_code=404,\n            detail=\"The user with this username does not exist in the system.\",\n        )\n    password_reset_token = generate_password_reset_token(email=email)\n    email_data = generate_reset_password_email(\n        email_to=user.email, email=email, token=password_reset_token\n    )\n\n    return HTMLResponse(\n        content=email_data.html_content, headers={\"subject:\": email_data.subject}\n    )",
+      "expected_keywords": [
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "function naming",
+        "openapi tags",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.25,
+        "timestamp": "2026-01-20 22:57:18",
+        "token_usage": {
+          "prompt_tokens": 1433,
+          "completion_tokens": 338,
+          "total_tokens": 1771
+        }
+      },
+      "response_time": 3.25,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_PRIVATE_create_user_1",
+      "metadata": {
+        "has_async": false,
+        "lines": 16
+      },
+      "source_file": "backend\\app\\api\\routes\\private.py",
+      "code_snippet": "@router.post(\"/users/\", response_model=UserPublic)\ndef create_user(user_in: PrivateUserCreate, session: SessionDep) -> Any:\n    \"\"\"\n    Create a new user.\n    \"\"\"\n\n    user = User(\n        email=user_in.email,\n        full_name=user_in.full_name,\n        hashed_password=get_password_hash(user_in.password),\n    )\n\n    session.add(user)\n    session.commit()\n\n    return user",
+      "expected_keywords": [
+        "endpoint organization",
+        "explicit status",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras estruturais",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code",
+          "suggestion": "Adicione status_code=200 ou outro apropriado",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Usa tipos adequados (List, Dict, Optional, etc)",
+          "description": "A função retorna tipo Any, que não é específico",
+          "suggestion": "Substitua Any pelo tipo específico de retorno, como UsersPublic",
+          "line_reference": "Linha 3"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "O nome da função 'read_users' não segue a convenção snake_case com verbo de ação",
+          "suggestion": "Renomeie para 'get_users' ou 'list_users'",
+          "line_reference": "Linha 3"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.41,
+        "timestamp": "2026-01-20 22:57:23",
+        "token_usage": {
+          "prompt_tokens": 1471,
+          "completion_tokens": 532,
+          "total_tokens": 2003
+        }
+      },
+      "response_time": 4.41,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_read_users_1",
+      "metadata": {
+        "has_async": false,
+        "lines": 17
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.get(\n    \"/\",\n    dependencies=[Depends(get_current_active_superuser)],\n    response_model=UsersPublic,\n)\ndef read_users(session: SessionDep, skip: int = 0, limit: int = 100) -> Any:\n    \"\"\"\n    Retrieve users.\n    \"\"\"\n\n    count_statement = select(func.count()).select_from(User)\n    count = session.exec(count_statement).one()\n\n    statement = select(User).offset(skip).limit(limit)\n    users = session.exec(statement).all()\n\n    return UsersPublic(data=users, count=count)",
+      "expected_keywords": [
+        "Query()",
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "parameter documentation",
+        "query validation",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica explicitamente o status_code para o sucesso da operação.",
+          "suggestion": "Adicione status_code=201 para indicar que um recurso foi criado com sucesso.",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função muito genérico",
+          "description": "O nome da função 'create_user' é claro, mas poderia ser mais específico para indicar o contexto de criação.",
+          "suggestion": "Considere renomear para 'create_new_user' ou 'register_user' para maior clareza.",
+          "line_reference": "Linha 5"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.63,
+        "timestamp": "2026-01-20 22:57:29",
+        "token_usage": {
+          "prompt_tokens": 1541,
+          "completion_tokens": 523,
+          "total_tokens": 2064
+        }
+      },
+      "response_time": 4.63,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_create_user_2",
+      "metadata": {
+        "has_async": false,
+        "lines": 25
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.post(\n    \"/\", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic\n)\ndef create_user(*, session: SessionDep, user_in: UserCreate) -> Any:\n    \"\"\"\n    Create new user.\n    \"\"\"\n    user = crud.get_user_by_email(session=session, email=user_in.email)\n    if user:\n        raise HTTPException(\n            status_code=400,\n            detail=\"The user with this email already exists in the system.\",\n        )\n\n    user = crud.create_user(session=session, user_create=user_in)\n    if settings.emails_enabled and user_in.email:\n        email_data = generate_new_account_email(\n            email_to=user_in.email, username=user_in.email, password=user_in.password\n        )\n        send_email(\n            email_to=user_in.email,\n            subject=email_data.subject,\n            html_content=email_data.html_content,\n        )\n    return user",
+      "expected_keywords": [
+        "endpoint organization",
+        "openapi tags",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.27,
+        "timestamp": "2026-01-20 22:57:33",
+        "token_usage": {
+          "prompt_tokens": 1505,
+          "completion_tokens": 353,
+          "total_tokens": 1858
+        }
+      },
+      "response_time": 3.27,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_me_3",
+      "metadata": {
+        "has_async": false,
+        "lines": 20
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.patch(\"/me\", response_model=UserPublic)\ndef update_user_me(\n    *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser\n) -> Any:\n    \"\"\"\n    Update own user.\n    \"\"\"\n\n    if user_in.email:\n        existing_user = crud.get_user_by_email(session=session, email=user_in.email)\n        if existing_user and existing_user.id != current_user.id:\n            raise HTTPException(\n                status_code=409, detail=\"User with this email already exists\"\n            )\n    user_data = user_in.model_dump(exclude_unset=True)\n    current_user.sqlmodel_update(user_data)\n    session.add(current_user)\n    session.commit()\n    session.refresh(current_user)\n    return current_user",
+      "expected_keywords": [
+        "correct status codes",
+        "endpoint organization",
+        "error codes",
+        "http semantics",
+        "openapi tags",
+        "put/patch response",
+        "resource representation",
+        "tags",
+        "update semantics"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.07,
+        "timestamp": "2026-01-20 22:57:37",
+        "token_usage": {
+          "prompt_tokens": 1507,
+          "completion_tokens": 338,
+          "total_tokens": 1845
+        }
+      },
+      "response_time": 3.07,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_update_password_me_4",
+      "metadata": {
+        "has_async": false,
+        "lines": 18
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.patch(\"/me/password\", response_model=Message)\ndef update_password_me(\n    *, session: SessionDep, body: UpdatePassword, current_user: CurrentUser\n) -> Any:\n    \"\"\"\n    Update own password.\n    \"\"\"\n    if not verify_password(body.current_password, current_user.hashed_password):\n        raise HTTPException(status_code=400, detail=\"Incorrect password\")\n    if body.current_password == body.new_password:\n        raise HTTPException(\n            status_code=400, detail=\"New password cannot be the same as the current one\"\n        )\n    hashed_password = get_password_hash(body.new_password)\n    current_user.hashed_password = hashed_password\n    session.add(current_user)\n    session.commit()\n    return Message(message=\"Password updated successfully\")",
+      "expected_keywords": [
+        "endpoint organization",
+        "openapi tags",
+        "put/patch response",
+        "resource representation",
+        "tags",
+        "update semantics"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código atende a todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.69,
+        "timestamp": "2026-01-20 22:57:42",
+        "token_usage": {
+          "prompt_tokens": 1388,
+          "completion_tokens": 338,
+          "total_tokens": 1726
+        }
+      },
+      "response_time": 3.69,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_me_5",
+      "metadata": {
+        "has_async": false,
+        "lines": 6
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.get(\"/me\", response_model=UserPublic)\ndef read_user_me(current_user: CurrentUser) -> Any:\n    \"\"\"\n    Get current user.\n    \"\"\"\n    return current_user",
+      "expected_keywords": [
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código atende todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.48,
+        "timestamp": "2026-01-20 22:57:47",
+        "token_usage": {
+          "prompt_tokens": 1441,
+          "completion_tokens": 337,
+          "total_tokens": 1778
+        }
+      },
+      "response_time": 3.48,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_me_6",
+      "metadata": {
+        "has_async": false,
+        "lines": 12
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.delete(\"/me\", response_model=Message)\ndef delete_user_me(session: SessionDep, current_user: CurrentUser) -> Any:\n    \"\"\"\n    Delete own user.\n    \"\"\"\n    if current_user.is_superuser:\n        raise HTTPException(\n            status_code=403, detail=\"Super users are not allowed to delete themselves\"\n        )\n    session.delete(current_user)\n    session.commit()\n    return Message(message=\"User deleted successfully\")",
+      "expected_keywords": [
+        "204 no content",
+        "delete response",
+        "empty body",
+        "endpoint organization",
+        "openapi tags",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.13,
+        "timestamp": "2026-01-20 22:57:51",
+        "token_usage": {
+          "prompt_tokens": 1477,
+          "completion_tokens": 342,
+          "total_tokens": 1819
+        }
+      },
+      "response_time": 3.13,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_register_user_7",
+      "metadata": {
+        "has_async": false,
+        "lines": 14
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.post(\"/signup\", response_model=UserPublic)\ndef register_user(session: SessionDep, user_in: UserRegister) -> Any:\n    \"\"\"\n    Create new user without the need to be logged in.\n    \"\"\"\n    user = crud.get_user_by_email(session=session, email=user_in.email)\n    if user:\n        raise HTTPException(\n            status_code=400,\n            detail=\"The user with this email already exists in the system\",\n        )\n    user_create = UserCreate.model_validate(user_in)\n    user = crud.create_user(session=session, user_create=user_create)\n    return user",
+      "expected_keywords": [
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "function naming",
+        "openapi tags",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.78,
+        "timestamp": "2026-01-20 22:57:55",
+        "token_usage": {
+          "prompt_tokens": 1464,
+          "completion_tokens": 360,
+          "total_tokens": 1824
+        }
+      },
+      "response_time": 3.78,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_by_id_8",
+      "metadata": {
+        "has_async": false,
+        "lines": 16
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.get(\"/{user_id}\", response_model=UserPublic)\ndef read_user_by_id(\n    user_id: uuid.UUID, session: SessionDep, current_user: CurrentUser\n) -> Any:\n    \"\"\"\n    Get a specific user by id.\n    \"\"\"\n    user = session.get(User, user_id)\n    if user == current_user:\n        return user\n    if not current_user.is_superuser:\n        raise HTTPException(\n            status_code=403,\n            detail=\"The user doesn't have enough privileges\",\n        )\n    return user",
+      "expected_keywords": [
+        "Path()",
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "function naming",
+        "openapi tags",
+        "parameter constraints",
+        "path validation",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 85,
+      "summary": "Código atende a maioria das regras, com apenas algumas melhorias sugeridas",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint não especifica status_code explicitamente para o caso de sucesso",
+          "suggestion": "Adicione status_code=200 ou outro apropriado para o caso de sucesso",
+          "line_reference": "N/A"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação",
+          "description": "O nome da função 'update_user' segue a convenção, mas poderia ser mais específico",
+          "suggestion": "Considere renomear para 'patch_user' ou 'update_user_by_id' para maior clareza",
+          "line_reference": "Linha 6"
+        },
+        {
+          "severity": "error",
+          "rule_category": "type_hints",
+          "check_failed": "Função possui return type annotation",
+          "description": "O tipo de retorno é definido como Any, o que não é específico",
+          "suggestion": "Altere para o tipo específico de retorno, como UserPublic",
+          "line_reference": "Linha 6"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 3.53,
+        "timestamp": "2026-01-20 22:58:00",
+        "token_usage": {
+          "prompt_tokens": 1555,
+          "completion_tokens": 605,
+          "total_tokens": 2160
+        }
+      },
+      "response_time": 3.53,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_9",
+      "metadata": {
+        "has_async": false,
+        "lines": 30
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.patch(\n    \"/{user_id}\",\n    dependencies=[Depends(get_current_active_superuser)],\n    response_model=UserPublic,\n)\ndef update_user(\n    *,\n    session: SessionDep,\n    user_id: uuid.UUID,\n    user_in: UserUpdate,\n) -> Any:\n    \"\"\"\n    Update a user.\n    \"\"\"\n\n    db_user = session.get(User, user_id)\n    if not db_user:\n        raise HTTPException(\n            status_code=404,\n            detail=\"The user with this id does not exist in the system\",\n        )\n    if user_in.email:\n        existing_user = crud.get_user_by_email(session=session, email=user_in.email)\n        if existing_user and existing_user.id != user_id:\n            raise HTTPException(\n                status_code=409, detail=\"User with this email already exists\"\n            )\n\n    db_user = crud.update_user(session=session, db_user=db_user, user_in=user_in)\n    return db_user",
+      "expected_keywords": [
+        "Path()",
+        "correct status codes",
+        "endpoint organization",
+        "error codes",
+        "http semantics",
+        "openapi tags",
+        "parameter constraints",
+        "path validation",
+        "put/patch response",
+        "resource representation",
+        "tags",
+        "update semantics"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 80,
+      "summary": "Código atende a todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 4.55,
+        "timestamp": "2026-01-20 22:58:06",
+        "token_usage": {
+          "prompt_tokens": 1514,
+          "completion_tokens": 337,
+          "total_tokens": 1851
+        }
+      },
+      "response_time": 4.55,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_10",
+      "metadata": {
+        "has_async": false,
+        "lines": 19
+      },
+      "source_file": "backend\\app\\api\\routes\\users.py",
+      "code_snippet": "@router.delete(\"/{user_id}\", dependencies=[Depends(get_current_active_superuser)])\ndef delete_user(\n    session: SessionDep, current_user: CurrentUser, user_id: uuid.UUID\n) -> Message:\n    \"\"\"\n    Delete a user.\n    \"\"\"\n    user = session.get(User, user_id)\n    if not user:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    if user == current_user:\n        raise HTTPException(\n            status_code=403, detail=\"Super users are not allowed to delete themselves\"\n        )\n    statement = delete(Item).where(col(Item.owner_id) == user_id)\n    session.exec(statement)  # type: ignore\n    session.delete(user)\n    session.commit()\n    return Message(message=\"User deleted successfully\")",
+      "expected_keywords": [
+        "204 no content",
+        "Path()",
+        "delete response",
+        "empty body",
+        "endpoint organization",
+        "openapi tags",
+        "output schema",
+        "parameter constraints",
+        "path validation",
+        "pydantic model",
+        "response_model",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 2.86,
+        "timestamp": "2026-01-20 22:58:09",
+        "token_usage": {
+          "prompt_tokens": 1450,
+          "completion_tokens": 340,
+          "total_tokens": 1790
+        }
+      },
+      "response_time": 2.86,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_UTILS_test_email_1",
+      "metadata": {
+        "has_async": false,
+        "lines": 16
+      },
+      "source_file": "backend\\app\\api\\routes\\utils.py",
+      "code_snippet": "@router.post(\n    \"/test-email/\",\n    dependencies=[Depends(get_current_active_superuser)],\n    status_code=201,\n)\ndef test_email(email_to: EmailStr) -> Message:\n    \"\"\"\n    Test emails.\n    \"\"\"\n    email_data = generate_test_email(email_to=email_to)\n    send_email(\n        email_to=email_to,\n        subject=email_data.subject,\n        html_content=email_data.html_content,\n    )\n    return Message(message=\"Test email sent\")",
+      "expected_keywords": [
+        "action verb",
+        "descriptive names",
+        "endpoint organization",
+        "function naming",
+        "openapi tags",
+        "output schema",
+        "pydantic model",
+        "response_model",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "pass",
+      "overall_score": 100,
+      "summary": "Código está em conformidade com todas as regras de validação ativas",
+      "violations": [],
+      "compliant_rules": [
+        {
+          "rule_category": "endpoint_structure",
+          "checks_passed": [
+            "Possui docstring explicativa",
+            "Especifica status_code explicitamente"
+          ]
+        },
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento",
+            "Se status_code for 204, não retorna corpo"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 1.62,
+        "timestamp": "2026-01-20 22:58:12",
+        "token_usage": {
+          "prompt_tokens": 1369,
+          "completion_tokens": 342,
+          "total_tokens": 1711
+        }
+      },
+      "response_time": 1.62,
+      "file_path": "FULL-STACK-FASTAPI-TEMPLATE_UTILS_health_check_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 3
+      },
+      "source_file": "backend\\app\\api\\routes\\utils.py",
+      "code_snippet": "@router.get(\"/health-check/\")\nasync def health_check() -> bool:\n    return True",
+      "expected_keywords": [
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "output schema",
+        "pydantic model",
+        "response_model",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "pass",
+      "expected_status_source": "derived_from_violations"
+    }
+  ],
+  "timestamp": "2026-01-20 22:58:13",
+  "benchmark_metadata": {
+    "llm_name": "Mistral Small",
+    "repo_name": "full-stack-fastapi-template",
+    "repo_url": "https://github.com/tiangolo/full-stack-fastapi-template",
+    "total_time": 114.56,
+    "total_endpoints": 23,
+    "skipped_files_count": 0,
+    "skipped_files": [],
+    "token_usage": {
+      "prompt_tokens": 34052,
+      "completion_tokens": 10000,
+      "total_tokens": 44052
+    }
+  }
+}

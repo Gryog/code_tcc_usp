@@ -10,7 +10,7 @@ class GeminiClient(LLMClient):
         self.client = genai.Client(api_key=api_key)
         self.model_name = model_name
 
-    def generate_json(self, prompt: str) -> Dict[str, Any]:
+    def generate_json(self, prompt: str) -> tuple[Dict[str, Any], Dict[str, Any]]:
         try:
             response = self.client.models.generate_content(
                 model=self.model_name,
@@ -21,6 +21,14 @@ class GeminiClient(LLMClient):
                     top_p=0.9,
                 ),
             )
-            return json.loads(response.text)
+            usage_metadata = {}
+            if response.usage_metadata:
+                usage_metadata = {
+                    "prompt_token_count": response.usage_metadata.prompt_token_count,
+                    "candidates_token_count": response.usage_metadata.candidates_token_count,
+                    "total_token_count": response.usage_metadata.total_token_count,
+                }
+
+            return json.loads(response.text), usage_metadata
         except Exception as e:
             raise RuntimeError(f"Falha na geração do Gemini: {str(e)}")

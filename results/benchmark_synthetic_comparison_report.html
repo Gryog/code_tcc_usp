@@ -1,0 +1,3179 @@
+
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Comparação Detalhada de LLMs</title>
+        <style>
+            body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; }
+            .container { max-width: 95%; margin: 0 auto; }
+            .card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }
+            .card-header { background: #34495e; color: white; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+            .card-content { padding: 20px; display: none; }
+            .comparison-grid { display: grid; grid-template-columns: 30% repeat(2, 1fr); gap: 15px; }
+            .code-column { background: #272822; color: #f8f8f2; padding: 10px; border-radius: 5px; font-family: monospace; white-space: pre-wrap; font-size: 0.85em; max-height: 500px; overflow-y: auto; }
+            .llm-column { border: 1px solid #ddd; border-radius: 5px; padding: 10px; background: #fff; }
+            .status-pass { color: green; font-weight: bold; }
+            .status-fail { color: red; font-weight: bold; }
+            .status-warning { color: orange; font-weight: bold; }
+            .violation-item { background: #fff3cd; padding: 5px; margin: 5px 0; border-left: 3px solid #ffc107; font-size: 0.9em; }
+            .violation-critical { background: #f8d7da; border-left: 3px solid #dc3545; }
+            .meta-info { font-size: 0.8em; color: #666; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        </style>
+        <script>
+            function toggleCard(id) {
+                var content = document.getElementById('content-' + id);
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                } else {
+                    content.style.display = 'block';
+                }
+            }
+            function expandAll() {
+                var contents = document.getElementsByClassName('card-content');
+                for(var i=0; i<contents.length; i++) contents[i].style.display = 'block';
+            }
+            function collapseAll() {
+                var contents = document.getElementsByClassName('card-content');
+                for(var i=0; i<contents.length; i++) contents[i].style.display = 'none';
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🔍 Comparação Lado a Lado (50 casos)</h1>
+            <div style="margin-bottom: 20px;">
+                <button onclick="expandAll()" style="padding: 10px; cursor: pointer;">Expandir Todos</button>
+                <button onclick="collapseAll()" style="padding: 10px; cursor: pointer;">Recolher Todos</button>
+            </div>
+    
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_001')">
+                    <span><strong>[EXCELLENT] EXC_001</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_001" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy.orm import Session
+from typing import List
+
+router = APIRouter(prefix="/api/v1", tags=["users"])
+
+@router.get(
+    "/users",
+    response_model=List[UserResponse],
+    status_code=status.HTTP_200_OK,
+    tags=["users"]
+)
+async def get_users(
+    skip: int = Query(0, ge=0, description="Número de registros a pular"),
+    limit: int = Query(100, ge=1, le=100, description="Limite de registros"),
+    db: Session = Depends(get_db)
+) -&gt; List[UserResponse]:
+    '''
+    Recupera lista paginada de usuários.
+    
+    Args:
+        skip: Registros a pular para paginação
+        limit: Número máximo de registros a retornar
+        db: Sessão do banco de dados
+    
+    Returns:
+        Lista de usuários encontrados
+    
+    Raises:
+        HTTPException: Erro 500 se houver falha no banco
+    '''
+    try:
+        users = db.query(User).offset(skip).limit(limit).all()
+        return users
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao buscar usuários: {str(e)}"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 9.98s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: APIRouter, response_model, status_code, Query, docstring, type_hints</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.48s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: APIRouter, response_model, status_code, Query, docstring, type_hints</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_002')">
+                    <span><strong>[EXCELLENT] EXC_002</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_002" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+router = APIRouter(prefix="/api/v1", tags=["products"])
+
+@router.post(
+    "/products",
+    response_model=ProductResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["products"]
+)
+async def create_product(
+    product: ProductCreate,
+    db: Session = Depends(get_db)
+) -&gt; ProductResponse:
+    '''
+    Cria um novo produto no sistema.
+    
+    Args:
+        product: Dados do produto a ser criado
+        db: Sessão do banco de dados
+    
+    Returns:
+        Produto criado com ID gerado
+    
+    Raises:
+        HTTPException: Erro 409 se produto já existe
+        HTTPException: Erro 500 se houver falha no banco
+    '''
+    try:
+        existing = db.query(Product).filter(Product.name == product.name).first()
+        if existing:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Produto com este nome já existe"
+            )
+        
+        new_product = Product(**product.dict())
+        db.add(new_product)
+        db.commit()
+        db.refresh(new_product)
+        return new_product
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao criar produto: {str(e)}"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 9.59s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: APIRouter, status, HTTPException, Pydantic, ProductCreate, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código FastAPI está bem estruturado e segue as boas práticas definidas nas regras ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.05s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: APIRouter, status, HTTPException, Pydantic, ProductCreate, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_003')">
+                    <span><strong>[EXCELLENT] EXC_003</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_003" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, HTTPException, status, Path
+from sqlalchemy.orm import Session
+
+router = APIRouter(prefix="/api/v1", tags=["orders"])
+
+@router.put(
+    "/orders/{order_id}",
+    response_model=OrderResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["orders"]
+)
+async def update_order(
+    order_id: int = Path(..., gt=0, description="ID do pedido"),
+    order_update: OrderUpdate = ...,
+    db: Session = Depends(get_db)
+) -&gt; OrderResponse:
+    '''
+    Atualiza dados de um pedido existente.
+    
+    Args:
+        order_id: ID do pedido a atualizar
+        order_update: Dados atualizados do pedido
+        db: Sessão do banco de dados
+    
+    Returns:
+        Pedido atualizado
+    
+    Raises:
+        HTTPException: Erro 404 se pedido não encontrado
+        HTTPException: Erro 500 em caso de erro no banco
+    '''
+    try:
+        order = db.query(Order).filter(Order.id == order_id).first()
+        if not order:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Pedido {order_id} não encontrado"
+            )
+        
+        for key, value in order_update.dict(exclude_unset=True).items():
+            setattr(order, key, value)
+        
+        db.commit()
+        db.refresh(order)
+        return order
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao atualizar pedido: {str(e)}"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 11.3s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: APIRouter, Path, OrderUpdate, HTTPException, status, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.75s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: APIRouter, Path, OrderUpdate, HTTPException, status, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_004')">
+                    <span><strong>[EXCELLENT] EXC_004</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_004" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, status, Path
+from sqlalchemy.orm import Session
+
+router = APIRouter(prefix="/api/v1", tags=["categories"])
+
+@router.delete(
+    response_model=DeleteResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["categories"]
+)
+async def delete_category(
+    category_id: int = Path(..., gt=0, description="ID da categoria"),
+    db: Session = Depends(get_db)
+) -&gt; DeleteResponse:
+    '''
+    Remove uma categoria (soft delete).
+    
+    Args:
+        category_id: ID da categoria a remover
+        db: Sessão do banco de dados
+    
+    Raises:
+        HTTPException: Erro 404 se categoria não encontrada
+        HTTPException: Erro 500 em caso de erro no banco
+    '''
+    try:
+        category = db.query(Category).filter(Category.id == category_id).first()
+        if not category:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Categoria {category_id} não encontrada"
+            )
+        
+        category.deleted_at = datetime.utcnow()
+        db.commit()
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao deletar categoria: {str(e)}"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.24s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: APIRouter, docstring, status_code, convenção, snake_case, type annotation, codes</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.32s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, convenção</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint usa status_code 200 para uma operação de delete, que deveria retornar 204 sem corpo</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'delete_category' segue a convenção, mas poderia ser mais específico</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_005')">
+                    <span><strong>[EXCELLENT] EXC_005</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_005" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, BackgroundTasks, HTTPException, status, Body
+from pydantic import BaseModel, EmailStr, Field
+
+router = APIRouter(prefix="/api/v1", tags=["notifications"])
+
+
+class EmailSchema(BaseModel):
+    email: EmailStr
+    subject: str = Field(..., min_length=1, description="Assunto do email")
+    content: str = Field(..., min_length=1, description="Conteúdo do email")
+
+
+class NotificationQueuedResponse(BaseModel):
+    message: str
+
+
+def send_email_background(email: str, subject: str, content: str) -&gt; None:
+    # Simula envio de email
+    pass
+
+
+@router.post(
+    "/send-email",
+    response_model=NotificationQueuedResponse,
+    status_code=status.HTTP_202_ACCEPTED,
+    tags=["notifications"]
+)
+async def send_notification(
+    email_data: EmailSchema = Body(..., description="Dados do email para envio em background"),
+    background_tasks: BackgroundTasks = ...
+) -&gt; NotificationQueuedResponse:
+    '''
+    Envia notificação por email em background.
+
+    Args:
+        email_data: Dados do email
+        background_tasks: Gerenciador de tarefas em background
+
+    Returns:
+        Mensagem de confirmação de enfileiramento
+
+    Raises:
+        HTTPException: Erro 500 caso falhe ao enfileirar a tarefa
+    '''
+    try:
+        background_tasks.add_task(
+            send_email_background,
+            email_data.email,
+            email_data.subject,
+            email_data.content
+        )
+        return NotificationQueuedResponse(message="Email queued for sending")
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao enfileirar envio de email: {str(e)}"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 6.8s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: BackgroundTasks, status.HTTP_202_ACCEPTED, Body, Pydantic, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código FastAPI está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.39s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: BackgroundTasks, status.HTTP_202_ACCEPTED, Body, Pydantic, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_006')">
+                    <span><strong>[EXCELLENT] EXC_006</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_006" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from pydantic import BaseModel
+
+router = APIRouter(prefix="/api/v1", tags=["files"])
+
+@router.post(
+    "/upload",
+    response_model=FileUploadResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["files"]
+)
+async def upload_file(
+    file: UploadFile = File(..., description="Arquivo de imagem (max 5MB)")
+) -&gt; FileUploadResponse:
+    '''
+    Faz upload de um arquivo de imagem.
+    '''
+    try:
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Apenas imagens são permitidas"
+            )
+
+        contents = await file.read()
+
+        if len(contents) &gt; 5 * 1024 * 1024:
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="Arquivo muito grande (max 5MB)"
+            )
+
+        return FileUploadResponse(
+            filename=file.filename,
+            content_type=file.content_type
+        )
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro ao processar arquivo"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 18.75s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: UploadFile, File, content_type, validation, size limit, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código FastAPI está bem estruturado e segue as boas práticas definidas nas regras de validação....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>90</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.07s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: File</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>naming_conventions</strong>: Função chamada apenas 'upload_file' sem indicar o recurso específico. Dificulta entendimento do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_007')">
+                    <span><strong>[EXCELLENT] EXC_007</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_007" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, Query, HTTPException, status
+from typing import Optional, List
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
+router = APIRouter(prefix="/api/v1", tags=["items"])
+
+@router.get(
+    "/search",
+    response_model=List[ItemResponse],
+    status_code=status.HTTP_200_OK,
+    tags=["items"]
+)
+async def search_items(
+    filters: ItemFilter = Depends(parse_filter),
+    db: Session = Depends(get_db)
+) -&gt; List[ItemResponse]:
+    '''
+    Busca itens com filtros complexos.
+    '''
+    try:
+        query = db.query(Item)
+
+        if filters.q:
+            query = query.filter(Item.name.contains(filters.q))
+        if filters.min_price is not None:
+            query = query.filter(Item.price &gt;= filters.min_price)
+        if filters.max_price is not None:
+            query = query.filter(Item.price &lt;= filters.max_price)
+
+        return query.all()
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro ao buscar itens"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.51s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Depends, filter, query builder, Optional, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>90</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.9s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Depends, filter, query builder, Optional, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>naming_conventions</strong>: Função chamada 'search_items' é um pouco genérica. Poderia ser mais específica.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_008')">
+                    <span><strong>[EXCELLENT] EXC_008</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_008" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, Security, status
+from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+
+router = APIRouter(prefix="/api/v1", tags=["admin"])
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", scopes={"admin": "Acesso administrativo"})
+
+async def get_current_user(security_scopes: SecurityScopes, token: str = Depends(oauth2_scheme)):
+    # Lógica de validação de token e escopo
+    pass
+
+@router.delete(
+    "/users/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    tags=["admin"]
+)
+async def delete_user_admin(
+    user_id: int = Path(..., gt=0, description="ID do usuário"),
+    current_user: User = Security(get_current_user, scopes=["admin"]),
+    db: Session = Depends(get_db)
+) -&gt; None:
+    '''
+    Endpoint administrativo seguro para remoção de usuários.
+    '''
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Usuário não encontrado"
+            )
+
+        db.delete(user)
+        db.commit()
+    except HTTPException:
+        raise
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro ao remover usuário"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 7.74s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: OAuth2PasswordBearer, SecurityScopes, Security, scopes, authentication, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.23s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: OAuth2PasswordBearer, SecurityScopes, Security, scopes, authentication, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_009')">
+                    <span><strong>[EXCELLENT] EXC_009</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_009" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status, Depends
+from sqlalchemy.sql import text
+
+router = APIRouter(tags=["health"])
+
+@router.get(
+    "/health",
+    status_code=status.HTTP_200_OK,
+    tags=["health"],
+    response_model=HealthResponse
+)
+async def health_check(db: Session = Depends(get_db)) -&gt; HealthResponse:
+    '''
+    Verifica a saúde da aplicação e conexão com banco.
+    '''
+    try:
+        db.execute(text("SELECT 1"))
+        return HealthResponse(status="healthy", database="connected")
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Banco indisponível"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 8.71s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: health check, SELECT 1, database check, status.HTTP_200_OK, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.09s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: health check, SELECT 1, database check, status.HTTP_200_OK, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[EXCELLENT] EXC_010')">
+                    <span><strong>[EXCELLENT] EXC_010</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[EXCELLENT] EXC_010" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from fastapi.responses import StreamingResponse
+import io
+
+router = APIRouter(prefix="/api/v1", tags=["export"])
+
+@router.get(
+    "/export/csv",
+    status_code=status.HTTP_200_OK,
+    tags=["export"]
+)
+async def export_data_csv() -&gt; StreamingResponse:
+    '''
+    Exporta dados em formato CSV via stream.
+    '''
+    stream = io.StringIO()
+    stream.write("id,name,value\n")
+    stream.write("1,Test,100\n")
+    stream.seek(0)
+    
+    return StreamingResponse(
+        iter([stream.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=data.csv"}
+    )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.51s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: StreamingResponse, yield, generator, stream, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.0s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: StreamingResponse, yield, generator, stream, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_001')">
+                    <span><strong>[GOOD] GOOD_001</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_001" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+router = APIRouter(prefix="/api/v1")
+
+@router.get(
+    "/items",
+    response_model=List[ItemResponse],
+    status_code=status.HTTP_200_OK,
+    tags=["items"]
+)
+async def get_items(
+    db: Session = Depends(get_db)
+):
+    '''Recupera lista de items'''
+    try:
+        items = db.query(Item).all()
+        return items
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 10.96s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, status, List, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>type_hints</strong>: A função 'get_items' não possui uma anotação de tipo de retorno explícita em sua assinatura. Embora 'response_model' no decorador ajude na documentação OpenAPI e serialização, a anotação de tipo na função é crucial para análise estática e clareza do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, mas falta uma anotação de tipo de retorno na função....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.49s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Docstring não é detalhada o suficiente. Deve explicar parâmetros, retorno e possíveis exceções.</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'get_items' segue a convenção, mas poderia ser mais descritivo.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_002')">
+                    <span><strong>[GOOD] GOOD_002</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_002" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, HTTPException, status
+
+router = APIRouter(prefix="/api/v1", tags=["tasks"])
+
+@router.post(
+    "/tasks",
+    response_model=TaskResponse,
+    status_code=status.HTTP_201_CREATED,
+    tags=["tasks"]
+)
+async def create_task(task: TaskCreate, db: Session = Depends(get_db)) -&gt; TaskResponse:
+    try:
+        new_task = Task(**task.dict())
+        db.add(new_task)
+        db.commit()
+        db.refresh(new_task)
+        return new_task
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro ao criar tarefa")
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 12.83s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'create_task' não possui uma docstring explicativa. Docstrings são cruciais para a documentação automática (ex: Swagger UI) e para a clareza do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em boa forma, com uma pequena melhoria sugerida para documentação....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.81s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: TaskCreate, TaskResponse, HTTP_201_CREATED, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação especificadas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_003')">
+                    <span><strong>[GOOD] GOOD_003</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_003" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+
+router = APIRouter(prefix="/api/v1", tags=["reports"])
+
+@router.get(
+    "/reports",
+    response_model=List[ReportResponse],
+    status_code=status.HTTP_200_OK,
+    tags=["reports"]
+)
+async def get_reports(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=100),
+    db: Session = Depends(get_db)
+) -&gt; List[ReportResponse]:
+    try:
+        reports = db.query(Report).offset(skip).limit(limit).all()
+        return reports
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro: {str(e)}"
+        )
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 15.55s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint `get_reports` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado e segue a maioria das boas práticas, mas falta uma docstring....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.17s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: docstring, pagination, List</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_004')">
+                    <span><strong>[GOOD] GOOD_004</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_004" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Query
+
+router = APIRouter(tags=["search"])
+
+@router.get("/search", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, response_model=Dict[str, str], tags=["search"])
+async def search(q: Optional[str] = Query(None)) -&gt; Dict[str, str]:
+    '''Busca simples'''
+    return {"query": q or ""}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 23.46s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>endpoint_structure</strong>: A docstring 'Busca simples' é muito genérica e não oferece detalhes suficientes sobre a funcionalidade do endpoint, seus parâmetros ou o formato da resposta esperada.</div><div class='violation-critical'><strong>http_semantics</strong>: Um endpoint GET que retorna sucesso (um corpo de resposta) não deve usar o status code 500 Internal Server Error. O status 500 indica que algo deu errado no servidor, não que a requisição foi processada com sucesso.</div><div class='violation-critical'><strong>error_handling</strong>: O endpoint está configurado para sempre retornar `status.HTTP_500_INTERNAL_SERVER_ERROR`, mesmo em casos de sucesso. Isso indica uma falha na definição de status codes corretos para diferentes cenários (sucesso vs. erro específico).</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta problemas críticos de semântica HTTP e tratamento de erros, além de uma docstring genérica....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 5.33s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Docstring é muito curta e não explicativa</div><div class='violation-critical'><strong>http_semantics</strong>: Status code 500 não é apropriado para um endpoint de busca simples</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'search' é genérico e não especifica o recurso</div><div class='violation-critical'><strong>type_hints</strong>: A função possui return type annotation, mas não está importado o status</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais não críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_005')">
+                    <span><strong>[GOOD] GOOD_005</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_005" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from typing import Dict
+
+router = APIRouter(tags=["misc"])
+
+@router.get("/config", status_code=status.HTTP_200_OK, tags=["misc"])
+async def get_config() -&gt; Dict[str, str]:
+    '''Retorna configurações'''
+    return {"version": "1.0", "env": "prod"}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 7.77s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: response_model, Dict, schema, Pydantic, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Todas as regras de validação foram atendidas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.83s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: response_model, Dict, schema, Pydantic, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_006')">
+                    <span><strong>[GOOD] GOOD_006</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_006" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status, Depends
+from pydantic import BaseModel
+
+router = APIRouter(prefix="/v1", tags=["auth"])
+
+@router.post("/login", response_model=Dict[str, str], tags=["auth"])
+async def login(creds: LoginCtx) -&gt; Dict[str, str]:
+    '''Faz login e retorna um token.'''
+    try:
+        return {"token": "abc"}
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Erro no login")
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 17.95s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O decorador do endpoint `@router.post` não especifica explicitamente o status_code de sucesso. Embora o padrão seja 200 OK para POST, é uma boa prática ser explícito para clareza e para diferenciar de 201 Created se a intenção fosse criar um recurso.</div><div class='violation-critical'><strong>http_semantics</strong>: Um erro no login está retornando `status.HTTP_200_OK` (200 OK) através de uma `HTTPException`. Retornar 200 OK para uma falha é semanticamente incorreto e pode levar a confusão no cliente.</div><div class='violation-critical'><strong>error_handling</strong>: A `HTTPException` levantada em caso de erro no login está utilizando `status.HTTP_200_OK`. Status codes de sucesso não devem ser usados para indicar condições de erro.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas na semântica HTTP e tratamento de erros, além de não especificar explicitamente o status code de sucesso....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>60</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 4.71s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica status_code explicitamente para o caso de sucesso.</div><div class='violation-critical'><strong>http_semantics</strong>: O endpoint retorna um status_code 200_OK mesmo em caso de erro, o que é semânticamente incorreto.</div><div class='violation-critical'><strong>type_hints</strong>: O tipo de retorno da função não está corretamente anotado.</div><div class='violation-item'><strong>input_validation_and_openapi</strong>: O modelo LoginCtx não foi definido no código fornecido.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais não críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_007')">
+                    <span><strong>[GOOD] GOOD_007</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_007" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+
+router = APIRouter(tags=["test"])
+
+@router.get("/debug", status_code=status.HTTP_200_OK)
+async def debug_endpoint() -&gt; Dict[str, str]:
+    print("Debug endpoint called")
+    return {"status": "ok"}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>90</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 6.4s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'debug_endpoint' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas falta uma docstring para o endpoint....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.31s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_008')">
+                    <span><strong>[GOOD] GOOD_008</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_008" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter
+
+router = APIRouter(tags=["users"])
+
+@router.get("/users/count", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["users"])
+async def get_user_count() -&gt; Dict[str, int]:
+    '''Retorna total de usuários'''
+    UserCount = 100
+    return {"count": UserCount}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 6.57s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: variable case, snake_case, camelCase, convenção, convention, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.63s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: variable case, snake_case, camelCase, convenção, convention, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_009')">
+                    <span><strong>[GOOD] GOOD_009</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_009" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter
+from pydantic import BaseModel
+
+router = APIRouter(tags=["items"])
+
+class Item(BaseModel):
+    name: str
+
+@router.post("/items")
+async def create_item(item: Item):
+    '''Cria item'''
+    return item
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 13.05s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST não especifica explicitamente o status_code de sucesso. Para criação de recursos, o status 201 Created é o mais adequado e semântico.</div><div class='violation-critical'><strong>http_semantics</strong>: Um endpoint POST que cria um recurso deve retornar o status code 201 (Created) por padrão, não 200 (OK), que é o padrão implícito do FastAPI quando não especificado.</div><div class='violation-critical'><strong>type_hints</strong>: A função `create_item` não possui anotação de tipo de retorno. Isso dificulta a leitura, manutenção e o uso de ferramentas de análise estática de código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui algumas violações de boas práticas e semântica HTTP....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.96s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTP_201_CREATED, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_010')">
+                    <span><strong>[GOOD] GOOD_010</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_010" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter
+
+router = APIRouter(tags=["utils"])
+
+@router.get("/echo", status_code=status.HTTP_200_OK, tags=["utils"])
+def echo_message(msg: str = Query(...)) -&gt; Dict[str, str]:
+    '''Retorna a mensagem enviada'''
+    return {"message": msg}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 6.89s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: response_model, Dict, schema, Pydantic, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.34s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: response_model, Dict, schema, Pydantic, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_011')">
+                    <span><strong>[GOOD] GOOD_011</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_011" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, HTTPException
+
+router = APIRouter(tags=["calc"])
+
+@router.get("/divide", status_code=status.HTTP_200_OK, response_model=Dict[str, float], tags=["calc"])
+async def divide(a: int, b: int):
+    '''Faz divisão'''
+    if b == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Zero division")
+    return {"result": a / b}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 18.16s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: manual validation, HTTPException, if check, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>type_hints</strong>: A função `divide` não possui uma anotação de tipo de retorno explícita. Embora `response_model` seja usado, a anotação de tipo na assinatura da função é uma boa prática para clareza e ferramentas de análise estática.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas falta uma anotação de tipo de retorno na função do endpoint....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>80</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.31s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: manual validation, HTTPException, if check, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_012')">
+                    <span><strong>[GOOD] GOOD_012</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_012" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter
+
+router = APIRouter(tags=["users"])
+
+@router.get("/users/{user_id}")
+async def get_user(user_id: int):
+    '''Busca usuário'''
+    return {"id": user_id, "name": "User"}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 16.52s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: path parameter, no explicit type in decorator, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o status_code de sucesso (200 OK). Embora 200 seja o padrão, a especificação explícita melhora a legibilidade, a documentação OpenAPI e a intenção do desenvolvedor.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'get_user' não possui anotação de tipo de retorno. Isso dificulta a inferência de tipo, a validação do modelo de resposta pelo FastAPI e ferramentas de análise estática, além de reduzir a clareza do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código é geralmente bom, mas pode melhorar a clareza com anotações de tipo de retorno e status codes explícitos....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.69s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: path parameter, no explicit type in decorator, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_013')">
+                    <span><strong>[GOOD] GOOD_013</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_013" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter
+from typing import List
+
+router = APIRouter(tags=["tags"])
+
+@router.get("/tags", response_model=List[str], status_code=status.HTTP_200_OK, tags=["tags"])
+async def get() -&gt; List[str]:
+    '''Lista todas as tags'''
+    return ["tag1", "tag2"]
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 14.08s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: snake_case</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'get' é snake_case, mas é muito genérico e não especifica o recurso que está sendo obtido. Embora 'get' seja um verbo, ele não é específico o suficiente para o recurso 'tags'.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'get' é muito genérico e não indica claramente qual recurso está sendo manipulado. Isso dificulta a leitura e manutenção do código, especialmente em um projeto maior.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta uma violação de convenção de nomenclatura, mas está em conformidade com a maioria das regras....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>90</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.5s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: direct list return, List[str], naming conventions, snake_case, camelCase</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>naming_conventions</strong>: Função chamada apenas 'get' sem indicar o recurso. Dificulta entendimento do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_014')">
+                    <span><strong>[GOOD] GOOD_014</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_014" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+
+router = APIRouter(tags=["status"])
+
+@router.get("/ping", status_code=status.HTTP_200_OK, tags=["status"])
+async def ping() -&gt; Dict[str, str]:
+    '''Health check simples'''
+    return {"ping": "pong"}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 8.77s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: response_model, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.19s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: response_model, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[GOOD] GOOD_015')">
+                    <span><strong>[GOOD] GOOD_015</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[GOOD] GOOD_015" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Form
+
+router = APIRouter(tags=["login"])
+
+@router.post("/login-form", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["login"])
+async def login_form(username: str = Form(...), password: str = Form(...)) -&gt; Dict[str, str]:
+    '''Login via form data'''
+    return {"user": username}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 16.42s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: Form</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código FastAPI está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.79s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Form, form-data, not JSON, input validation, openapi, pydantic, Body, request body</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O status_code 200_OK não é o mais adequado para um endpoint de login, que geralmente retorna 201 Created ou 200 OK com um token</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_001')">
+                    <span><strong>[MEDIUM] MED_001</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_001" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+
+router = APIRouter(prefix="/api/v1", tags=["customers"])
+
+@router.get("/customers", status_code=status.HTTP_200_OK)
+async def get_customers(db: Session = Depends(get_db)):
+    '''Retorna lista de clientes'''
+    try:
+        customers = db.query(Customer).all()
+        return customers
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro ao buscar clientes")
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>91</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 12.81s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: List[dict], missing schema, status_code, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>type_hints</strong>: A função 'get_customers' não possui uma anotação de tipo de retorno explícita. Isso dificulta a compreensão do tipo de dado que a função retorna e a validação estática do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui uma pequena violação de boas práticas de type hinting....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.32s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: List[dict], missing schema, status_code, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>input_validation_and_openapi</strong>: O endpoint não utiliza Pydantic models para validação de entrada, o que pode dificultar a validação e documentação automática.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_002')">
+                    <span><strong>[MEDIUM] MED_002</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_002" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import FastAPI, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
+app = FastAPI()
+
+@app.get("/user/{user_id}", status_code=status.HTTP_200_OK)
+def get_user_data(user_id: int, db: Session = Depends(get_db)):
+    '''Busca dados do usuário'''
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+    return user
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 10.32s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: FastAPI, missing return hint, naming, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>type_hints</strong>: A função 'get_user_data' não possui uma anotação de tipo de retorno. Isso dificulta a inferência de tipo e a validação estática do código, além de não aparecer no OpenAPI.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código bem estruturado, com uma pequena melhoria de tipagem necessária....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.98s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: FastAPI, missing return hint, naming, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_003')">
+                    <span><strong>[MEDIUM] MED_003</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_003" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, HTTPException, status, Path
+from sqlalchemy.orm import Session
+
+router = APIRouter(tags=["invoices"])
+
+@router.get(
+    "/invoices/{invoice_id}",
+    response_model=InvoiceResponse,
+    status_code=status.HTTP_200_OK,
+    tags=["invoices"]
+)
+async def get_invoice(
+    invoice_id: int = Path(..., gt=0),
+    db: Session = Depends(get_db)
+):
+    '''Busca fatura por ID'''
+    try:
+        invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
+        if not invoice:
+            raise HTTPException(status_code=status.HTTP_200_OK, detail="Invoice not found")
+        return invoice
+    except HTTPException:
+        raise
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Erro ao buscar fatura")
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 21.71s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>http_semantics</strong>: O endpoint GET retorna status_code 200 OK quando a fatura não é encontrada. O correto seria 404 Not Found para indicar que o recurso não existe.</div><div class='violation-critical'><strong>http_semantics</strong>: O endpoint GET retorna status_code 200 OK para um erro genérico não especificado. O correto seria 500 Internal Server Error para indicar um problema no servidor.</div><div class='violation-critical'><strong>type_hints</strong>: A função `get_invoice` não possui anotação de tipo de retorno, o que dificulta a leitura e validação estática do código.</div><div class='violation-critical'><strong>error_handling</strong>: O status code `HTTP_200_OK` é usado para indicar que uma fatura não foi encontrada. O correto para este cenário é `HTTP_404_NOT_FOUND`.</div><div class='violation-critical'><strong>error_handling</strong>: O status code `HTTP_200_OK` é usado para um erro genérico de servidor. O correto para este cenário é `HTTP_500_INTERNAL_SERVER_ERROR`.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas de semântica HTTP e tratamento de erros, além de faltar anotação de tipo de retorno....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 5.72s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Exception, generic error, status_code, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>error_handling</strong>: Status code 200 para recurso não encontrado não é semântico. Deve ser 404.</div><div class='violation-critical'><strong>error_handling</strong>: Status code 200 para erro genérico não é semântico. Deve ser 500.</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'get_invoice' segue a convenção, mas poderia ser mais descritivo.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_004')">
+                    <span><strong>[MEDIUM] MED_004</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_004" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, HTTPException, status
+from typing import Dict
+
+router = APIRouter(tags=["risky"])
+
+@router.get("/risky", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["risky"])
+async def risky_op() -&gt; Dict[str, str]:
+    try:
+        return {"status": "ok"}
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_200_OK, detail="Error")
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>67</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 11.82s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: Exception, status_code, HTTPException, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint 'risky_op' não possui uma docstring explicativa. Isso dificulta o entendimento da sua finalidade e comportamento.</div><div class='violation-critical'><strong>http_semantics</strong>: O endpoint retorna status HTTP 200 OK em caso de exceção. Um status 200 indica sucesso, o que é semanticamente incorreto para uma condição de erro.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'risky_op' é um pouco genérico e não descreve completamente a ação ou o recurso que está sendo operado. 'op' é uma abreviação que pode não ser clara para todos.</div><div class='violation-critical'><strong>error_handling</strong>: A exceção `HTTPException` está sendo levantada com `status_code=status.HTTP_200_OK` em caso de erro. Isso é incorreto, pois 200 OK indica sucesso, não falha.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta problemas na semântica HTTP de erros e falta de documentação....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>60</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 5.44s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>http_semantics</strong>: Status code 200_OK não é apropriado para tratamento de erro</div><div class='violation-item'><strong>naming_conventions</strong>: Função chamada apenas 'risky_op' sem indicar o recurso</div><div class='violation-item'><strong>input_validation_and_openapi</strong>: Endpoint não utiliza Pydantic models para validação de entrada</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais não críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_005')">
+                    <span><strong>[MEDIUM] MED_005</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_005" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from typing import Dict
+
+router = APIRouter(tags=["calc"])
+
+@router.get("/calc", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["calc"])
+async def calculate(x, y):
+    '''Calcula soma'''
+    return {"sum": x + y}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>67</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 21.69s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: int, type hints</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>type_hints</strong>: Os parâmetros 'x' e 'y' na função 'calculate' não possuem type hints. Isso impede a validação automática de tipos pelo FastAPI e pode levar a comportamentos inesperados (ex: concatenação de strings ao invés de soma numérica).</div><div class='violation-critical'><strong>type_hints</strong>: A função 'calculate' não possui uma anotação de tipo de retorno. Embora `response_model` ajude o OpenAPI, a anotação de tipo na função melhora a legibilidade e a análise estática do código.</div><div class='violation-critical'><strong>error_handling</strong>: A ausência de type hints para os parâmetros 'x' e 'y' significa que o FastAPI não validará automaticamente a entrada. Se valores não numéricos forem fornecidos, a operação de soma resultará em um `TypeError` ou `ValueError`, que o FastAPI tratará como um erro 500 Internal Server Error, em vez de um 422 Unprocessable Entity, que seria o status correto para um erro de validação de entrada do cliente.</div><div class='violation-item'><strong>input_validation_and_openapi</strong>: Os parâmetros de entrada 'x' e 'y' não utilizam type hints, o que impede a validação automática de tipos pelo FastAPI. Isso pode levar a comportamentos inesperados, como a concatenação de strings ao invés da soma de números, e não aproveita os recursos de validação e documentação do OpenAPI.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas de tipagem e validação de entrada que podem levar a comportamentos inesperados e erros de servidor....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.7s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: int, type hints</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Status code está definido explicitamente, mas não é necessário para GET que retorna dados</div><div class='violation-item'><strong>naming_conventions</strong>: Parâmetros x e y não seguem convenção snake_case</div><div class='violation-critical'><strong>type_hints</strong>: Parâmetros x e y não possuem type hints</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_006')">
+                    <span><strong>[MEDIUM] MED_006</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_006" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from typing import Dict
+import asyncio
+
+router = APIRouter(tags=["sleep"])
+
+@router.get("/sleep", response_model=List[str], tags=["sleep"])
+async def sleep_route() -&gt; List[str]:
+    '''Simula espera sem bloquear o loop'''
+    await asyncio.sleep(1)
+    return ["awake"]
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.35s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o status_code. Embora o padrão 200 OK seja frequentemente correto para GET, a especificação explícita melhora a clareza e a intenção do código, facilitando a leitura e manutenção.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, com uma pequena melhoria sugerida para clareza....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>80</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.78s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_007')">
+                    <span><strong>[MEDIUM] MED_007</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_007" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from typing import Dict, Any
+
+router = APIRouter(tags=["data"])
+
+@router.get("/data", status_code=status.HTTP_200_OK, response_model=Dict[str, Any], tags=["data"])
+async def get_data() -&gt; Dict[str, Any]:
+    '''Retorna dados simples'''
+    return {"a": 1, "b": 2, "c": [1, 2, 3]}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 6.75s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Dict[str, Any], no schema, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.81s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Dict[str, Any], no schema, status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_008')">
+                    <span><strong>[MEDIUM] MED_008</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_008" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import FastAPI, status
+from typing import Dict
+
+app = FastAPI()
+
+@app.get("/direct", response_model=Dict[str, str])
+def direct_route():
+    '''Rota direta'''
+    return {"status": "ok"}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 14.26s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o status_code. Embora 200 seja o padrão para GETs bem-sucedidos, explicitá-lo melhora a clareza e a intenção do código, especialmente para futuras manutenções ou revisões.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função `direct_route` não começa com um verbo de ação claro (ex: get, retrieve, list), o que pode dificultar a compreensão rápida da sua finalidade ou da ação que ela executa.</div><div class='violation-critical'><strong>type_hints</strong>: A função `direct_route` não possui uma anotação de tipo de retorno explícita. Embora `response_model` ajude o FastAPI na documentação e serialização, a anotação de tipo de retorno é crucial para a verificação estática de tipo do Python e para a clareza do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui algumas violações de boas práticas e convenções....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>80</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.99s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_009')">
+                    <span><strong>[MEDIUM] MED_009</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_009" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, HTTPException, status
+from typing import Dict
+
+router = APIRouter(tags=["check"])
+
+@router.get("/check/{id}", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["check"])
+async def check(id: int) -&gt; Dict[str, int]:
+    '''Valida ID'''
+    if id &lt; 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid ID")
+    return {"id": id}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>91</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.23s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming, error</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'check' é genérico e não descreve completamente a ação ou o recurso que está sendo verificado. Isso pode dificultar a compreensão do propósito do endpoint, mesmo que o path ajude.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em boa conformidade com as regras, com uma pequena sugestão de melhoria na nomenclatura....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.87s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming, error</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_010')">
+                    <span><strong>[MEDIUM] MED_010</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_010" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from typing import Dict
+
+router = APIRouter(tags=["process"])
+
+@router.post("/process", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["process"])
+async def ProcessData(data: Dict[str, int]):
+    res = 0
+    for _, v in data.items():
+        res += v * 2
+    return {"result": res}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>67</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 15.21s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint não possui uma docstring explicativa. Isso dificulta o entendimento da sua finalidade e uso.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'ProcessData' está em PascalCase, o que não segue a convenção snake_case recomendada para funções em Python.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'ProcessData' não possui uma anotação de tipo de retorno. Isso reduz a clareza do código e a capacidade de ferramentas de análise estática.</div><div class='violation-item'><strong>input_validation_and_openapi</strong>: O corpo da requisição (`data`) está usando um tipo nativo (`Dict[str, int]`) em vez de um modelo Pydantic. Embora funcional, Pydantic oferece validação de dados mais robusta e documentação OpenAPI mais rica.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui algumas violações de boas práticas e convenções....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>80</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.05s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_011')">
+                    <span><strong>[MEDIUM] MED_011</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_011" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from typing import Dict
+
+router = APIRouter(tags=["users"])
+
+@router.get("/User-Info", status_code=status.HTTP_200_OK, response_model=Dict[str, str], tags=["users"])
+async def get_user_info() -&gt; Dict[str, str]:
+    '''Retorna info do usuário'''
+    return {"user": "info"}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 7.98s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com todas as regras de validação ativas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.54s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_012')">
+                    <span><strong>[MEDIUM] MED_012</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_012" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status, Query
+from typing import Dict
+
+router = APIRouter(tags=["filter"])
+
+@router.get("/filter", status_code=status.HTTP_200_OK, tags=["filter"])
+async def filter_items(where: str = Query(..., min_length=1, description="Filtro (não usar SQL raw)")):
+    '''Filtra itens (exemplo)'''
+    return {"query": f"SELECT * FROM items WHERE {where}"}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 14.66s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A docstring 'Filtra itens (exemplo)' é muito genérica e não explica adequadamente a funcionalidade do endpoint, seus parâmetros ou o que ele retorna. O termo '(exemplo)' sugere que não é uma descrição final.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'filter_items' não possui uma anotação de tipo de retorno, o que dificulta a compreensão do tipo de dado que será retornado pela API.</div><div class='violation-critical'><strong>error_handling</strong>: O endpoint não define explicitamente status codes para cenários de erro (ex: query inválida, erro interno ao processar o filtro). Atualmente, um erro na lógica interna resultaria em um 500 genérico, sem feedback específico ao cliente.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas de documentação, tipagem e tratamento de erros....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>90</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.77s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>input_validation_and_openapi</strong>: O endpoint não utiliza Pydantic models para validação de entrada, apenas Query params</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_013')">
+                    <span><strong>[MEDIUM] MED_013</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_013" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm import Session
+from typing import Dict
+
+router = APIRouter(tags=["db"])
+
+@router.get("/db-test", status_code=status.HTTP_200_OK, tags=["db"])
+async def db_test(db: Session = Depends(get_db)):
+    '''Teste simples de acesso ao DB'''
+    return {"status": "ok"}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 15.55s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'db_test' é genérico e não descreve completamente a ação ou o recurso. Poderia ser mais específico sobre o que está sendo testado ou o status retornado.</div><div class='violation-critical'><strong>type_hints</strong>: A função `db_test` não possui uma anotação de tipo de retorno explícita. Isso dificulta a inferência de tipo e a validação estática do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui algumas melhorias de nomenclatura e tipagem, mas está bem estruturado....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.89s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_014')">
+                    <span><strong>[MEDIUM] MED_014</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_014" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from typing import Dict
+
+router = APIRouter(tags=["count"])
+COUNTER = 0
+
+@router.get("/count", status_code=status.HTTP_200_OK, response_model=Dict[str, int], tags=["count"])
+async def get_count():
+    global COUNTER
+    COUNTER += 1
+    return {"count": COUNTER}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>82</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 9.18s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'get_count' não possui uma docstring explicativa. Docstrings são cruciais para documentar o propósito, parâmetros e retorno de funções, melhorando a legibilidade e manutenibilidade do código, além de serem usadas para gerar documentação automática (ex: Sphinx).</div><div class='violation-critical'><strong>type_hints</strong>: A função 'get_count' não possui uma anotação de tipo de retorno explícita em sua assinatura. Embora 'response_model' no decorador ajude o OpenAPI, a anotação na assinatura da função é uma boa prática para validação estática de tipo e clareza do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em boa forma, com algumas melhorias de documentação e tipagem sugeridas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.85s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[MEDIUM] MED_015')">
+                    <span><strong>[MEDIUM] MED_015</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[MEDIUM] MED_015" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import APIRouter, status
+from typing import Dict, Any
+
+router = APIRouter(tags=["submit"])
+
+@router.post("/submit", status_code=status.HTTP_200_OK, response_model=Dict[str, bool], tags=["submit"])
+async def submit(data: Dict[str, Any]) -&gt; Dict[str, bool]:
+    '''Recebe dados e confirma recebimento'''
+    return {"received": True}
+
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 19.74s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-item'><strong>input_validation_and_openapi</strong>: O parâmetro 'data' do body da requisição utiliza um tipo nativo (Dict[str, Any]) em vez de um modelo Pydantic. Embora funcional, um modelo Pydantic oferece validação de dados mais robusta, melhor documentação automática no OpenAPI e tipagem mais explícita, o que é recomendado para corpos de requisição.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em grande parte conforme as boas práticas, com uma pequena violação de convenção....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.91s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: status_code, docstring, type hints, type annotation, naming</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_001')">
+                    <span><strong>[POOR] POOR_001</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_001" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/data")
+def get():
+    return db.query(Data).all()
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>67</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 22.47s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: validation, pydantic, schema, type hint, error handling</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint 'get' não possui uma docstring explicativa. Isso dificulta o entendimento da funcionalidade do endpoint e a geração de documentação automática.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o status_code de sucesso. Embora 200 seja o padrão para GET, a especificação explícita melhora a clareza e a documentação OpenAPI.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'get' é muito genérico e não indica claramente qual recurso está sendo retornado. Isso pode causar confusão em projetos maiores.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'get' não possui uma anotação de tipo de retorno. Isso dificulta a análise estática de código e o entendimento do tipo de dado esperado na resposta.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas de estrutura de endpoint, nomenclatura e tipagem....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 6.28s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: validation, pydantic, schema, type hint, error handling</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-item'><strong>naming_conventions</strong>: Função chamada apenas 'get' sem indicar o recurso</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui parâmetros, mas não possui return type annotation</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_002')">
+                    <span><strong>[POOR] POOR_002</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_002" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.post("/create")
+def create(data):
+    obj = MyModel()
+    obj.name = data['name']
+    obj.value = data['value']
+    db.add(obj)
+    db.commit()
+    return {"status": "ok"}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>33</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 23.41s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: pydantic, type hint, status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint 'create' não possui uma docstring explicativa. Isso prejudica a documentação automática e a clareza do código, dificultando o entendimento da sua finalidade.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST não especifica um status_code explícito. O FastAPI usará 200 OK por padrão, o que não é o mais adequado para uma operação de criação de recurso.</div><div class='violation-critical'><strong>http_semantics</strong>: Para uma operação de criação (método POST), o status code esperado para sucesso é 201 Created, não o padrão 200 OK. O retorno de 200 OK sugere que a requisição foi processada com sucesso, mas não que um novo recurso foi criado.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'create' é um pouco genérico. Embora o path seja '/create', um nome mais descritivo como 'create_item' ou 'create_resource' seria mais claro, especialmente em um contexto maior de múltiplos endpoints.</div><div class='violation-critical'><strong>type_hints</strong>: O parâmetro 'data' não possui type hint. Isso impede a validação automática de entrada pelo FastAPI, a geração de esquema OpenAPI e reduz a clareza do código, dificultando a identificação do tipo de dado esperado.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'create' não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que o endpoint retorna, impactando a legibilidade e a capacidade de ferramentas de análise estática.</div><div class='violation-critical'><strong>error_handling</strong>: O código não possui tratamento explícito de erros para falhas na manipulação de 'data' (ex: KeyError se 'name' ou 'value' estiverem ausentes) ou falhas no banco de dados. Isso resultará em um 500 Internal Server Error genérico, sem feedback útil ao cliente sobre a causa do problema.</div><div class='violation-item'><strong>input_validation_and_openapi</strong>: O parâmetro 'data' é usado como um dicionário Python simples, sem a definição de um modelo Pydantic. Isso impede a validação automática de entrada, a geração de esquema OpenAPI detalhado e a clareza da estrutura do corpo da requisição.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta múltiplas violações de boas práticas e estrutura, especialmente em tipagem, semântica HTTP e validação de entrada....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 3.89s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: pydantic, type hint, status_code, docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-critical'><strong>http_semantics</strong>: Endpoint POST não retorna status_code 201 para criação bem-sucedida</div><div class='violation-item'><strong>naming_conventions</strong>: Função chamada 'create' sem indicar o recurso</div><div class='violation-critical'><strong>type_hints</strong>: Parâmetro 'data' não possui type hint</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div><div class='violation-item'><strong>input_validation_and_openapi</strong>: Body request não usa Pydantic model para validação</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_003')">
+                    <span><strong>[POOR] POOR_003</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_003" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+@app.put("/update/{ID}")
+def UpdateItem(ID, NewData):
+    ITEM = db.query(Item).get(ID)
+    ITEM.data = NewData
+    db.commit()
+    return ITEM
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>33</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 17.51s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: pydantic, type hint, status_code, docstring, type hints</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint 'UpdateItem' não possui uma docstring explicativa. Isso dificulta o entendimento da sua funcionalidade, parâmetros e o que ele retorna.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint PUT não especifica explicitamente o status_code de sucesso. Embora o FastAPI defina 200 OK por padrão para PUT com corpo de resposta, a explicitação melhora a clareza e a documentação da API.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'UpdateItem' está em PascalCase, o que viola a convenção de nomenclatura snake_case para funções em Python.</div><div class='violation-item'><strong>naming_conventions</strong>: Os parâmetros 'ID' e 'NewData' estão em PascalCase, o que viola a convenção de nomenclatura snake_case para parâmetros em Python.</div><div class='violation-critical'><strong>type_hints</strong>: Os parâmetros 'ID' e 'NewData' não possuem type hints. Isso prejudica a legibilidade do código, a validação automática do FastAPI e o suporte de ferramentas de análise estática e IDEs.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'UpdateItem' não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que a função retorna, impactando a clareza e a documentação da API.</div><div class='violation-critical'><strong>error_handling</strong>: O código não trata explicitamente o cenário onde o 'ITEM' não é encontrado. Se `db.query(Item).get(ID)` retornar `None`, o acesso a `ITEM.data` resultará em um erro 500 Internal Server Error, em vez de um 404 Not Found mais apropriado para o cliente da API.</div><div class='violation-item'><strong>input_validation_and_openapi</strong>: O parâmetro 'NewData' é usado como corpo da requisição, mas não é um modelo Pydantic. Isso impede a validação automática de dados, a geração de esquema OpenAPI detalhado e a clareza da estrutura de entrada esperada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta múltiplas violações de boas práticas e problemas estruturais, incluindo falta de tipagem, tratamento de erros e convenções de nomenclatura....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 6.29s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: type hint, status_code, docstring, type hints, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-critical'><strong>http_semantics</strong>: Endpoint PUT não retorna status_code 204 ou 200 com corpo</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função não segue convenção snake_case e não possui verbo de ação</div><div class='violation-item'><strong>naming_conventions</strong>: Parâmetros ID e NewData não seguem convenção snake_case</div><div class='violation-critical'><strong>type_hints</strong>: Parâmetros ID e NewData não possuem type hints</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_004')">
+                    <span><strong>[POOR] POOR_004</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_004" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+@app.get("/home")
+def home():
+    return "&lt;h1&gt;Hello&lt;/h1&gt;"
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>54</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 21.67s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'home' não possui uma docstring explicativa, o que dificulta o entendimento da sua funcionalidade e uso.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador '@app.get' não especifica o 'status_code' explicitamente. Embora o padrão 200 seja correto para GET, a explicitação melhora a clareza e a documentação da API.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'home' não inclui um verbo de ação claro (ex: 'get', 'read'), o que pode tornar a intenção do endpoint menos óbvia.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'home' é muito genérico e não descreve de forma específica o recurso ou a ação que está sendo realizada.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'home' não possui uma anotação de tipo de retorno, o que prejudica a legibilidade, a validação estática e o suporte a ferramentas de IDE.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui problemas estruturais e de boas práticas que precisam ser corrigidos....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 5.44s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-item'><strong>naming_conventions</strong>: Função chamada apenas 'home' sem indicar o recurso</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_005')">
+                    <span><strong>[POOR] POOR_005</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_005" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+@app.post("/calc")
+def calc(expr: str):
+    return eval(expr)
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>60</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 17.65s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: eval, exec, status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'calc' não possui uma docstring explicativa. Isso dificulta o entendimento da funcionalidade do endpoint e a geração de documentação automática.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST não especifica um status_code explícito. Embora 200 OK seja o padrão para POSTs que não criam recursos, é uma boa prática ser explícito para clareza e para indicar o resultado esperado da operação.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'calc' não possui uma anotação de tipo de retorno. Isso dificulta a análise estática do código e o entendimento do tipo de dado que o endpoint irá retornar.</div><div class='violation-critical'><strong>error_handling</strong>: O uso de `eval()` é extremamente perigoso e pode levar a vulnerabilidades de segurança (execução de código arbitrário). Além disso, ele pode levantar exceções como `SyntaxError` ou `NameError` que não são tratadas, resultando em um erro 500 genérico. Erros de entrada do usuário (como uma expressão inválida) deveriam retornar um status 400 Bad Request.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui problemas de estrutura de endpoint, tipagem e tratamento de erros....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 3.15s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-critical'><strong>http_semantics</strong>: Endpoint POST não retorna status_code 201 para criação de recurso</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div><div class='violation-critical'><strong>error_handling</strong>: Endpoint não trata erros e não define status codes para erros</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_006')">
+                    <span><strong>[POOR] POOR_006</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_006" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+def my_route(req):
+    return {"a":1}
+    
+app.add_api_route("/weird", my_route)
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>55</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 37.77s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: type hint, status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função `my_route` não possui uma docstring explicativa, o que dificulta o entendimento da sua finalidade e uso.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica o `status_code` explicitamente na definição da rota. Isso pode levar a comportamentos padrão inesperados e dificulta a clareza da API.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função `my_route` é muito genérico e não descreve claramente a ação ou o recurso que ela manipula.</div><div class='violation-critical'><strong>type_hints</strong>: O parâmetro `req` da função `my_route` não possui um type hint. Isso reduz a clareza do código e a capacidade de ferramentas de análise estática.</div><div class='violation-critical'><strong>type_hints</strong>: A função `my_route` não possui uma anotação de tipo de retorno. Isso dificulta o entendimento do tipo de dado que a função retorna.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui múltiplos problemas estruturais, de tipagem e convenções de nomenclatura....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>0</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 6.62s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: type hint, status_code, docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Função não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Função não especifica status_code explicitamente</div><div class='violation-critical'><strong>http_semantics</strong>: Função não especifica status_code, o que pode levar a um status_code inadequado</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'my_route' não segue a convenção snake_case com verbo de ação</div><div class='violation-item'><strong>naming_conventions</strong>: Parâmetro 'req' não é descritivo e não segue a convenção Python</div><div class='violation-critical'><strong>type_hints</strong>: Parâmetro 'req' não possui type hint</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div><div class='violation-critical'><strong>error_handling</strong>: Função não trata erros e não define status codes para erros</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui múltiplos problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_007')">
+                    <span><strong>[POOR] POOR_007</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_007" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+@app.get("/silent")
+def silent_error():
+    try:
+        1/0
+    except:
+        pass
+    return "ok"
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>25</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 14.97s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint 'silent_error' não possui uma docstring explicativa. Isso dificulta o entendimento da sua finalidade e comportamento.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET '/silent' não especifica explicitamente o status_code de sucesso. Embora o padrão seja 200 OK, é uma boa prática ser explícito para clareza e manutenção.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'silent_error' não segue a convenção de usar um verbo de ação que descreva a operação do endpoint (ex: get_resource, list_items). Ele descreve um comportamento interno, não a ação da API.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'silent_error' é genérico e não comunica claramente a finalidade do endpoint para um consumidor da API. Ele foca em um detalhe de implementação (o erro silencioso) em vez do propósito da API.</div><div class='violation-critical'><strong>type_hints</strong>: A função 'silent_error' não possui anotação de tipo para seu valor de retorno. Isso reduz a clareza do código e a capacidade de ferramentas de análise estática.</div><div class='violation-critical'><strong>error_handling</strong>: O endpoint captura silenciosamente uma exceção (1/0) e retorna um status 200 OK com a mensagem 'ok'. Isso esconde completamente um erro crítico de execução, levando a um comportamento imprevisível e dificultando a depuração. APIs devem comunicar falhas de forma explícita com status codes HTTP apropriados (ex: 500 Internal Server Error).</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta problemas críticos de estrutura, tratamento de erros e convenções de nomenclatura....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 4.57s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-critical'><strong>http_semantics</strong>: Endpoint retorna 'ok' sem especificar status_code, o que pode ser confuso</div><div class='violation-critical'><strong>error_handling</strong>: Tratamento de erro não define status code apropriado</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_008')">
+                    <span><strong>[POOR] POOR_008</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_008" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+@app.get("/user/{id}")
+def get_user_bad(id):
+    user = db.get(id)
+    return {"user": user.name, "password": user.password_hash}
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>55</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 17.16s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função `get_user_bad` não possui uma docstring explicativa, o que dificulta o entendimento da sua finalidade e comportamento.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code` na declaração do decorador. Embora 200 seja o padrão para GETs bem-sucedidos, a especificação explícita melhora a clareza e a documentação OpenAPI.</div><div class='violation-critical'><strong>type_hints</strong>: O parâmetro `id` da função `get_user_bad` não possui type hint. Isso reduz a legibilidade, a capacidade de detecção de erros estáticos e a geração de documentação OpenAPI.</div><div class='violation-critical'><strong>type_hints</strong>: A função `get_user_bad` não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que o endpoint irá retornar e impede a validação automática de resposta pelo FastAPI.</div><div class='violation-critical'><strong>error_handling</strong>: O endpoint não trata explicitamente o cenário onde o usuário não é encontrado (`db.get(id)` retorna None). Isso pode levar a um erro 500 (Internal Server Error) se `user` for `None` e tentar acessar `user.name`, em vez de um 404 (Not Found), que seria o status correto para um recurso inexistente.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui problemas significativos de estrutura, tipagem e tratamento de erros....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 7.38s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-critical'><strong>http_semantics</strong>: Endpoint não retorna status_code apropriado para o método GET</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função não segue convenção snake_case com verbo de ação</div><div class='violation-critical'><strong>type_hints</strong>: Parâmetro 'id' não possui type hint</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div><div class='violation-critical'><strong>error_handling</strong>: Endpoint não trata erros e não define status codes para erros</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_009')">
+                    <span><strong>[POOR] POOR_009</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_009" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+@app.get("/hang")
+def hang():
+    while True:
+        pass
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>20</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 24.38s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: loop, dos, status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função `hang` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador `@app.get` não especifica um `status_code` explicitamente. Embora o FastAPI defina um padrão (200 OK para GET), é uma boa prática declarar o status code esperado para clareza e para evitar ambiguidades, especialmente em endpoints com comportamentos não-padrão ou que podem ter múltiplos retornos.</div><div class='violation-critical'><strong>http_semantics</strong>: A função `hang` entra em um loop infinito (`while True: pass`), o que significa que ela nunca retornará uma resposta HTTP. Isso causa um esgotamento de recursos no servidor e no cliente, resultando em um Denial of Service (DoS) para esta rota. O status code padrão 200 OK implica uma resposta bem-sucedida, o que é fundamentalmente incompatível com o comportamento de não-resposta.</div><div class='violation-critical'><strong>type_hints</strong>: A função `hang` não possui uma anotação de tipo de retorno. Anotações de tipo melhoram a legibilidade, permitem validação estática de código por ferramentas como MyPy e auxiliam ferramentas de desenvolvimento (IDEs) com autocompletar e verificação de erros.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas críticos de semântica HTTP e estruturais, incluindo um loop infinito que causa DoS....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>0</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 3.48s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code, docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-critical'><strong>http_semantics</strong>: O endpoint não retorna um status_code adequado para o comportamento de 'hang'</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'hang' não segue a convenção snake_case com verbo de ação</div><div class='violation-critical'><strong>type_hints</strong>: A função não possui return type annotation</div><div class='violation-critical'><strong>error_handling</strong>: O endpoint não trata erros ou define status codes para erros</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui múltiplos problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('[POOR] POOR_010')">
+                    <span><strong>[POOR] POOR_010</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-[POOR] POOR_010" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">
+@app.get("/bad-defaults")
+def bad_defaults(lista=[]):
+    lista.append(1)
+    return lista
+</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>67</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 18.69s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: type hint, status_code, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint `bad_defaults` não possui uma docstring explicativa, o que dificulta a compreensão de sua finalidade e uso.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code` de sucesso (ex: 200 OK). Embora o FastAPI defina 200 como padrão para GET, a explicitação melhora a clareza e a documentação OpenAPI.</div><div class='violation-critical'><strong>type_hints</strong>: O parâmetro `lista` da função `bad_defaults` não possui type hint. Isso reduz a clareza do código e a capacidade de ferramentas de análise estática.</div><div class='violation-critical'><strong>type_hints</strong>: A função `bad_defaults` não possui uma anotação de tipo de retorno. Isso dificulta a compreensão do tipo de dado que a função irá retornar.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas de documentação e tipagem....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 6.48s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: type hint, status_code, docstring, type annotation</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-critical'><strong>http_semantics</strong>: Endpoint GET não retorna status_code 200 ou 204</div><div class='violation-critical'><strong>type_hints</strong>: Parâmetro 'lista' não possui type hint</div><div class='violation-critical'><strong>type_hints</strong>: Função não possui return type annotation</div><div class='violation-critical'><strong>error_handling</strong>: Endpoint não trata erros explicitamente</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </body>
+    </html>
+    

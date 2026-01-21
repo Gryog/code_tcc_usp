@@ -1,0 +1,2964 @@
+
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <title>Comparação Detalhada de LLMs</title>
+        <style>
+            body { font-family: 'Segoe UI', sans-serif; background: #f4f6f9; padding: 20px; }
+            .container { max-width: 95%; margin: 0 auto; }
+            .card { background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; overflow: hidden; }
+            .card-header { background: #34495e; color: white; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+            .card-content { padding: 20px; display: none; }
+            .comparison-grid { display: grid; grid-template-columns: 30% repeat(2, 1fr); gap: 15px; }
+            .code-column { background: #272822; color: #f8f8f2; padding: 10px; border-radius: 5px; font-family: monospace; white-space: pre-wrap; font-size: 0.85em; max-height: 500px; overflow-y: auto; }
+            .llm-column { border: 1px solid #ddd; border-radius: 5px; padding: 10px; background: #fff; }
+            .status-pass { color: green; font-weight: bold; }
+            .status-fail { color: red; font-weight: bold; }
+            .status-warning { color: orange; font-weight: bold; }
+            .violation-item { background: #fff3cd; padding: 5px; margin: 5px 0; border-left: 3px solid #ffc107; font-size: 0.9em; }
+            .violation-critical { background: #f8d7da; border-left: 3px solid #dc3545; }
+            .meta-info { font-size: 0.8em; color: #666; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        </style>
+        <script>
+            function toggleCard(id) {
+                var content = document.getElementById('content-' + id);
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                } else {
+                    content.style.display = 'block';
+                }
+            }
+            function expandAll() {
+                var contents = document.getElementsByClassName('card-content');
+                for(var i=0; i<contents.length; i++) contents[i].style.display = 'block';
+            }
+            function collapseAll() {
+                var contents = document.getElementsByClassName('card-content');
+                for(var i=0; i<contents.length; i++) contents[i].style.display = 'none';
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🔍 Comparação Lado a Lado (47 casos)</h1>
+            <div style="margin-bottom: 20px;">
+                <button onclick="expandAll()" style="padding: 10px; cursor: pointer;">Expandir Todos</button>
+                <button onclick="collapseAll()" style="padding: 10px; cursor: pointer;">Recolher Todos</button>
+            </div>
+    
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-NANO_AUTH_login_for_access_token_1')">
+                    <span><strong>FASTAPI-NANO_AUTH_login_for_access_token_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-NANO_AUTH_login_for_access_token_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/token", response_model=Token)
+async def login_for_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+) -&gt; dict[str, str]:
+    user = authenticate_user(
+        fake_users_db,
+        form_data.username,
+        form_data.password,
+    )
+
+    if not user:
+        raise HTTPException(
+            status_code=HTTPStatus.UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    access_token_expires = timedelta(
+        seconds=config.API_ACCESS_TOKEN_EXPIRE_MINUTES,
+    )
+    access_token = create_access_token(
+        data={"sub": user.username},  # type: ignore
+        expires_delta=access_token_expires,
+    )
+    return {"access_token": access_token, "token_type": "bearer"}</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 14.05s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'login_for_access_token' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade da API, facilitando o entendimento e a manutenção.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador '@router.post' não especifica explicitamente o 'status_code' para o sucesso da operação. Embora o padrão 200 OK seja aceitável para um endpoint de login, explicitá-lo melhora a clareza e a intenção do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código é bem estruturado, mas pode melhorar a documentação e a explicitação de status codes....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.46s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code de sucesso, que deveria ser 201 para criação de recursos</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'login_for_access_token' é descritivo mas não segue o padrão snake_case</div><div class='violation-critical'><strong>type_hints</strong>: O return type annotation está usando dict[str, str] que não é um tipo nativo do Python</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-NANO_VIEWS_index_1')">
+                    <span><strong>FASTAPI-NANO_VIEWS_index_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-NANO_VIEWS_index_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/")
+async def index() -&gt; dict[str, str]:
+    return {
+        "info": "This is the index page of fastapi-nano. "
+        "You probably want to go to 'http://&lt;hostname:port&gt;/docs'.",
+    }</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>43</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 19.93s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint `index` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code`. Embora o padrão 200 seja correto para GETs bem-sucedidos, a especificação explícita melhora a clareza e a documentação da API, tornando-a mais robusta e fácil de entender.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função `index` não começa com um verbo de ação, o que é uma boa prática para endpoints RESTful para indicar a operação que está sendo realizada (ex: `get_root_info`, `retrieve_index`).</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função `index` é muito genérico e não descreve claramente o recurso ou a ação que o endpoint realiza, mesmo para a rota raiz. Isso pode dificultar a compreensão do propósito do endpoint em um projeto maior.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui problemas de documentação, especificação explícita de status code e convenções de nomenclatura....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.18s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, description, descriptive names, docstring, documentation, endpoint organization, explicit status, function naming, http status, openapi tags, output schema, pydantic model, response_model, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-NANO_VIEWS_view_a_2')">
+                    <span><strong>FASTAPI-NANO_VIEWS_view_a_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-NANO_VIEWS_view_a_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/api_a/{num}", tags=["api_a"])
+async def view_a(
+    num: int,
+    auth: Depends = Depends(get_current_user),
+) -&gt; dict[str, int]:
+    result = main_func_a(num)
+    logger.info(f"API A: {result}")
+    return result</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>67</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 22.93s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint `view_a` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a clareza do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code` no decorador. Embora o FastAPI defina 200 OK por padrão para GET, a especificação explícita melhora a clareza e a intenção do código, especialmente para futuros mantenedores.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função `view_a` é muito genérico. 'a' não descreve o recurso ou a entidade que está sendo visualizada, dificultando o entendimento do propósito do endpoint sem contexto adicional.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui algumas melhorias de documentação e nomenclatura para maior clareza e manutenibilidade....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.57s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, Path(), action verb, description, descriptive names, docstring, documentation, explicit status, function naming, http errors, http status, output schema, parameter constraints, path validation, pydantic model, response_model, status codes, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-NANO_VIEWS_view_b_3')">
+                    <span><strong>FASTAPI-NANO_VIEWS_view_b_3</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-NANO_VIEWS_view_b_3" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/api_b/{num}", tags=["api_b"])
+async def view_b(
+    num: int,
+    auth: Depends = Depends(get_current_user),
+) -&gt; dict[str, int]:
+    result = main_func_b(num)
+    logger.info(f"API B: {result}")
+    return result</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>73</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 19.15s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: HTTPException, docstring, status codes, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função `view_b` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code`. Embora 200 OK seja o padrão para GETs bem-sucedidos, a especificação explícita melhora a clareza e a intenção do código, além de facilitar futuras alterações.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função `view_b` é genérico e não descreve claramente a ação ou o recurso que está sendo manipulado. O sufixo `_b` não adiciona clareza sobre o que 'b' representa.</div><div class='violation-critical'><strong>error_handling</strong>: O código não demonstra tratamento de erros explícito (ex: `try-except` com `HTTPException`) que defina status codes apropriados para diferentes cenários de falha. Em um ambiente de API, é crucial comunicar falhas de forma clara através de status codes HTTP.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui algumas violações de boas práticas e estrutura, principalmente em documentação e tratamento de erros....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.09s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, Path(), action verb, description, descriptive names, docstring, documentation, explicit status, function naming, http errors, http status, output schema, parameter constraints, path validation, pydantic model, response_model, status codes, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_get_articles_for_user_feed_1')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_get_articles_for_user_feed_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_get_articles_for_user_feed_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get(
+    "/feed",
+    response_model=ListOfArticlesInResponse,
+    name="articles:get-user-feed-articles",
+)
+async def get_articles_for_user_feed(
+    limit: int = Query(DEFAULT_ARTICLES_LIMIT, ge=1),
+    offset: int = Query(DEFAULT_ARTICLES_OFFSET, ge=0),
+    user: User = Depends(get_current_user_authorizer()),
+    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),
+) -&gt; ListOfArticlesInResponse:
+    articles = await articles_repo.get_articles_for_user_feed(
+        user=user,
+        limit=limit,
+        offset=offset,
+    )
+    articles_for_response = [
+        ArticleForResponse(**article.dict()) for article in articles
+    ]
+    return ListOfArticlesInResponse(
+        articles=articles_for_response,
+        articles_count=len(articles),
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 17.66s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: HTTPException, docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'get_articles_for_user_feed' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, facilitando a manutenção e o entendimento do código.</div><div class='violation-critical'><strong>error_handling</strong>: O endpoint não implementa tratamento explícito de erros (ex: try-except com HTTPException) para cenários onde a recuperação de artigos possa falhar (ex: usuário não encontrado, problemas de repositório). Isso pode levar a respostas genéricas de erro 500 ou comportamentos inesperados.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código demonstra boas práticas em tipagem, nomenclatura e semântica HTTP, mas requer melhorias em documentação e tratamento de erros....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.08s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, description, docstring, documentation, endpoint organization, explicit status, http errors, http status, openapi tags, status codes, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_mark_article_as_favorite_2')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_mark_article_as_favorite_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_mark_article_as_favorite_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post(
+    "/{slug}/favorite",
+    response_model=ArticleInResponse,
+    name="articles:mark-article-favorite",
+)
+async def mark_article_as_favorite(
+    article: Article = Depends(get_article_by_slug_from_path),
+    user: User = Depends(get_current_user_authorizer()),
+    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),
+) -&gt; ArticleInResponse:
+    if not article.favorited:
+        await articles_repo.add_article_into_favorites(article=article, user=user)
+
+        return ArticleInResponse(
+            article=ArticleForResponse.from_orm(
+                article.copy(
+                    update={
+                        "favorited": True,
+                        "favorites_count": article.favorites_count + 1,
+                    },
+                ),
+            ),
+        )
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=strings.ARTICLE_IS_ALREADY_FAVORITED,
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 13.29s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'mark_article_as_favorite' não possui uma docstring explicativa. Isso dificulta o entendimento da funcionalidade do endpoint e a geração automática de documentação.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador @router.post não especifica explicitamente o status_code para o sucesso da operação. Embora o FastAPI possa inferir um status 200 OK, para uma operação POST que cria um novo estado ou relacionamento (como 'favoritar'), o status 201 Created seria mais semanticamente correto e explícito.</div><div class='violation-critical'><strong>http_semantics</strong>: Para um método POST que resulta na criação de um novo estado ou relacionamento (marcar um artigo como favorito), o status HTTP 201 Created é o mais semanticamente apropriado. O FastAPI, por padrão, retornará 200 OK quando um response_model é definido e nenhum status_code é especificado, o que é menos preciso para esta operação.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui algumas melhorias a serem feitas em documentação e semântica HTTP....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 7.99s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não possui uma docstring explicativa que descreva sua função e comportamento.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code para a resposta bem-sucedida.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'mark_article_as_favorite' não segue a convenção snake_case.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_remove_article_from_favorites_3')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_remove_article_from_favorites_3</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_COMMON_remove_article_from_favorites_3" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.delete(
+    "/{slug}/favorite",
+    response_model=ArticleInResponse,
+    name="articles:unmark-article-favorite",
+)
+async def remove_article_from_favorites(
+    article: Article = Depends(get_article_by_slug_from_path),
+    user: User = Depends(get_current_user_authorizer()),
+    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),
+) -&gt; ArticleInResponse:
+    if article.favorited:
+        await articles_repo.remove_article_from_favorites(article=article, user=user)
+
+        return ArticleInResponse(
+            article=ArticleForResponse.from_orm(
+                article.copy(
+                    update={
+                        "favorited": False,
+                        "favorites_count": article.favorites_count - 1,
+                    },
+                ),
+            ),
+        )
+
+    raise HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=strings.ARTICLE_IS_NOT_FAVORITED,
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 16.27s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint não possui uma docstring explicativa. Isso dificulta a compreensão da sua finalidade, parâmetros e o que ela retorna, impactando a manutenibilidade e a geração de documentação automática.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O status code de sucesso (200 OK, neste caso, devido ao `response_model`) não está explicitamente definido no decorador do endpoint. Embora o FastAPI defina um padrão razoável, a explicitação melhora a clareza e a conformidade com a regra.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui pequenas melhorias a serem feitas na estrutura do endpoint....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.29s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: 204 no content, action verb, delete response, description, descriptive names, docstring, documentation, empty body, endpoint organization, explicit status, function naming, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_create_new_article_2')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_create_new_article_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_create_new_article_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post(
+    "",
+    status_code=status.HTTP_201_CREATED,
+    response_model=ArticleInResponse,
+    name="articles:create-article",
+)
+async def create_new_article(
+    article_create: ArticleInCreate = Body(..., embed=True, alias="article"),
+    user: User = Depends(get_current_user_authorizer()),
+    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),
+) -&gt; ArticleInResponse:
+    slug = get_slug_for_article(article_create.title)
+    if await check_article_exists(articles_repo, slug):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=strings.ARTICLE_ALREADY_EXISTS,
+        )
+
+    article = await articles_repo.create_article(
+        slug=slug,
+        title=article_create.title,
+        description=article_create.description,
+        body=article_create.body,
+        author=user,
+        tags=article_create.tags,
+    )
+    return ArticleInResponse(article=ArticleForResponse.from_orm(article))</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 10.08s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'create_new_article' não possui uma docstring explicativa. Docstrings são cruciais para documentar a finalidade, parâmetros e retorno de funções, melhorando a legibilidade e manutenibilidade do código, além de serem usadas para gerar documentação automática (ex: Sphinx).</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código bem estruturado, com uma pequena melhoria sugerida para documentação....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.21s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: description, docstring, documentation, endpoint organization, explicit status, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_delete_article_by_slug_5')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_delete_article_by_slug_5</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_delete_article_by_slug_5" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.delete(
+    "/{slug}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    name="articles:delete-article",
+    dependencies=[Depends(check_article_modification_permissions)],
+    response_class=Response,
+)
+async def delete_article_by_slug(
+    article: Article = Depends(get_article_by_slug_from_path),
+    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),
+) -&gt; None:
+    await articles_repo.delete_article(article=article)</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 10.19s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'delete_article_by_slug' não possui uma docstring explicativa. Docstrings são essenciais para documentar a finalidade, parâmetros e comportamento de um endpoint, melhorando a legibilidade e manutenibilidade do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, com uma pequena violação de estrutura....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.35s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, description, docstring, documentation, endpoint organization, explicit status, http errors, http status, openapi tags, status codes, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_list_articles_1')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_list_articles_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_list_articles_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("", response_model=ListOfArticlesInResponse, name="articles:list-articles")
+async def list_articles(
+    articles_filters: ArticlesFilters = Depends(get_articles_filters),
+    user: Optional[User] = Depends(get_current_user_authorizer(required=False)),
+    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),
+) -&gt; ListOfArticlesInResponse:
+    articles = await articles_repo.filter_articles(
+        tag=articles_filters.tag,
+        author=articles_filters.author,
+        favorited=articles_filters.favorited,
+        limit=articles_filters.limit,
+        offset=articles_filters.offset,
+        requested_user=user,
+    )
+    articles_for_response = [
+        ArticleForResponse.from_orm(article) for article in articles
+    ]
+    return ListOfArticlesInResponse(
+        articles=articles_for_response,
+        articles_count=len(articles),
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>80</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 14.53s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'list_articles' não possui uma docstring explicativa. Docstrings são cruciais para documentar o propósito, parâmetros e retorno do endpoint, facilitando a compreensão e manutenção do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador '@router.get' não especifica explicitamente o 'status_code'. Embora 200 OK seja o padrão para GETs bem-sucedidos, a especificação explícita melhora a clareza e a intenção do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui pequenos problemas de estrutura de endpoint, mas segue boas práticas em outras áreas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.96s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, description, docstring, documentation, endpoint organization, explicit status, http errors, http status, openapi tags, status codes, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_retrieve_article_by_slug_3')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_retrieve_article_by_slug_3</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_retrieve_article_by_slug_3" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/{slug}", response_model=ArticleInResponse, name="articles:get-article")
+async def retrieve_article_by_slug(
+    article: Article = Depends(get_article_by_slug_from_path),
+) -&gt; ArticleInResponse:
+    return ArticleInResponse(article=ArticleForResponse.from_orm(article))</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 14.85s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'retrieve_article_by_slug' não possui uma docstring explicativa. Isso dificulta o entendimento do propósito, dos parâmetros e do retorno do endpoint, especialmente em projetos maiores ou para novos desenvolvedores.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador @router.get não especifica explicitamente o status_code. Embora o padrão 200 OK seja o correto para uma operação GET bem-sucedida, a regra exige a explicitação para clareza e consistência.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado e segue a maioria das boas práticas, com algumas oportunidades de melhoria....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.28s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: description, docstring, documentation, endpoint organization, explicit status, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_update_article_by_slug_4')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_update_article_by_slug_4</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_ARTICLES_RESOURCE_update_article_by_slug_4" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.put(
+    "/{slug}",
+    response_model=ArticleInResponse,
+    name="articles:update-article",
+    dependencies=[Depends(check_article_modification_permissions)],
+)
+async def update_article_by_slug(
+    article_update: ArticleInUpdate = Body(..., embed=True, alias="article"),
+    current_article: Article = Depends(get_article_by_slug_from_path),
+    articles_repo: ArticlesRepository = Depends(get_repository(ArticlesRepository)),
+) -&gt; ArticleInResponse:
+    slug = get_slug_for_article(article_update.title) if article_update.title else None
+    article = await articles_repo.update_article(
+        article=current_article,
+        slug=slug,
+        **article_update.dict(),
+    )
+    return ArticleInResponse(article=ArticleForResponse.from_orm(article))</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 15.45s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: HTTPException, docstring, status codes, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'update_article_by_slug' não possui uma docstring explicativa. Isso dificulta o entendimento rápido da finalidade, parâmetros e retorno do endpoint.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador @router.put não especifica explicitamente o status_code de sucesso. Embora o FastAPI defina 200 OK por padrão para PUT com response_model, a explicitação melhora a clareza e a manutenibilidade.</div><div class='violation-critical'><strong>error_handling</strong>: O código não demonstra tratamento explícito de erros (e.g., com blocos try/except e raise HTTPException) para cenários como artigo não encontrado, dados de entrada inválidos ou falha na atualização do repositório. Isso pode resultar em respostas genéricas de erro 500 ou status codes inadequados para o cliente.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui algumas melhorias pendentes em estrutura e tratamento de erros....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.31s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, description, docstring, documentation, endpoint organization, explicit status, http errors, http status, openapi tags, status codes, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_login_1')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_login_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_login_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/login", response_model=UserInResponse, name="auth:login")
+async def login(
+    user_login: UserInLogin = Body(..., embed=True, alias="user"),
+    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),
+    settings: AppSettings = Depends(get_app_settings),
+) -&gt; UserInResponse:
+    wrong_login_error = HTTPException(
+        status_code=HTTP_400_BAD_REQUEST,
+        detail=strings.INCORRECT_LOGIN_INPUT,
+    )
+
+    try:
+        user = await users_repo.get_user_by_email(email=user_login.email)
+    except EntityDoesNotExist as existence_error:
+        raise wrong_login_error from existence_error
+
+    if not user.check_password(user_login.password):
+        raise wrong_login_error
+
+    token = jwt.create_access_token_for_user(
+        user,
+        str(settings.secret_key.get_secret_value()),
+    )
+    return UserInResponse(
+        user=UserWithToken(
+            username=user.username,
+            email=user.email,
+            bio=user.bio,
+            image=user.image,
+            token=token,
+        ),
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>82</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 15.9s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint 'login' não possui uma docstring explicativa. Isso dificulta a compreensão do propósito, parâmetros e retorno do endpoint, além de prejudicar a geração automática de documentação.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador '@router.post' não especifica explicitamente o 'status_code' para uma resposta bem-sucedida. Embora o FastAPI possa inferir 200 OK com 'response_model', a declaração explícita melhora a clareza e a manutenibilidade do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas faltam docstrings e a especificação explícita do status code de sucesso....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 5.15s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não possui uma docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code para o caso de sucesso</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'login' é muito genérico e não segue a convenção de nomenclatura sugerida</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras de validação com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_register_2')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_register_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_AUTHENTICATION_register_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post(
+    "",
+    status_code=HTTP_201_CREATED,
+    response_model=UserInResponse,
+    name="auth:register",
+)
+async def register(
+    user_create: UserInCreate = Body(..., embed=True, alias="user"),
+    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),
+    settings: AppSettings = Depends(get_app_settings),
+) -&gt; UserInResponse:
+    if await check_username_is_taken(users_repo, user_create.username):
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=strings.USERNAME_TAKEN,
+        )
+
+    if await check_email_is_taken(users_repo, user_create.email):
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=strings.EMAIL_TAKEN,
+        )
+
+    user = await users_repo.create_user(**user_create.dict())
+
+    token = jwt.create_access_token_for_user(
+        user,
+        str(settings.secret_key.get_secret_value()),
+    )
+    return UserInResponse(
+        user=UserWithToken(
+            username=user.username,
+            email=user.email,
+            bio=user.bio,
+            image=user.image,
+            token=token,
+        ),
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 11.52s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint 'register' não possui uma docstring explicativa. Isso dificulta o entendimento da sua finalidade, parâmetros e retorno, além de não aparecer na documentação OpenAPI gerada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código bem estruturado e segue a maioria das boas práticas, mas falta docstring para clareza....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>90</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.82s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'register' é genérico e não especifica o recurso</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_create_comment_for_article_2')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_create_comment_for_article_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_create_comment_for_article_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post(
+    "",
+    status_code=status.HTTP_201_CREATED,
+    response_model=CommentInResponse,
+    name="comments:create-comment-for-article",
+)
+async def create_comment_for_article(
+    comment_create: CommentInCreate = Body(..., embed=True, alias="comment"),
+    article: Article = Depends(get_article_by_slug_from_path),
+    user: User = Depends(get_current_user_authorizer()),
+    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),
+) -&gt; CommentInResponse:
+    comment = await comments_repo.create_comment_for_article(
+        body=comment_create.body,
+        article=article,
+        user=user,
+    )
+    return CommentInResponse(comment=comment)</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.58s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'create_comment_for_article' não possui uma docstring. Docstrings são essenciais para documentar a finalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a legibilidade e a manutenção do código, além de serem usadas para gerar a documentação OpenAPI.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está bem estruturado e segue a maioria das boas práticas, mas falta uma docstring explicativa para o endpoint....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.2s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, description, docstring, documentation, endpoint organization, explicit status, http errors, http status, openapi tags, status codes, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_delete_comment_from_article_3')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_delete_comment_from_article_3</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_delete_comment_from_article_3" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.delete(
+    "/{comment_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    name="comments:delete-comment-from-article",
+    dependencies=[Depends(check_comment_modification_permissions)],
+    response_class=Response,
+)
+async def delete_comment_from_article(
+    comment: Comment = Depends(get_comment_by_id_from_path),
+    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),
+) -&gt; None:
+    await comments_repo.delete_comment(comment=comment)</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>91</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 10.28s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'delete_comment_from_article' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, com uma pequena violação de documentação....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.59s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, description, docstring, documentation, endpoint organization, explicit status, http errors, http status, openapi tags, status codes, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_list_comments_for_article_1')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_list_comments_for_article_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_COMMENTS_list_comments_for_article_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get(
+    "",
+    response_model=ListOfCommentsInResponse,
+    name="comments:get-comments-for-article",
+)
+async def list_comments_for_article(
+    article: Article = Depends(get_article_by_slug_from_path),
+    user: Optional[User] = Depends(get_current_user_authorizer(required=False)),
+    comments_repo: CommentsRepository = Depends(get_repository(CommentsRepository)),
+) -&gt; ListOfCommentsInResponse:
+    comments = await comments_repo.get_comments_for_article(article=article, user=user)
+    return ListOfCommentsInResponse(comments=comments)</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.38s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função do endpoint `list_comments_for_article` não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a legibilidade e manutenibilidade do código, além de serem usadas para gerar a documentação OpenAPI.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code`. Embora o padrão 200 (OK) seja geralmente apropriado para requisições GET bem-sucedidas que retornam dados, a regra exige a especificação explícita para clareza e consistência.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas faltam docstrings e a especificação explícita do status code....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.68s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, description, docstring, documentation, endpoint organization, explicit status, http errors, http status, openapi tags, status codes, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_follow_for_user_2')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_follow_for_user_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_follow_for_user_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post(
+    "/{username}/follow",
+    response_model=ProfileInResponse,
+    name="profiles:follow-user",
+)
+async def follow_for_user(
+    profile: Profile = Depends(get_profile_by_username_from_path),
+    user: User = Depends(get_current_user_authorizer()),
+    profiles_repo: ProfilesRepository = Depends(get_repository(ProfilesRepository)),
+) -&gt; ProfileInResponse:
+    if user.username == profile.username:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=strings.UNABLE_TO_FOLLOW_YOURSELF,
+        )
+
+    if profile.following:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=strings.USER_IS_ALREADY_FOLLOWED,
+        )
+
+    await profiles_repo.add_user_into_followers(
+        target_user=profile,
+        requested_user=user,
+    )
+
+    return ProfileInResponse(profile=profile.copy(update={"following": True}))</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 14.46s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'follow_for_user' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador `@router.post` não especifica explicitamente o `status_code`. Embora o FastAPI defina um padrão (200 OK quando `response_model` está presente), é uma boa prática definir explicitamente o status code para clareza e para garantir a semântica HTTP correta.</div><div class='violation-critical'><strong>http_semantics</strong>: O método POST é usado para 'seguir' um usuário, o que implica a criação de um novo relacionamento. Embora o FastAPI retorne 200 OK por padrão quando um `response_model` é fornecido, o status code 201 Created seria mais semanticamente apropriado para indicar a criação bem-sucedida de um novo recurso (a relação de 'seguir').</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui algumas melhorias a serem feitas na estrutura do endpoint e semântica HTTP....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.96s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente para sucesso</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'follow_for_user' não segue convenção snake_case</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_retrieve_profile_by_username_1')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_retrieve_profile_by_username_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_retrieve_profile_by_username_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get(
+    "/{username}",
+    response_model=ProfileInResponse,
+    name="profiles:get-profile",
+)
+async def retrieve_profile_by_username(
+    profile: Profile = Depends(get_profile_by_username_from_path),
+) -&gt; ProfileInResponse:
+    return ProfileInResponse(profile=profile)</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 15.47s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função `retrieve_profile_by_username` não possui uma docstring explicativa. Docstrings são essenciais para documentar o propósito do endpoint, seus parâmetros e o que ele retorna, facilitando a compreensão e manutenção do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code` na definição do decorador. Embora 200 seja o padrão para um GET bem-sucedido, a explicitação melhora a clareza e a manutenibilidade do código, especialmente em equipes.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em boa forma, com algumas melhorias recomendadas para clareza e completude....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.57s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: description, docstring, documentation, endpoint organization, explicit status, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_unsubscribe_from_user_3')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_unsubscribe_from_user_3</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_PROFILES_unsubscribe_from_user_3" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.delete(
+    "/{username}/follow",
+    response_model=ProfileInResponse,
+    name="profiles:unsubscribe-from-user",
+)
+async def unsubscribe_from_user(
+    profile: Profile = Depends(get_profile_by_username_from_path),
+    user: User = Depends(get_current_user_authorizer()),
+    profiles_repo: ProfilesRepository = Depends(get_repository(ProfilesRepository)),
+) -&gt; ProfileInResponse:
+    if user.username == profile.username:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=strings.UNABLE_TO_UNSUBSCRIBE_FROM_YOURSELF,
+        )
+
+    if not profile.following:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail=strings.USER_IS_NOT_FOLLOWED,
+        )
+
+    await profiles_repo.remove_user_from_followers(
+        target_user=profile,
+        requested_user=user,
+    )
+
+    return ProfileInResponse(profile=profile.copy(update={"following": False}))</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 12.62s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: 204 no content, docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'unsubscribe_from_user' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador @router.delete não especifica explicitamente o status_code para uma resposta bem-sucedida. Embora o FastAPI defina um padrão (200 OK quando há response_model), é uma boa prática ser explícito para clareza e para evitar ambiguidades, especialmente em operações DELETE que frequentemente retornam 204 No Content.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas faltam docstrings e a especificação explícita do status_code....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 5.06s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'unsubscribe_from_user' é muito longo e poderia ser mais conciso</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_TAGS_get_all_tags_1')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_TAGS_get_all_tags_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_TAGS_get_all_tags_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("", response_model=TagsInList, name="tags:get-all")
+async def get_all_tags(
+    tags_repo: TagsRepository = Depends(get_repository(TagsRepository)),
+) -&gt; TagsInList:
+    tags = await tags_repo.get_all_tags()
+    return TagsInList(tags=tags)</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>80</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 18.43s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'get_all_tags' não possui uma docstring explicativa. Docstrings são cruciais para documentar o propósito, parâmetros e retorno do endpoint, melhorando a legibilidade e a manutenção do código, além de serem usadas para gerar documentação automática (ex: Swagger UI).</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador '@router.get' não especifica explicitamente o 'status_code'. Embora o FastAPI defina 200 OK como padrão para GETs bem-sucedidos, a especificação explícita melhora a clareza e a intenção do código, tornando-o mais robusto e fácil de entender.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende à maioria das regras, com algumas melhorias de estrutura e documentação sugeridas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.02s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: description, docstring, documentation, endpoint organization, explicit status, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_TEST_422_ERROR_route_for_test_1')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_TEST_422_ERROR_route_for_test_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_TEST_422_ERROR_route_for_test_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@app.get("/wrong_path/{param}")
+    def route_for_test(param: int) -&gt; None:  # pragma: no cover
+        pass</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>44</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 24.05s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função `route_for_test` não possui uma docstring explicativa. Docstrings são essenciais para documentar a finalidade e o comportamento do endpoint, melhorando a manutenibilidade e a compreensão do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador `@app.get` não especifica explicitamente o `status_code`. Embora o FastAPI defina um padrão (200 para GET), ser explícito melhora a clareza e a intenção do código.</div><div class='violation-critical'><strong>http_semantics</strong>: A função retorna `None` (devido ao `pass`) e possui uma anotação de tipo de retorno `-> None`. Isso sugere que nenhum conteúdo significativo é retornado. O status code padrão 200 OK com um corpo JSON vazio (`{}`) pode ser enganoso. Um `204 No Content` seria mais semântico para indicar que a requisição foi bem-sucedida, mas não há conteúdo para enviar no corpo da resposta.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função `route_for_test` não começa com um verbo de ação claro que descreva o que o endpoint 'GET' faz. 'route_for_test' é mais descritivo de um propósito interno do que da ação HTTP.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função `route_for_test` é genérico e não descreve claramente o recurso ou a operação específica que o endpoint realiza. Isso dificulta a compreensão rápida da funcionalidade do endpoint.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta problemas significativos de estrutura de endpoint, semântica HTTP e convenções de nomenclatura....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>50</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 4.66s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-critical'><strong>type_hints</strong>: Função possui return type annotation como None, o que pode não ser adequado</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas estruturais críticos...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_USERS_retrieve_current_user_1')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_USERS_retrieve_current_user_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_USERS_retrieve_current_user_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("", response_model=UserInResponse, name="users:get-current-user")
+async def retrieve_current_user(
+    user: User = Depends(get_current_user_authorizer()),
+    settings: AppSettings = Depends(get_app_settings),
+) -&gt; UserInResponse:
+    token = jwt.create_access_token_for_user(
+        user,
+        str(settings.secret_key.get_secret_value()),
+    )
+    return UserInResponse(
+        user=UserWithToken(
+            username=user.username,
+            email=user.email,
+            bio=user.bio,
+            image=user.image,
+            token=token,
+        ),
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 14.37s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'retrieve_current_user' não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador '@router.get' não especifica explicitamente o 'status_code'. Embora 200 OK seja o padrão para GETs bem-sucedidos, a especificação explícita melhora a clareza e a intenção do código, além de ser uma boa prática para consistência.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas faltam docstring e especificação explícita do status code....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.78s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: HTTPException, description, docstring, documentation, endpoint organization, explicit status, http errors, http status, openapi tags, status codes, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FASTAPI-REALWORLD-EXAMPLE-APP_USERS_update_current_user_2')">
+                    <span><strong>FASTAPI-REALWORLD-EXAMPLE-APP_USERS_update_current_user_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FASTAPI-REALWORLD-EXAMPLE-APP_USERS_update_current_user_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.put("", response_model=UserInResponse, name="users:update-current-user")
+async def update_current_user(
+    user_update: UserInUpdate = Body(..., embed=True, alias="user"),
+    current_user: User = Depends(get_current_user_authorizer()),
+    users_repo: UsersRepository = Depends(get_repository(UsersRepository)),
+    settings: AppSettings = Depends(get_app_settings),
+) -&gt; UserInResponse:
+    if user_update.username and user_update.username != current_user.username:
+        if await check_username_is_taken(users_repo, user_update.username):
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail=strings.USERNAME_TAKEN,
+            )
+
+    if user_update.email and user_update.email != current_user.email:
+        if await check_email_is_taken(users_repo, user_update.email):
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail=strings.EMAIL_TAKEN,
+            )
+
+    user = await users_repo.update_user(user=current_user, **user_update.dict())
+
+    token = jwt.create_access_token_for_user(
+        user,
+        str(settings.secret_key.get_secret_value()),
+    )
+    return UserInResponse(
+        user=UserWithToken(
+            username=user.username,
+            email=user.email,
+            bio=user.bio,
+            image=user.image,
+            token=token,
+        ),
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.03s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função 'update_current_user' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O decorador '@router.put' não especifica explicitamente o 'status_code' para uma resposta de sucesso. Embora o FastAPI defina um padrão (200 OK para PUT com corpo de resposta), é uma boa prática ser explícito para clareza e para evitar ambiguidades.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas faltam docstrings e especificação explícita do status code de sucesso....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 5.12s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não possui docstring explicativa</div><div class='violation-critical'><strong>endpoint_structure</strong>: Endpoint não especifica status_code explicitamente</div><div class='violation-item'><strong>naming_conventions</strong>: Nome da função 'update_current_user' é descritivo mas poderia ser mais conciso</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_ITEMS_create_item_3')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_ITEMS_create_item_3</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_ITEMS_create_item_3" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/", response_model=ItemPublic)
+def create_item(
+    *, session: SessionDep, current_user: CurrentUser, item_in: ItemCreate
+) -&gt; Any:
+    """
+    Create new item.
+    """
+    item = Item.model_validate(item_in, update={"owner_id": current_user.id})
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.43s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST para criação de um recurso não especifica explicitamente o status_code. Embora o FastAPI possa inferir 200 OK, a semântica correta para criação é 201 Created.</div><div class='violation-critical'><strong>http_semantics</strong>: Para uma operação de criação (POST), o status code padrão 200 OK não é o mais semanticamente correto. O status 201 Created é o mais apropriado para indicar que um novo recurso foi criado com sucesso.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta boa estrutura, mas pode melhorar a semântica HTTP....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.29s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: endpoint organization, explicit status, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_ITEMS_delete_item_5')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_ITEMS_delete_item_5</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_ITEMS_delete_item_5" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.delete("/{id}")
+def delete_item(
+    session: SessionDep, current_user: CurrentUser, id: uuid.UUID
+) -&gt; Message:
+    """
+    Delete an item.
+    """
+    item = session.get(Item, id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    if not current_user.is_superuser and (item.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+    session.delete(item)
+    session.commit()
+    return Message(message="Item deleted successfully")</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>25</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 31.88s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: 204 no content, Path(), delete response, empty body, endpoint organization, openapi tags, output schema, parameter constraints, path validation, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint DELETE retorna um corpo (`Message`) mas não especifica explicitamente o `status_code` no decorador. Embora 200 OK seja o padrão para DELETE com corpo, é uma boa prática ser explícito para melhorar a clareza e a documentação OpenAPI.</div><div class='violation-critical'><strong>error_handling</strong>: O status code 400 (Bad Request) é usado para 'Not enough permissions'. Embora seja um erro do cliente, 403 (Forbidden) seria mais semântico e preciso para problemas de autorização, indicando que o cliente está autenticado, mas não tem permissão para realizar a ação.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta problemas na especificação explícita de status codes e na semântica de tratamento de erros....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.72s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: 204 no content, Path(), delete response, empty body, endpoint organization, openapi tags, output schema, parameter constraints, path validation, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code para o caso de sucesso</div><div class='violation-item'><strong>naming_conventions</strong>: Função chamada 'delete_item' é genérica e não especifica o recurso</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_item_2')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_item_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_item_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/{id}", response_model=ItemPublic)
+def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -&gt; Any:
+    """
+    Get item by ID.
+    """
+    item = session.get(Item, id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    if not current_user.is_superuser and (item.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+    return item</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 17.19s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Path(), action verb, descriptive names, endpoint organization, function naming, openapi tags, parameter constraints, path validation, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O status code de sucesso (200 OK) não está explicitamente definido no decorador do endpoint. Embora 200 seja o padrão para GET, a especificação explícita melhora a clareza e a documentação OpenAPI.</div><div class='violation-critical'><strong>type_hints</strong>: A anotação de tipo de retorno da função é `Any`, enquanto o `response_model` do decorador é `ItemPublic`. É uma boa prática que a anotação de tipo de retorno da função seja mais específica e corresponda ao `response_model` ou ao tipo de dado retornado para maior precisão e validação estática.</div><div class='violation-critical'><strong>error_handling</strong>: Para o erro de permissão ('Not enough permissions'), o status code 400 Bad Request foi utilizado. Embora seja um erro do cliente, 403 Forbidden seria mais semanticamente preciso para indicar que o usuário está autenticado, mas não autorizado a acessar o recurso específico.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta algumas oportunidades de melhoria em relação à clareza e semântica HTTP....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 5.48s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Path(), action verb, descriptive names, endpoint organization, function naming, openapi tags, parameter constraints, path validation, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code para o caso de sucesso</div><div class='violation-critical'><strong>type_hints</strong>: O tipo de retorno é Any, que não é específico</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'read_item' não segue a convenção snake_case</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_items_1')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_items_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_ITEMS_read_items_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/", response_model=ItemsPublic)
+def read_items(
+    session: SessionDep, current_user: CurrentUser, skip: int = 0, limit: int = 100
+) -&gt; Any:
+    """
+    Retrieve items.
+    """
+
+    if current_user.is_superuser:
+        count_statement = select(func.count()).select_from(Item)
+        count = session.exec(count_statement).one()
+        statement = select(Item).offset(skip).limit(limit)
+        items = session.exec(statement).all()
+    else:
+        count_statement = (
+            select(func.count())
+            .select_from(Item)
+            .where(Item.owner_id == current_user.id)
+        )
+        count = session.exec(count_statement).one()
+        statement = (
+            select(Item)
+            .where(Item.owner_id == current_user.id)
+            .offset(skip)
+            .limit(limit)
+        )
+        items = session.exec(statement).all()
+
+    return ItemsPublic(data=items, count=count)</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 21.12s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o status_code no decorador. Embora 200 OK seja o padrão e correto para uma operação de leitura bem-sucedida, a regra exige a especificação explícita.</div><div class='violation-critical'><strong>type_hints</strong>: A função utiliza 'Any' como type hint de retorno, mas o 'response_model=ItemsPublic' no decorador indica um tipo de retorno mais específico e conhecido. Usar 'Any' reduz os benefícios da tipagem estática e da clareza do código.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está bem estruturado, mas pode melhorar na especificação explícita de status codes e na precisão dos type hints de retorno....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 7.03s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code de resposta</div><div class='violation-critical'><strong>type_hints</strong>: O tipo de retorno da função é Any, que não é específico</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'read_items' não segue a convenção snake_case com verbo de ação</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_ITEMS_update_item_4')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_ITEMS_update_item_4</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_ITEMS_update_item_4" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.put("/{id}", response_model=ItemPublic)
+def update_item(
+    *,
+    session: SessionDep,
+    current_user: CurrentUser,
+    id: uuid.UUID,
+    item_in: ItemUpdate,
+) -&gt; Any:
+    """
+    Update an item.
+    """
+    item = session.get(Item, id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+    if not current_user.is_superuser and (item.owner_id != current_user.id):
+        raise HTTPException(status_code=400, detail="Not enough permissions")
+    update_dict = item_in.model_dump(exclude_unset=True)
+    item.sqlmodel_update(update_dict)
+    session.add(item)
+    session.commit()
+    session.refresh(item)
+    return item</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 13.07s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Path(), endpoint organization, openapi tags, parameter constraints, path validation, put/patch response, resource representation, tags, update semantics</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O decorador @router.put não especifica explicitamente o status_code de sucesso. Embora 200 seja o padrão para PUT que retorna um corpo, é uma boa prática ser explícito para clareza e documentação.</div><div class='violation-critical'><strong>type_hints</strong>: O tipo de retorno da função é 'Any', o que é muito genérico. Embora 'response_model' cuide da serialização, a anotação de tipo da função deve refletir o tipo do objeto Python retornado.</div><div class='violation-critical'><strong>error_handling</strong>: Para o erro de 'Not enough permissions' (usuário autenticado, mas sem autorização para o recurso específico), o status code 403 Forbidden seria mais semanticamente correto do que 400 Bad Request. 400 é geralmente usado para requisições malformadas.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código apresenta algumas melhorias potenciais em tipagem e tratamento de erros HTTP....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.28s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Path(), endpoint organization, openapi tags, parameter constraints, path validation, put/patch response, resource representation, tags, update semantics</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica status_code explicitamente para o caso de sucesso</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'update_item' é genérico e não indica claramente o recurso</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_LOGIN_login_access_token_1')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_LOGIN_login_access_token_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_LOGIN_login_access_token_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/login/access-token")
+def login_access_token(
+    session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+) -&gt; Token:
+    """
+    OAuth2 compatible token login, get an access token for future requests
+    """
+    user = crud.authenticate(
+        session=session, email=form_data.username, password=form_data.password
+    )
+    if not user:
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+    elif not user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    return Token(
+        access_token=security.create_access_token(
+            user.id, expires_delta=access_token_expires
+        )
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 15.33s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, output schema, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O decorador `@router.post` não especifica explicitamente o `status_code` para a resposta de sucesso. Embora o padrão 200 OK seja semanticamente correto para este endpoint, a regra exige que o status code seja declarado explicitamente para maior clareza e documentação.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui uma pequena violação de estrutura de endpoint, mas está em conformidade com a maioria das boas práticas....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.3s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, output schema, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_3')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_3</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_3" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/password-recovery/{email}")
+def recover_password(email: str, session: SessionDep) -&gt; Message:
+    """
+    Password Recovery
+    """
+    user = crud.get_user_by_email(session=session, email=email)
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this email does not exist in the system.",
+        )
+    password_reset_token = generate_password_reset_token(email=email)
+    email_data = generate_reset_password_email(
+        email_to=user.email, email=email, token=password_reset_token
+    )
+    send_email(
+        email_to=user.email,
+        subject=email_data.subject,
+        html_content=email_data.html_content,
+    )
+    return Message(message="Password recovery email sent")</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 18.46s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, output schema, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST não especifica explicitamente o 'status_code' no decorador. Embora o FastAPI infira 200 OK por padrão para operações bem-sucedidas que não criam um recurso, é uma boa prática definir o status code de sucesso para clareza e documentação OpenAPI.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em boa forma, com uma pequena violação de boas práticas na especificação explícita do status code....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.11s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, output schema, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code para o caso de sucesso</div><div class='violation-item'><strong>naming_conventions</strong>: Função chamada 'recover_password' poderia ser mais específica</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_html_content_5')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_html_content_5</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_LOGIN_recover_password_html_content_5" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post(
+    "/password-recovery-html-content/{email}",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_class=HTMLResponse,
+)
+def recover_password_html_content(email: str, session: SessionDep) -&gt; Any:
+    """
+    HTML Content for Password Recovery
+    """
+    user = crud.get_user_by_email(session=session, email=email)
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this username does not exist in the system.",
+        )
+    password_reset_token = generate_password_reset_token(email=email)
+    email_data = generate_reset_password_email(
+        email_to=user.email, email=email, token=password_reset_token
+    )
+
+    return HTMLResponse(
+        content=email_data.html_content, headers={"subject:": email_data.subject}
+    )</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>55</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 19.42s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST não especifica um status_code explícito para sucesso. Embora o padrão seja 200 OK, explicitá-lo melhora a clareza e a intenção da API, especialmente para operações que não são uma criação típica.</div><div class='violation-item'><strong>type_hints</strong>: O tipo de retorno `Any` é muito genérico para um endpoint FastAPI que retorna `HTMLResponse`. Usar um tipo mais específico melhora a clareza do código e a documentação OpenAPI gerada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código possui problemas de estrutura de endpoint e precisão de tipos....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 5.91s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code para o caso de sucesso</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'recover_password_html_content' é muito longo e não segue o padrão verbo + substantivo</div><div class='violation-critical'><strong>type_hints</strong>: O tipo de retorno da função é 'Any', que não é específico</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_LOGIN_reset_password_4')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_LOGIN_reset_password_4</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_LOGIN_reset_password_4" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/reset-password/")
+def reset_password(session: SessionDep, body: NewPassword) -&gt; Message:
+    """
+    Reset password
+    """
+    email = verify_password_reset_token(token=body.token)
+    if not email:
+        raise HTTPException(status_code=400, detail="Invalid token")
+    user = crud.get_user_by_email(session=session, email=email)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this email does not exist in the system.",
+        )
+    elif not user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    hashed_password = get_password_hash(password=body.new_password)
+    user.hashed_password = hashed_password
+    session.add(user)
+    session.commit()
+    return Message(message="Password updated successfully")</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>91</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 17.36s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, output schema, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O status_code de sucesso para o endpoint POST não é especificado explicitamente no decorador. Embora o padrão 200 OK seja semanticamente correto para uma operação de atualização que retorna um corpo, a regra exige que o status code seja explicitamente definido para maior clareza e conformidade.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado e segue a maioria das boas práticas, com uma pequena melhoria sugerida para explicitação do status code de sucesso....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.78s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, output schema, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica status_code explicitamente para o caso de sucesso</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'reset_password' é claro, mas poderia ser mais específico</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_LOGIN_test_token_2')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_LOGIN_test_token_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_LOGIN_test_token_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/login/test-token", response_model=UserPublic)
+def test_token(current_user: CurrentUser) -&gt; Any:
+    """
+    Test access token
+    """
+    return current_user</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 10.26s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST não especifica explicitamente o status_code. Embora o FastAPI defina 200 OK como padrão para POSTs que retornam um corpo, a regra exige a especificação explícita para clareza e manutenção.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, com uma pequena melhoria sugerida....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.37s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, explicit status, function naming, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_PRIVATE_create_user_1')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_PRIVATE_create_user_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_PRIVATE_create_user_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/users/", response_model=UserPublic)
+def create_user(user_in: PrivateUserCreate, session: SessionDep) -&gt; Any:
+    """
+    Create a new user.
+    """
+
+    user = User(
+        email=user_in.email,
+        full_name=user_in.full_name,
+        hashed_password=get_password_hash(user_in.password),
+    )
+
+    session.add(user)
+    session.commit()
+
+    return user</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>75</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 15.95s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST que cria um recurso não especifica explicitamente o status_code. Para criação bem-sucedida, o status 201 Created é o mais semântico, enquanto o FastAPI por padrão retorna 200 OK.</div><div class='violation-critical'><strong>http_semantics</strong>: Para uma operação de criação (POST), o status code 201 Created é o mais apropriado semanticamente. O código atual, por não especificar, resultará em 200 OK, que é menos preciso para a criação de um novo recurso.</div><div class='violation-critical'><strong>error_handling</strong>: O código não inclui tratamento explícito de erros (ex: validação de unicidade de email, erros de banco de dados) que poderiam resultar em status codes HTTP apropriados (ex: 400 Bad Request, 409 Conflict, 500 Internal Server Error).</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui algumas violações de boas práticas, principalmente relacionadas a semântica HTTP e tratamento de erros....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.25s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: endpoint organization, explicit status, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_create_user_2')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_create_user_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_create_user_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post(
+    "/", dependencies=[Depends(get_current_active_superuser)], response_model=UserPublic
+)
+def create_user(*, session: SessionDep, user_in: UserCreate) -&gt; Any:
+    """
+    Create new user.
+    """
+    user = crud.get_user_by_email(session=session, email=user_in.email)
+    if user:
+        raise HTTPException(
+            status_code=400,
+            detail="The user with this email already exists in the system.",
+        )
+
+    user = crud.create_user(session=session, user_create=user_in)
+    if settings.emails_enabled and user_in.email:
+        email_data = generate_new_account_email(
+            email_to=user_in.email, username=user_in.email, password=user_in.password
+        )
+        send_email(
+            email_to=user_in.email,
+            subject=email_data.subject,
+            html_content=email_data.html_content,
+        )
+    return user</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 18.55s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: endpoint organization, openapi tags, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST para criação de um recurso não especifica explicitamente o status_code. O FastAPI retornará 200 OK por padrão, mas o status 201 Created é semanticamente mais apropriado para operações de criação bem-sucedidas.</div><div class='violation-critical'><strong>http_semantics</strong>: Para uma operação de criação (método POST), o status code HTTP 201 Created é o mais adequado para indicar que o recurso foi criado com sucesso. O comportamento atual retorna 200 OK por padrão, o que não é o mais semântico para esta ação.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas precisa de ajustes nos status codes HTTP para melhor semântica....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.63s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: endpoint organization, openapi tags, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code para o sucesso da operação.</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'create_user' é claro, mas poderia ser mais específico para indicar o contexto de criação.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_10')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_10</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_10" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.delete("/{user_id}", dependencies=[Depends(get_current_active_superuser)])
+def delete_user(
+    session: SessionDep, current_user: CurrentUser, user_id: uuid.UUID
+) -&gt; Message:
+    """
+    Delete a user.
+    """
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user == current_user:
+        raise HTTPException(
+            status_code=403, detail="Super users are not allowed to delete themselves"
+        )
+    statement = delete(Item).where(col(Item.owner_id) == user_id)
+    session.exec(statement)  # type: ignore
+    session.delete(user)
+    session.commit()
+    return Message(message="User deleted successfully")</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.18s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: 204 no content, Path(), delete response, empty body, endpoint organization, openapi tags, output schema, parameter constraints, path validation, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint DELETE retorna um corpo de resposta (Message), o que implica um status code 200 OK por padrão. No entanto, a regra exige que o `status_code` seja especificado explicitamente no decorador do endpoint para clareza e para evitar ambiguidades.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, com uma pequena melhoria sugerida....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>80</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.55s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: 204 no content, Path(), delete response, empty body, endpoint organization, openapi tags, output schema, parameter constraints, path validation, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_me_6')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_me_6</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_delete_user_me_6" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.delete("/me", response_model=Message)
+def delete_user_me(session: SessionDep, current_user: CurrentUser) -&gt; Any:
+    """
+    Delete own user.
+    """
+    if current_user.is_superuser:
+        raise HTTPException(
+            status_code=403, detail="Super users are not allowed to delete themselves"
+        )
+    session.delete(current_user)
+    session.commit()
+    return Message(message="User deleted successfully")</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 13.25s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: 204 no content, delete response, empty body, endpoint organization, openapi tags, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint DELETE retorna um corpo de resposta (response_model=Message), o que implica um status code 200 OK. No entanto, o status_code não foi especificado explicitamente no decorador, dependendo do comportamento padrão do FastAPI.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, com uma pequena melhoria sugerida....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.48s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: 204 no content, delete response, empty body, endpoint organization, openapi tags, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_by_id_8')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_by_id_8</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_by_id_8" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/{user_id}", response_model=UserPublic)
+def read_user_by_id(
+    user_id: uuid.UUID, session: SessionDep, current_user: CurrentUser
+) -&gt; Any:
+    """
+    Get a specific user by id.
+    """
+    user = session.get(User, user_id)
+    if user == current_user:
+        return user
+    if not current_user.is_superuser:
+        raise HTTPException(
+            status_code=403,
+            detail="The user doesn't have enough privileges",
+        )
+    return user</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>25</strong> | <span class="status-fail">fail</span>
+                        <br>Tempo: 26.88s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Path(), action verb, descriptive names, endpoint organization, function naming, openapi tags, parameter constraints, path validation, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o `status_code` para respostas de sucesso (200 OK), dependendo do comportamento padrão do FastAPI. Embora 200 seja o padrão para GET, a explicitação melhora a clareza e a documentação da API, especialmente quando múltiplos status codes são possíveis.</div><div class='violation-critical'><strong>type_hints</strong>: O tipo de retorno `Any` é muito genérico. Embora o `response_model=UserPublic` no decorador ajude na serialização, a anotação de tipo da função deve ser mais específica para o objeto que a função realmente retorna (neste caso, uma instância de `User` ou o modelo Pydantic `UserPublic` se houver compatibilidade direta).</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui problemas na estrutura do endpoint e na tipagem de retorno....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.78s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Path(), action verb, descriptive names, endpoint organization, function naming, openapi tags, parameter constraints, path validation, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_me_5')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_me_5</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_read_user_me_5" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/me", response_model=UserPublic)
+def read_user_me(current_user: CurrentUser) -&gt; Any:
+    """
+    Get current user.
+    """
+    return current_user</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 11.54s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o 'status_code' de sucesso. Embora o padrão seja 200 OK, a especificação explícita melhora a clareza e a manutenibilidade do código, especialmente em cenários onde o status code pode variar.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, com uma pequena melhoria de clareza sugerida....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.69s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, explicit status, function naming, http status, openapi tags, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_read_users_1')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_read_users_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_read_users_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get(
+    "/",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=UsersPublic,
+)
+def read_users(session: SessionDep, skip: int = 0, limit: int = 100) -&gt; Any:
+    """
+    Retrieve users.
+    """
+
+    count_statement = select(func.count()).select_from(User)
+    count = session.exec(count_statement).one()
+
+    statement = select(User).offset(skip).limit(limit)
+    users = session.exec(statement).all()
+
+    return UsersPublic(data=users, count=count)</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>60</strong> | <span class="status-warning">warning</span>
+                        <br>Tempo: 20.08s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code`. Embora 200 OK seja o padrão para GETs bem-sucedidos, a regra exige a especificação explícita para clareza e consistência, mesmo para o valor padrão.</div><div class='violation-critical'><strong>type_hints</strong>: A anotação de tipo de retorno da função é `Any`, o que é muito genérico. O endpoint define `response_model=UsersPublic`, e a função retorna uma instância de `UsersPublic`. Usar `Any` diminui a utilidade das verificações de tipo estáticas.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código possui algumas melhorias de clareza e explicitação de tipos e status HTTP....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 4.41s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica explicitamente o status_code</div><div class='violation-critical'><strong>type_hints</strong>: A função retorna tipo Any, que não é específico</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'read_users' não segue a convenção snake_case com verbo de ação</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras estruturais...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_register_user_7')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_register_user_7</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_register_user_7" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post("/signup", response_model=UserPublic)
+def register_user(session: SessionDep, user_in: UserRegister) -&gt; Any:
+    """
+    Create new user without the need to be logged in.
+    """
+    user = crud.get_user_by_email(session=session, email=user_in.email)
+    if user:
+        raise HTTPException(
+            status_code=400,
+            detail="The user with this email already exists in the system",
+        )
+    user_create = UserCreate.model_validate(user_in)
+    user = crud.create_user(session=session, user_create=user_create)
+    return user</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>80</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 16.16s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint POST para criação de recurso não especifica explicitamente o status_code 201 Created no decorador. Embora o FastAPI possa inferir um 200 OK, o 201 é semanticamente mais preciso para criação.</div><div class='violation-critical'><strong>http_semantics</strong>: Para um método POST que cria um novo recurso, o status code esperado é 201 Created. O FastAPI, por padrão, retorna 200 OK se não for especificado, o que não é semanticamente correto para criação de recursos.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está bem estruturado, mas pode melhorar na explicitação de status codes HTTP para semântica de criação....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.13s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_update_password_me_4')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_update_password_me_4</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_update_password_me_4" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.patch("/me/password", response_model=Message)
+def update_password_me(
+    *, session: SessionDep, body: UpdatePassword, current_user: CurrentUser
+) -&gt; Any:
+    """
+    Update own password.
+    """
+    if not verify_password(body.current_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect password")
+    if body.current_password == body.new_password:
+        raise HTTPException(
+            status_code=400, detail="New password cannot be the same as the current one"
+        )
+    hashed_password = get_password_hash(body.new_password)
+    current_user.hashed_password = hashed_password
+    session.add(current_user)
+    session.commit()
+    return Message(message="Password updated successfully")</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 17.54s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: endpoint organization, openapi tags, put/patch response, resource representation, tags, update semantics</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint PATCH não especifica explicitamente o status_code de sucesso. Embora o FastAPI defina 200 OK por padrão para PATCH com corpo de resposta, é uma boa prática ser explícito para maior clareza e manutenção do contrato da API.</div><div class='violation-critical'><strong>type_hints</strong>: A anotação de tipo de retorno `-> Any` é muito genérica. Como `response_model=Message` é especificado no decorador, o tipo de retorno esperado é `Message`.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em boa forma, com algumas melhorias pontuais para maior clareza e tipagem....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.07s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: endpoint organization, openapi tags, put/patch response, resource representation, tags, update semantics</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_9')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_9</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_9" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.patch(
+    "/{user_id}",
+    dependencies=[Depends(get_current_active_superuser)],
+    response_model=UserPublic,
+)
+def update_user(
+    *,
+    session: SessionDep,
+    user_id: uuid.UUID,
+    user_in: UserUpdate,
+) -&gt; Any:
+    """
+    Update a user.
+    """
+
+    db_user = session.get(User, user_id)
+    if not db_user:
+        raise HTTPException(
+            status_code=404,
+            detail="The user with this id does not exist in the system",
+        )
+    if user_in.email:
+        existing_user = crud.get_user_by_email(session=session, email=user_in.email)
+        if existing_user and existing_user.id != user_id:
+            raise HTTPException(
+                status_code=409, detail="User with this email already exists"
+            )
+
+    db_user = crud.update_user(session=session, db_user=db_user, user_in=user_in)
+    return db_user</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 9.73s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Path(), correct status codes, endpoint organization, error codes, http semantics, openapi tags, parameter constraints, path validation, put/patch response, resource representation, tags, update semantics</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint PATCH retorna um corpo de resposta (response_model=UserPublic), o que implica um status code 200 OK por padrão. No entanto, a regra exige que o status code seja explicitamente definido no decorador para clareza e manutenção, mesmo que seja o padrão.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código está em conformidade com a maioria das regras, com uma pequena melhoria sugerida....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>85</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.53s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: Path(), correct status codes, endpoint organization, error codes, http semantics, openapi tags, parameter constraints, path validation, put/patch response, resource representation, tags, update semantics</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint não especifica status_code explicitamente para o caso de sucesso</div><div class='violation-item'><strong>naming_conventions</strong>: O nome da função 'update_user' segue a convenção, mas poderia ser mais específico</div><div class='violation-critical'><strong>type_hints</strong>: O tipo de retorno é definido como Any, o que não é específico</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende a maioria das regras, com apenas algumas melhorias sugeridas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_me_3')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_me_3</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_USERS_update_user_me_3" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.patch("/me", response_model=UserPublic)
+def update_user_me(
+    *, session: SessionDep, user_in: UserUpdateMe, current_user: CurrentUser
+) -&gt; Any:
+    """
+    Update own user.
+    """
+
+    if user_in.email:
+        existing_user = crud.get_user_by_email(session=session, email=user_in.email)
+        if existing_user and existing_user.id != current_user.id:
+            raise HTTPException(
+                status_code=409, detail="User with this email already exists"
+            )
+    user_data = user_in.model_dump(exclude_unset=True)
+    current_user.sqlmodel_update(user_data)
+    session.add(current_user)
+    session.commit()
+    session.refresh(current_user)
+    return current_user</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 17.89s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: correct status codes, endpoint organization, error codes, http semantics, openapi tags, put/patch response, resource representation, tags, update semantics</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint PATCH não especifica explicitamente o status_code de sucesso no decorador. Embora 200 OK seja o padrão para PATCH com corpo de resposta, a regra exige explicitação.</div><div class='violation-critical'><strong>type_hints</strong>: A anotação de tipo de retorno `-> Any` é muito genérica. Dado que `response_model=UserPublic` está definido, o tipo de retorno esperado é `UserPublic`.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código atende à maioria das boas práticas, com pequenas melhorias de explicitação e tipagem....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 3.27s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: correct status codes, endpoint organization, error codes, http semantics, openapi tags, put/patch response, resource representation, tags, update semantics</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_UTILS_health_check_2')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_UTILS_health_check_2</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_UTILS_health_check_2" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.get("/health-check/")
+async def health_check() -&gt; bool:
+    return True</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>83</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 12.15s
+                        <div style='margin-top:5px;'><span style='background:#d4edda; color:#155724; padding:2px 5px; border-radius:3px; font-size:0.8em'>✅ Recall: docstring, status_code</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>endpoint_structure</strong>: A função `health_check` não possui uma docstring explicativa. Isso dificulta o entendimento da finalidade e do comportamento do endpoint, especialmente em projetos maiores.</div><div class='violation-critical'><strong>endpoint_structure</strong>: O endpoint GET não especifica explicitamente o `status_code`. Embora o padrão para GET seja 200 OK, é uma boa prática declará-lo para clareza, documentação e para evitar ambiguidades futuras.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            O código é funcional, mas pode ser aprimorado com documentação e explicitação de status code....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 1.62s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, description, descriptive names, docstring, documentation, endpoint organization, explicit status, function naming, http status, openapi tags, output schema, pydantic model, response_model, status_code, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação ativas...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card">
+                <div class="card-header" onclick="toggleCard('FULL-STACK-FASTAPI-TEMPLATE_UTILS_test_email_1')">
+                    <span><strong>FULL-STACK-FASTAPI-TEMPLATE_UTILS_test_email_1</strong>: Sem descrição</span>
+                    <span>▼</span>
+                </div>
+                <div id="content-FULL-STACK-FASTAPI-TEMPLATE_UTILS_test_email_1" class="card-content">
+                    <div class="comparison-grid">
+                        <div class="code-column">@router.post(
+    "/test-email/",
+    dependencies=[Depends(get_current_active_superuser)],
+    status_code=201,
+)
+def test_email(email_to: EmailStr) -&gt; Message:
+    """
+    Test emails.
+    """
+    email_data = generate_test_email(email_to=email_to)
+    send_email(
+        email_to=email_to,
+        subject=email_data.subject,
+        html_content=email_data.html_content,
+    )
+    return Message(message="Test email sent")</div>
+        
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Gemini 2.5-flash</strong><br>
+                        Score: <strong>92</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 17.86s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, output schema, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div class='violation-critical'><strong>http_semantics</strong>: O método POST com status_code 201 (Created) é semanticamente usado para indicar a criação de um novo recurso no servidor. No entanto, este endpoint parece realizar uma ação (enviar e-mail) e retorna apenas uma mensagem de confirmação, sem criar um recurso persistente ou fornecer um cabeçalho 'Location'. Isso é um uso inadequado do status 201 para uma operação que não é de criação de recurso.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com a maioria das regras, mas possui uma pequena inconsistência semântica HTTP....
+                    </div>
+                </div>
+            
+                <div class="llm-column">
+                    <div class="meta-info">
+                        <strong>Mistral Small</strong><br>
+                        Score: <strong>100</strong> | <span class="status-pass">pass</span>
+                        <br>Tempo: 2.86s
+                        <div style='margin-top:5px;'><span style='background:#f8d7da; color:#721c24; padding:2px 5px; border-radius:3px; font-size:0.8em'>❌ Missed: action verb, descriptive names, endpoint organization, function naming, openapi tags, output schema, pydantic model, response_model, tags</span></div>
+                    </div>
+                    <div class="violations-list">
+            <div style='color:green; font-style:italic'>Nenhuma violação encontrada.</div>
+                    </div>
+                    <div style='margin-top:10px; font-size:0.85em; color:#555;'>
+                        <strong>Resumo:</strong><br>
+            Código está em conformidade com todas as regras de validação...
+                    </div>
+                </div>
+            
+                    </div>
+                </div>
+            </div>
+        
+        </div>
+    </body>
+    </html>
+    

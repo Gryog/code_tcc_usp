@@ -1,0 +1,441 @@
+{
+  "summary": {
+    "passed": 3,
+    "failed": 1,
+    "errors": 0
+  },
+  "results": [
+    {
+      "overall_status": "pass",
+      "overall_score": 83,
+      "summary": "O código é bem estruturado, mas pode melhorar a documentação e a explicitação de status codes.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função 'login_for_access_token' não possui uma docstring explicativa. Docstrings são cruciais para documentar a funcionalidade da API, facilitando o entendimento e a manutenção.",
+          "suggestion": "Adicione uma docstring clara e concisa que descreva o propósito do endpoint, seus parâmetros e o que ele retorna.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O decorador '@router.post' não especifica explicitamente o 'status_code' para o sucesso da operação. Embora o padrão 200 OK seja aceitável para um endpoint de login, explicitá-lo melhora a clareza e a intenção do código.",
+          "suggestion": "Adicione 'status_code=200' (ou 201 se a criação do token for vista como um recurso novo) ao decorador '@router.post' para maior clareza.",
+          "line_reference": "Linha 1"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python",
+            "Nomes de função muito genéricos"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 14.05,
+        "timestamp": "2026-01-20 22:41:15",
+        "token_usage": {
+          "prompt_token_count": 1617,
+          "candidates_token_count": 704,
+          "total_token_count": 4445
+        }
+      },
+      "response_time": 14.05,
+      "file_path": "FASTAPI-NANO_AUTH_login_for_access_token_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 25
+      },
+      "source_file": "svc\\core\\auth.py",
+      "code_snippet": "@router.post(\"/token\", response_model=Token)\nasync def login_for_access_token(\n    form_data: OAuth2PasswordRequestForm = Depends(),\n) -> dict[str, str]:\n    user = authenticate_user(\n        fake_users_db,\n        form_data.username,\n        form_data.password,\n    )\n\n    if not user:\n        raise HTTPException(\n            status_code=HTTPStatus.UNAUTHORIZED,\n            detail=\"Incorrect username or password\",\n            headers={\"WWW-Authenticate\": \"Bearer\"},\n        )\n\n    access_token_expires = timedelta(\n        seconds=config.API_ACCESS_TOKEN_EXPIRE_MINUTES,\n    )\n    access_token = create_access_token(\n        data={\"sub\": user.username},  # type: ignore\n        expires_delta=access_token_expires,\n    )\n    return {\"access_token\": access_token, \"token_type\": \"bearer\"}",
+      "expected_keywords": [
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "fail",
+      "overall_score": 43,
+      "summary": "O código possui problemas de documentação, especificação explícita de status code e convenções de nomenclatura.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint `index` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.",
+          "suggestion": "Adicione uma docstring clara e concisa à função `index` explicando seu propósito, por exemplo: `\"\"\"Retorna informações básicas sobre a API.\"\"\"`.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o `status_code`. Embora o padrão 200 seja correto para GETs bem-sucedidos, a especificação explícita melhora a clareza e a documentação da API, tornando-a mais robusta e fácil de entender.",
+          "suggestion": "Adicione `status_code=200` ao decorador `@router.get()` para clareza, por exemplo: `@router.get('/', status_code=200)`.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+          "description": "O nome da função `index` não começa com um verbo de ação, o que é uma boa prática para endpoints RESTful para indicar a operação que está sendo realizada (ex: `get_root_info`, `retrieve_index`).",
+          "suggestion": "Renomeie a função para algo como `get_root_info` ou `retrieve_index_page` para indicar a ação de forma mais clara.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função `index` é muito genérico e não descreve claramente o recurso ou a ação que o endpoint realiza, mesmo para a rota raiz. Isso pode dificultar a compreensão do propósito do endpoint em um projeto maior.",
+          "suggestion": "Escolha um nome mais descritivo para a função, como `get_api_info` ou `read_root_message`, que reflita o conteúdo retornado.",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 19.93,
+        "timestamp": "2026-01-20 22:41:36",
+        "token_usage": {
+          "prompt_token_count": 1457,
+          "candidates_token_count": 1002,
+          "total_token_count": 6373
+        }
+      },
+      "response_time": 19.93,
+      "file_path": "FASTAPI-NANO_VIEWS_index_1",
+      "metadata": {
+        "has_async": true,
+        "lines": 6
+      },
+      "source_file": "svc\\routes\\views.py",
+      "code_snippet": "@router.get(\"/\")\nasync def index() -> dict[str, str]:\n    return {\n        \"info\": \"This is the index page of fastapi-nano. \"\n        \"You probably want to go to 'http://<hostname:port>/docs'.\",\n    }",
+      "expected_keywords": [
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "endpoint organization",
+        "explicit status",
+        "function naming",
+        "http status",
+        "openapi tags",
+        "output schema",
+        "pydantic model",
+        "response_model",
+        "status_code",
+        "tags"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 67,
+      "summary": "O código possui algumas melhorias de documentação e nomenclatura para maior clareza e manutenibilidade.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função do endpoint `view_a` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a clareza do código.",
+          "suggestion": "Adicione uma docstring clara e concisa à função `view_a` descrevendo seu propósito, parâmetros e o valor de retorno.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o `status_code` no decorador. Embora o FastAPI defina 200 OK por padrão para GET, a especificação explícita melhora a clareza e a intenção do código, especialmente para futuros mantenedores.",
+          "suggestion": "Adicione `status_code=200` ao decorador `@router.get` para deixar explícito o código de sucesso esperado.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função `view_a` é muito genérico. 'a' não descreve o recurso ou a entidade que está sendo visualizada, dificultando o entendimento do propósito do endpoint sem contexto adicional.",
+          "suggestion": "Renomeie a função para algo mais descritivo, como `get_resource_a` ou `retrieve_data_a`, para indicar claramente o que o endpoint faz.",
+          "line_reference": "Linha 2"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "error_handling",
+          "checks_passed": [
+            "Define status codes corretos para erros"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 22.93,
+        "timestamp": "2026-01-20 22:42:00",
+        "token_usage": {
+          "prompt_token_count": 1479,
+          "candidates_token_count": 840,
+          "total_token_count": 6601
+        }
+      },
+      "response_time": 22.93,
+      "file_path": "FASTAPI-NANO_VIEWS_view_a_2",
+      "metadata": {
+        "has_async": true,
+        "lines": 8
+      },
+      "source_file": "svc\\routes\\views.py",
+      "code_snippet": "@router.get(\"/api_a/{num}\", tags=[\"api_a\"])\nasync def view_a(\n    num: int,\n    auth: Depends = Depends(get_current_user),\n) -> dict[str, int]:\n    result = main_func_a(num)\n    logger.info(f\"API A: {result}\")\n    return result",
+      "expected_keywords": [
+        "HTTPException",
+        "Path()",
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "explicit status",
+        "function naming",
+        "http errors",
+        "http status",
+        "output schema",
+        "parameter constraints",
+        "path validation",
+        "pydantic model",
+        "response_model",
+        "status codes",
+        "status_code"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    },
+    {
+      "overall_status": "warning",
+      "overall_score": 73,
+      "summary": "O código possui algumas violações de boas práticas e estrutura, principalmente em documentação e tratamento de erros.",
+      "violations": [
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Possui docstring explicativa",
+          "description": "A função `view_b` não possui uma docstring explicativa. Docstrings são essenciais para documentar a funcionalidade do endpoint, seus parâmetros e o que ele retorna, melhorando a manutenibilidade e a compreensão do código.",
+          "suggestion": "Adicione uma docstring clara e concisa à função `view_b` descrevendo seu propósito, parâmetros e retorno.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "endpoint_structure",
+          "check_failed": "Especifica status_code explicitamente",
+          "description": "O endpoint GET não especifica explicitamente o `status_code`. Embora 200 OK seja o padrão para GETs bem-sucedidos, a especificação explícita melhora a clareza e a intenção do código, além de facilitar futuras alterações.",
+          "suggestion": "Adicione `status_code=200` ao decorador `@router.get` para tornar o código mais explícito, por exemplo: `@router.get('/api_b/{num}', status_code=200, tags=['api_b'])`.",
+          "line_reference": "Linha 1"
+        },
+        {
+          "severity": "warning",
+          "rule_category": "naming_conventions",
+          "check_failed": "Nomes de função muito genéricos",
+          "description": "O nome da função `view_b` é genérico e não descreve claramente a ação ou o recurso que está sendo manipulado. O sufixo `_b` não adiciona clareza sobre o que 'b' representa.",
+          "suggestion": "Renomeie a função para algo mais descritivo, como `get_api_b_data` ou `retrieve_b_details`, para indicar claramente sua finalidade.",
+          "line_reference": "Linha 2"
+        },
+        {
+          "severity": "error",
+          "rule_category": "error_handling",
+          "check_failed": "Define status codes corretos para erros",
+          "description": "O código não demonstra tratamento de erros explícito (ex: `try-except` com `HTTPException`) que defina status codes apropriados para diferentes cenários de falha. Em um ambiente de API, é crucial comunicar falhas de forma clara através de status codes HTTP.",
+          "suggestion": "Implemente tratamento de erros usando `HTTPException` do FastAPI para cenários de falha (ex: recurso não encontrado, erro de validação de negócio), definindo os status codes HTTP corretos (ex: 404 Not Found, 400 Bad Request, 500 Internal Server Error).",
+          "line_reference": "N/A"
+        }
+      ],
+      "compliant_rules": [
+        {
+          "rule_category": "http_semantics",
+          "checks_passed": [
+            "Status code condiz com o método e o comportamento (ex: POST cria -> 201, DELETE sem body -> 204, async job -> 202)",
+            "Se status_code for 204, não retorna corpo (return None/Response sem content)"
+          ]
+        },
+        {
+          "rule_category": "naming_conventions",
+          "checks_passed": [
+            "Nome da função em snake_case com verbo de ação (ex: get_users, create_user)",
+            "Parâmetros seguem convenção Python"
+          ]
+        },
+        {
+          "rule_category": "type_hints",
+          "checks_passed": [
+            "Todos parâmetros possuem type hints",
+            "Função possui return type annotation",
+            "Usa tipos adequados (List, Dict, Optional, etc)"
+          ]
+        },
+        {
+          "rule_category": "input_validation_and_openapi",
+          "checks_passed": [
+            "Body requests usam Pydantic models (N/A se não há body)"
+          ]
+        }
+      ],
+      "_metadata": {
+        "response_time": 19.15,
+        "timestamp": "2026-01-20 22:42:20",
+        "token_usage": {
+          "prompt_token_count": 1479,
+          "candidates_token_count": 1014,
+          "total_token_count": 5689
+        }
+      },
+      "response_time": 19.15,
+      "file_path": "FASTAPI-NANO_VIEWS_view_b_3",
+      "metadata": {
+        "has_async": true,
+        "lines": 8
+      },
+      "source_file": "svc\\routes\\views.py",
+      "code_snippet": "@router.get(\"/api_b/{num}\", tags=[\"api_b\"])\nasync def view_b(\n    num: int,\n    auth: Depends = Depends(get_current_user),\n) -> dict[str, int]:\n    result = main_func_b(num)\n    logger.info(f\"API B: {result}\")\n    return result",
+      "expected_keywords": [
+        "HTTPException",
+        "Path()",
+        "action verb",
+        "description",
+        "descriptive names",
+        "docstring",
+        "documentation",
+        "explicit status",
+        "function naming",
+        "http errors",
+        "http status",
+        "output schema",
+        "parameter constraints",
+        "path validation",
+        "pydantic model",
+        "response_model",
+        "status codes",
+        "status_code"
+      ],
+      "expected_status": "fail",
+      "expected_status_source": "derived_from_violations"
+    }
+  ],
+  "timestamp": "2026-01-20 22:42:21",
+  "benchmark_metadata": {
+    "llm_name": "Gemini 2.5-flash",
+    "repo_name": "fastapi-nano",
+    "repo_url": "https://github.com/rednafi/fastapi-nano",
+    "total_time": 80.06,
+    "total_endpoints": 4,
+    "skipped_files_count": 0,
+    "skipped_files": [],
+    "token_usage": {
+      "prompt_tokens": 6032,
+      "completion_tokens": 3560,
+      "total_tokens": 23108
+    }
+  }
+}

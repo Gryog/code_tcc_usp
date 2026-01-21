@@ -154,11 +154,25 @@ def run_benchmark(run_id=None, skip_reporting=False):
                 if file_id_tag in batch_input:
                     result["code_snippet"] = batch_input[file_id_tag]
 
+            # Calcular uso total de tokens
+            total_tokens = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+            for res in report.get("results", []):
+                    usage = res.get("_metadata", {}).get("token_usage", {})
+                    
+                    p_tokens = usage.get("prompt_tokens") or usage.get("prompt_token_count") or 0
+                    c_tokens = usage.get("completion_tokens") or usage.get("candidates_token_count") or 0
+                    t_tokens = usage.get("total_tokens") or usage.get("total_token_count") or 0
+                    
+                    total_tokens["prompt_tokens"] += p_tokens
+                    total_tokens["completion_tokens"] += c_tokens
+                    total_tokens["total_tokens"] += t_tokens
+
             # Adiciona metadados do benchmark ao relatório
             report["benchmark_metadata"] = {
                 "llm_name": llm_name,
                 "total_time": round(time.time() - start_time, 2),
-                "dataset_version": dataset["metadata"]["version"]
+                "dataset_version": dataset["metadata"]["version"],
+                "token_usage": total_tokens
             }
             
             # Salva resultado individual
